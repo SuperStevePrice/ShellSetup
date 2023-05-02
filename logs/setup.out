@@ -1,47 +1,47 @@
 #-------------------------------------------------------------------------------
-Preparing files:	Tue May  2 13:39:45 PDT 2023
+Preparing files:	Tue May  2 13:49:32 PDT 2023
 #-------------------------------------------------------------------------------
 See contents of prep:
 
--rw-r--r--  1 steve  wheel  33 May  2 13:39 prep/xt.ksh
+-rw-r--r--  1 steve  wheel  33 May  2 13:49 prep/xt.ksh
 #!/usr/bin/env ksh
--rw-r--r--  1 steve  wheel  212 May  2 13:39 prep/PS1.ksh
+-rw-r--r--  1 steve  wheel  212 May  2 13:49 prep/PS1.ksh
 #!/usr/bin/env ksh
 
 dots/xtrc
 xpath=/opt/homebrew/bin
 
--rw-r--r--  1 steve  wheel  1148 May  2 13:39 dots/xtrc
+-rw-r--r--  1 steve  wheel  1148 May  2 13:49 dots/xtrc
 #-------------------------------------------------------------------------------
 ls -l prep
 total 192
--rw-r--r--  1 steve  wheel    212 May  2 13:39 PS1.ksh
--rwxr-xr-x  1 steve  staff   1263 May  2 13:22 git_clone.ksh
--rwxr-xr-x  1 steve  staff    461 May  2 13:38 git_mail.ksh
--rwxr-xr-x  1 steve  staff   1350 May  2 13:38 git_merge.ksh
--rwxr-xr-x  1 steve  staff   1743 May  2 13:39 git_new.ksh
--rwxr-xr-x  1 steve  staff    122 May  1 21:49 my_machine.ksh
--rwxr-xr-x  1 steve  staff    287 May  1 21:49 os.ksh
--rwxr-xr-x  1 steve  staff     32 May  1 21:49 p.ksh
--rwxr-xr-x  1 steve  staff    435 May  2 12:18 paths.ksh
--rwxr-xr-x  1 steve  staff   3559 May  2 12:17 remote_tar.ksh
--rwxr-xr-x  1 steve  staff   1432 May  1 21:49 scp_this.ksh
--rwxr-xr-x  1 steve  staff    322 May  1 21:49 set_shell.ksh
--rwxr-xr-x  1 steve  staff    935 May  2 12:18 ssh-copy-id.ksh
--rw-r--r--  1 steve  staff      9 May  2 13:39 which.ksh
--rw-r--r--  1 steve  staff     23 May  2 13:39 which.perl
--rw-r--r--  1 steve  staff     24 May  2 13:39 which.xterm
--rw-r--r--  1 steve  wheel     33 May  2 13:39 xt.ksh
--rw-r--r--  1 steve  staff  21815 May  2 12:00 xt.pl
--rw-r--r--  1 steve  staff   1617 May  1 21:49 xtrc
+-rw-r--r--  1 steve  wheel    212 May  2 13:49 PS1.ksh
+-rwxr-xr-x  1 steve  staff   1263 May  2 13:45 git_clone.ksh
+-rwxr-xr-x  1 steve  staff    461 May  2 13:45 git_mail.ksh
+-rwxr-xr-x  1 steve  staff   1350 May  2 13:45 git_merge.ksh
+-rwxr-xr-x  1 steve  staff   1743 May  2 13:45 git_new.ksh
+-rwxr-xr-x  1 steve  staff    122 May  2 13:45 my_machine.ksh
+-rwxr-xr-x  1 steve  staff    287 May  2 13:45 os.ksh
+-rwxr-xr-x  1 steve  staff     32 May  2 13:45 p.ksh
+-rwxr-xr-x  1 steve  staff    435 May  2 13:45 paths.ksh
+-rwxr-xr-x  1 steve  staff   3559 May  2 13:45 remote_tar.ksh
+-rwxr-xr-x  1 steve  staff   1432 May  2 13:45 scp_this.ksh
+-rwxr-xr-x  1 steve  staff    322 May  2 13:45 set_shell.ksh
+-rwxr-xr-x  1 steve  staff    935 May  2 13:45 ssh-copy-id.ksh
+-rw-r--r--  1 steve  staff      9 May  2 13:49 which.ksh
+-rw-r--r--  1 steve  staff     23 May  2 13:49 which.perl
+-rw-r--r--  1 steve  staff     24 May  2 13:49 which.xterm
+-rw-r--r--  1 steve  wheel     33 May  2 13:49 xt.ksh
+-rw-r--r--  1 steve  staff  21815 May  2 13:45 xt.pl
+-rw-r--r--  1 steve  staff   1617 May  2 13:45 xtrc
 
 #-------------------------------------------------------------------------------
-Preparations done:	Tue May  2 13:39:45 PDT 2023
+Preparations done:	Tue May  2 13:49:33 PDT 2023
 #-------------------------------------------------------------------------------
 
 
 #-------------------------------------------------------------------------------
-Setup Commenced:	Tue May  2 13:39:45 PDT 2023
+Setup Commenced:	Tue May  2 13:49:33 PDT 2023
 #-------------------------------------------------------------------------------
 
 /bin/cp /Users/steve/.alias /Users/steve/.alias.save
@@ -157,6 +157,6 @@ ln -s /Users/steve/bin/tr.ksh /Users/steve/bin/tr
 ln -s /Users/steve/bin/x.ksh /Users/steve/bin/x
 ln -s /Users/steve/bin/xt.ksh /Users/steve/bin/xt
 
-Setup Complete:	Tue May  2 13:39:45 PDT 2023
+Setup Complete:	Tue May  2 13:49:33 PDT 2023
 
 
