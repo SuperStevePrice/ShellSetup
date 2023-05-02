@@ -1,0 +1,37 @@
+#-------------------------------------------------------------------------------
+Preparing files
+#-------------------------------------------------------------------------------
+See contents of prep:
+
+-rw-rw-r-- 1 steve steve 33 Apr 29 12:59 prep/xt.ksh
+#!/usr/bin/env ksh
+-rw-rw-r-- 1 steve steve 212 Apr 29 12:59 prep/PS1.ksh
+#!/usr/bin/env ksh
+-rw-rw-r-- 1 steve steve 21795 Apr 29 12:59 prep/xt.pl
+#!/usr/bin/env perl
+
+prep/xtrc
+xpath=/usr/bin
+
+ls -l prep
+total 76
+-rwxr-xr-x 1 steve steve    85 Apr 28 19:37 machine.ksh
+-rwxr-xr-x 1 steve steve   122 Apr 28 19:37 my_machine.ksh
+-rwxr-xr-x 1 steve steve   287 Apr 28 19:37 os.ksh
+-rwxr-xr-x 1 steve steve   436 Apr 29 10:22 paths.ksh
+-rwxr-xr-x 1 steve steve    32 Apr 28 19:37 p.ksh
+-rw-rw-r-- 1 steve steve   212 Apr 29 12:59 PS1.ksh
+-rwxr-xr-x 1 steve steve  3591 Apr 28 19:37 remote_tar.ksh
+-rwxr-xr-x 1 steve steve   322 Apr 28 19:37 set_shell.ksh
+-rw-r--r-- 1 steve steve    13 Apr 29 12:59 which.ksh
+-rw-r--r-- 1 steve steve    14 Apr 29 12:59 which.perl
+-rw-r--r-- 1 steve steve    15 Apr 29 12:59 which.xterm
+-rw-rw-r-- 1 steve steve    33 Apr 29 12:59 xt.ksh
+-rw-rw-r-- 1 steve steve 21795 Apr 29 12:59 xt.pl
+-rw-rw-r-- 1 steve steve  1608 Apr 29 12:59 xtrc
+
+#-------------------------------------------------------------------------------
+Preparations done
+#-------------------------------------------------------------------------------
+
+

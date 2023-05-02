@@ -1,0 +1,2 @@
+# https://osxdaily.com/2017/11/16/access-icloud-drive-command-line-mac/
+~/Library/Mobile\ Documents/com~apple~CloudDocs/

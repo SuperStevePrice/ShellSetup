@@ -1,0 +1,1 @@
+setup.ksh > logs/setup.out 2>&1

@@ -1,0 +1,11 @@
+alias c="tput clear"      # clear the screen
+alias print="echo"        # bash has no print
+alias clr="tput clear"    # clear the screen
+alias h="fc -l"           # history command for ksh
+alias l="ls -l"           # short for long list ls
+alias ll="ls -l"          # short for long list ls
+alias lr="ls -ltr"        # short for long list time reversed ls
+alias py="$(which python)"
+alias g="$(which git)"
+alias gl="$(which git) log"
+

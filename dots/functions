@@ -1,0 +1,10 @@
+function f { find . -type f -print 2>/dev/null;  }
+function S { f | xargs grep "$1";  }
+function Si { f | xargs grep -i "$1";  }
+function Sl { f | xargs grep -l "$1"; }
+function Sil { f | xargs grep -il "$1" 2>/dev/null;  }
+
+alias search=S
+alias searchi=Si
+alias searchl=Sl
+alias searchil=Sil
