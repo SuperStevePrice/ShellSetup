@@ -1,4 +1,12 @@
 #!/usr/bin/env ksh
+
+#-------------------------------------------------------------------------------
+# Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
+#
+#                  GNU GENERAL PUBLIC LICENSE
+#                     Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
 #-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_merge.ksh	
@@ -58,4 +66,3 @@ $git commit -m "Merged $branch_name into $master"
 # push the changes to the remote repository
 echo "$git push"
 $git push
-#-------------------------------------------------------------------------------

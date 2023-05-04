@@ -1,5 +1,10 @@
 #-------------------------------------------------------------------------------
-# $Id: .xtrc,v 1.2 2013/08/28 21:23:18 rp3138 Exp $
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
 #-------------------------------------------------------------------------------
 # FILE:
 #	.xtrc
@@ -24,16 +29,6 @@
 #	All except x_sl and xpath may be configured by the user anytime after 
 #	xt.pl lauches the user control panel.
 #
-# HISTORY:
-#	12/13/2006	rp3138	Created
-#	$Log: .xtrc,v $
-#	Revision 1.2  2013/08/28 21:23:18  rp3138
-#	Modifed comments concerning placement of .xtrc.  Must be in $HOME.
-#	Modified xpath to remove unnecessary final "/".
-#	
-#	Revision 1.1  2006/12/13 18:37:42  rp3138
-#	Initial version created for CVS in the CM ATM/FRAME src system.
-#	
 #-------------------------------------------------------------------------------
 x_cols=80
 x_rows=44
@@ -42,4 +37,4 @@ x_fn=9x15bold
 x_bg=DarkGrey
 x_fg=Navy
 log=0
-xpath=/opt/homebrew/bin
+xpath=/usr/bin

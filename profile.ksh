@@ -1,6 +1,25 @@
 #!/usr/bin/env ksh
 
-filename=profile
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	profile.ksh
+#	
+# PURPOSE:
+#	Create ~/.profile including environment values for brew and perl via eval.
+#	
+# USAGE:
+#	Invoked by setup.ksh
+#
+#-------------------------------------------------------------------------------
+
+filename=dots/profile
 
 perl_v=$(which perl)
 brew_path=$(which brew)

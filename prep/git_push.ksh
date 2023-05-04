@@ -1,4 +1,12 @@
 #!/usr/bin/env ksh
+
+#-------------------------------------------------------------------------------
+# Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
+#
+#                  GNU GENERAL PUBLIC LICENSE
+#                     Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
 #-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_push.ksh
@@ -7,7 +15,7 @@
 #	Use git to add, commit, and push a project
 #	
 # USAGE:
-#	$0 repository
+#	git_push.ksh repository
 #
 #-------------------------------------------------------------------------------
 usage="Usage: $0 repository"
@@ -51,4 +59,3 @@ $git commit -m 'Commit project $repository'
 # push the changes to the remote repository
 echo "$git push"
 $git push
-#-------------------------------------------------------------------------------

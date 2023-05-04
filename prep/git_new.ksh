@@ -1,6 +1,13 @@
-#-------------------------------------------------------------------------------
 #!/usr/bin/env ksh
-# $Id$
+
+#-------------------------------------------------------------------------------
+# Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
+#
+#                  GNU GENERAL PUBLIC LICENSE
+#                     Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_new.ksh
 #	
@@ -66,4 +73,3 @@ $git remote add $repository git@github.com:$git_user/$repository.git
 
 print "$git push -u $repository main"
 $git push -u $repository main
-# EOF --------------------------------------------------------------------------

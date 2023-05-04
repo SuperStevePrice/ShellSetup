@@ -1,147 +1,251 @@
 #-------------------------------------------------------------------------------
-Preparing files:	Tue May  2 13:49:32 PDT 2023
+Preparing files:	Wed May  3 19:24:42 PDT 2023
 #-------------------------------------------------------------------------------
 See contents of prep:
 
--rw-r--r--  1 steve  wheel  33 May  2 13:49 prep/xt.ksh
+-rw-r--r--  1 steve  wheel  33 May  3 19:24 prep/xt.ksh
 #!/usr/bin/env ksh
--rw-r--r--  1 steve  wheel  212 May  2 13:49 prep/PS1.ksh
+-rw-r--r--  1 steve  wheel  720 May  3 19:24 prep/PS1.ksh
 #!/usr/bin/env ksh
 
 dots/xtrc
 xpath=/opt/homebrew/bin
 
--rw-r--r--  1 steve  wheel  1148 May  2 13:49 dots/xtrc
+-rw-r--r--  1 steve  wheel  1486 May  3 19:24 dots/xtrc
 #-------------------------------------------------------------------------------
 ls -l prep
-total 192
--rw-r--r--  1 steve  wheel    212 May  2 13:49 PS1.ksh
--rwxr-xr-x  1 steve  staff   1263 May  2 13:45 git_clone.ksh
--rwxr-xr-x  1 steve  staff    461 May  2 13:45 git_mail.ksh
--rwxr-xr-x  1 steve  staff   1350 May  2 13:45 git_merge.ksh
--rwxr-xr-x  1 steve  staff   1743 May  2 13:45 git_new.ksh
--rwxr-xr-x  1 steve  staff    122 May  2 13:45 my_machine.ksh
--rwxr-xr-x  1 steve  staff    287 May  2 13:45 os.ksh
--rwxr-xr-x  1 steve  staff     32 May  2 13:45 p.ksh
--rwxr-xr-x  1 steve  staff    435 May  2 13:45 paths.ksh
--rwxr-xr-x  1 steve  staff   3559 May  2 13:45 remote_tar.ksh
--rwxr-xr-x  1 steve  staff   1432 May  2 13:45 scp_this.ksh
--rwxr-xr-x  1 steve  staff    322 May  2 13:45 set_shell.ksh
--rwxr-xr-x  1 steve  staff    935 May  2 13:45 ssh-copy-id.ksh
--rw-r--r--  1 steve  staff      9 May  2 13:49 which.ksh
--rw-r--r--  1 steve  staff     23 May  2 13:49 which.perl
--rw-r--r--  1 steve  staff     24 May  2 13:49 which.xterm
--rw-r--r--  1 steve  wheel     33 May  2 13:49 xt.ksh
--rw-r--r--  1 steve  staff  21815 May  2 13:45 xt.pl
--rw-r--r--  1 steve  staff   1617 May  2 13:45 xtrc
+total 200
+-rw-r--r--  1 steve  wheel    720 May  3 19:24 PS1.ksh
+-rwxr-xr-x  1 steve  staff   1602 May  3 19:19 git_clone.ksh
+-rwxr-xr-x  1 steve  staff    950 May  3 19:19 git_mail.ksh
+-rwxr-xr-x  1 steve  staff   1587 May  3 19:19 git_merge.ksh
+-rwxr-xr-x  1 steve  staff   1973 May  3 19:19 git_new.ksh
+-rw-r--r--  1 steve  staff   1340 May  3 19:19 git_push.ksh
+-rwxr-xr-x  1 steve  staff    683 May  3 19:19 my_machine.ksh
+-rwxr-xr-x  1 steve  staff    873 May  3 19:19 os.ksh
+-rwxr-xr-x  1 steve  staff     32 May  3 19:19 p.ksh
+-rwxr-xr-x  1 steve  staff   1073 May  3 19:19 paths.ksh
+-rwxr-xr-x  1 steve  staff   3709 May  3 19:19 remote_tar.ksh
+-rwxr-xr-x  1 steve  staff   1972 May  3 19:19 scp_this.ksh
+-rwxr-xr-x  1 steve  staff    929 May  3 19:19 set_shell.ksh
+-rwxr-xr-x  1 steve  staff   1186 May  3 19:19 ssh-copy-id.ksh
+-rw-r--r--  1 steve  staff      9 May  3 19:24 which.ksh
+-rw-r--r--  1 steve  staff     23 May  3 19:24 which.perl
+-rw-r--r--  1 steve  staff     24 May  3 19:24 which.xterm
+-rw-r--r--  1 steve  wheel     33 May  3 19:24 xt.ksh
+-rw-r--r--  1 steve  staff  21801 May  3 19:19 xt.pl
+-rw-r--r--  1 steve  staff   1477 May  3 19:19 xtrc
 
 #-------------------------------------------------------------------------------
-Preparations done:	Tue May  2 13:49:33 PDT 2023
+Preparations done:	Wed May  3 19:24:42 PDT 2023
 #-------------------------------------------------------------------------------
 
 
 #-------------------------------------------------------------------------------
-Setup Commenced:	Tue May  2 13:49:33 PDT 2023
+Setup Commenced:	Wed May  3 19:24:42 PDT 2023
 #-------------------------------------------------------------------------------
 
 /bin/cp /Users/steve/.alias /Users/steve/.alias.save
 /bin/cp dots/alias /Users/steve/.alias
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/.alias
 
 /bin/cp /Users/steve/.exrc /Users/steve/.exrc.save
 /bin/cp dots/exrc /Users/steve/.exrc
+DEBUG:
+
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+"------------------------------------------------------------------------------
+" Last installed: 2023-05-03 19:24:42
+"-- End of File ----------------------------------------------------------------
+"------------------------------------------------------------------------------
+" Last installed: 2023-05-03 19:24:42
+"-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/.exrc
 
 /bin/cp /Users/steve/.functions /Users/steve/.functions.save
 /bin/cp dots/functions /Users/steve/.functions
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/.functions
 
 /bin/cp /Users/steve/.kshrc /Users/steve/.kshrc.save
 /bin/cp dots/kshrc /Users/steve/.kshrc
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/.kshrc
 
 /bin/cp /Users/steve/.profile /Users/steve/.profile.save
 ~/.profile created/updated
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/.profile
 
 /bin/cp /Users/steve/.xtrc /Users/steve/.xtrc.save
 /bin/cp dots/xtrc /Users/steve/.xtrc
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/.xtrc
 
 
 cp /Users/steve/bin/PS1.ksh /Users/steve/bin/PS1.ksh.save
 cp prep/PS1.ksh /Users/steve/bin/PS1.ksh
 chmod 755 /Users/steve/bin/PS1.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/PS1.ksh
 
 cp /Users/steve/bin/git_clone.ksh /Users/steve/bin/git_clone.ksh.save
 cp prep/git_clone.ksh /Users/steve/bin/git_clone.ksh
 chmod 755 /Users/steve/bin/git_clone.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/git_clone.ksh
 
 cp /Users/steve/bin/git_mail.ksh /Users/steve/bin/git_mail.ksh.save
 cp prep/git_mail.ksh /Users/steve/bin/git_mail.ksh
 chmod 755 /Users/steve/bin/git_mail.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/git_mail.ksh
 
 cp /Users/steve/bin/git_merge.ksh /Users/steve/bin/git_merge.ksh.save
 cp prep/git_merge.ksh /Users/steve/bin/git_merge.ksh
 chmod 755 /Users/steve/bin/git_merge.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/git_merge.ksh
 
 cp /Users/steve/bin/git_new.ksh /Users/steve/bin/git_new.ksh.save
 cp prep/git_new.ksh /Users/steve/bin/git_new.ksh
 chmod 755 /Users/steve/bin/git_new.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/git_new.ksh
+
+cp /Users/steve/bin/git_push.ksh /Users/steve/bin/git_push.ksh.save
+cp prep/git_push.ksh /Users/steve/bin/git_push.ksh
+chmod 755 /Users/steve/bin/git_push.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/git_push.ksh
 
 cp /Users/steve/bin/my_machine.ksh /Users/steve/bin/my_machine.ksh.save
 cp prep/my_machine.ksh /Users/steve/bin/my_machine.ksh
 chmod 755 /Users/steve/bin/my_machine.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/my_machine.ksh
 
 cp /Users/steve/bin/os.ksh /Users/steve/bin/os.ksh.save
 cp prep/os.ksh /Users/steve/bin/os.ksh
 chmod 755 /Users/steve/bin/os.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/os.ksh
 
 cp /Users/steve/bin/p.ksh /Users/steve/bin/p.ksh.save
 cp prep/p.ksh /Users/steve/bin/p.ksh
 chmod 755 /Users/steve/bin/p.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/p.ksh
 
 cp /Users/steve/bin/paths.ksh /Users/steve/bin/paths.ksh.save
 cp prep/paths.ksh /Users/steve/bin/paths.ksh
 chmod 755 /Users/steve/bin/paths.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/paths.ksh
 
 cp /Users/steve/bin/remote_tar.ksh /Users/steve/bin/remote_tar.ksh.save
 cp prep/remote_tar.ksh /Users/steve/bin/remote_tar.ksh
 chmod 755 /Users/steve/bin/remote_tar.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/remote_tar.ksh
 
 cp /Users/steve/bin/scp_this.ksh /Users/steve/bin/scp_this.ksh.save
 cp prep/scp_this.ksh /Users/steve/bin/scp_this.ksh
 chmod 755 /Users/steve/bin/scp_this.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/scp_this.ksh
 
 cp /Users/steve/bin/set_shell.ksh /Users/steve/bin/set_shell.ksh.save
 cp prep/set_shell.ksh /Users/steve/bin/set_shell.ksh
 chmod 755 /Users/steve/bin/set_shell.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/set_shell.ksh
 
 cp /Users/steve/bin/ssh-copy-id.ksh /Users/steve/bin/ssh-copy-id.ksh.save
 cp prep/ssh-copy-id.ksh /Users/steve/bin/ssh-copy-id.ksh
 chmod 755 /Users/steve/bin/ssh-copy-id.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/ssh-copy-id.ksh
 
 cp /Users/steve/bin/xt.ksh /Users/steve/bin/xt.ksh.save
 cp prep/xt.ksh /Users/steve/bin/xt.ksh
 chmod 755 /Users/steve/bin/xt.ksh
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/xt.ksh
 
 cp /Users/steve/bin/xt.pl /Users/steve/bin/xt.pl.save
 cp prep/xt.pl /Users/steve/bin/xt.pl
 chmod 755 /Users/steve/bin/xt.pl
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/xt.pl
 
 cp /Users/steve/bin/xtrc /Users/steve/bin/xtrc.save
 cp prep/xtrc /Users/steve/bin/xtrc
 chmod 755 /Users/steve/bin/xtrc
+#------------------------------------------------------------------------------
+# Last installed: 2023-05-03 19:24:42
+#-- End of File ----------------------------------------------------------------
+Adding last 3 comment lines to file: /Users/steve/bin/xtrc
 
-cp prep/xt.pl
-chmod 755 /Users/steve/bin/xt.pl
 
 date >> docs/README.txt
 
 
 Creating symbolic links to ksh scripts in ~/bin
 
+ln -s /Users/steve/bin/AddToShellSetup.ksh /Users/steve/bin/AddToShellSetup
 ln -s /Users/steve/bin/PS1.ksh /Users/steve/bin/PS1
 ln -s /Users/steve/bin/get_ip.ksh /Users/steve/bin/get_ip
 ln -s /Users/steve/bin/git_clone.ksh /Users/steve/bin/git_clone
 ln -s /Users/steve/bin/git_mail.ksh /Users/steve/bin/git_mail
 ln -s /Users/steve/bin/git_merge.ksh /Users/steve/bin/git_merge
 ln -s /Users/steve/bin/git_new.ksh /Users/steve/bin/git_new
-ln -s /Users/steve/bin/machine.ksh /Users/steve/bin/machine
+ln -s /Users/steve/bin/git_push.ksh /Users/steve/bin/git_push
 ln -s /Users/steve/bin/my_machine.ksh /Users/steve/bin/my_machine
 ln -s /Users/steve/bin/names.ksh /Users/steve/bin/names
 ln -s /Users/steve/bin/os.ksh /Users/steve/bin/os
@@ -150,13 +254,11 @@ ln -s /Users/steve/bin/paths.ksh /Users/steve/bin/paths
 ln -s /Users/steve/bin/pbpaste_script.ksh /Users/steve/bin/pbpaste_script
 ln -s /Users/steve/bin/remote_tar.ksh /Users/steve/bin/remote_tar
 ln -s /Users/steve/bin/scp_this.ksh /Users/steve/bin/scp_this
-ln -s /Users/steve/bin/set_auth_keys.ksh /Users/steve/bin/set_auth_keys
 ln -s /Users/steve/bin/set_shell.ksh /Users/steve/bin/set_shell
 No symbolic link will be created for /Users/steve/bin/ssh-copy-id.ksh.
 ln -s /Users/steve/bin/tr.ksh /Users/steve/bin/tr
-ln -s /Users/steve/bin/x.ksh /Users/steve/bin/x
 ln -s /Users/steve/bin/xt.ksh /Users/steve/bin/xt
 
-Setup Complete:	Tue May  2 13:49:33 PDT 2023
+Setup Complete:	Wed May  3 19:24:42 PDT 2023
 
 

@@ -1,5 +1,24 @@
 #!/usr/bin/env ksh
 
+#-------------------------------------------------------------------------------
+# Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
+#
+#                  GNU GENERAL PUBLIC LICENSE
+#                     Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	scp_this.ksh
+#	
+# PURPOSE:
+#	scp a source file or directory to a remote machine.
+#	
+# USAGE:
+#	scp_this.ksh source_dir target
+#
+#-------------------------------------------------------------------------------
+
 # Modify by adding -r for transferring folders.
 scp=$(which scp)
 print "DEBUG0: $scp"
@@ -64,4 +83,3 @@ scp_source() {
 print "Transfer Beginning"
 scp_source $1 $2
 print "Transfer Complete"
-#-------------------------------------------------------------------------------

@@ -1,5 +1,26 @@
 #!/usr/bin/env ksh
+
 #-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	setup.ksh
+#	
+# PURPOSE:
+#	Configures files and installs them with correct permissons. Creates symbolic
+#	links for *ksh files in ~/bin.
+#	
+# USAGE:
+#	Run "ksh setup" to invoke this script, which invokes prep.ksh and logs all.
+#
+#-------------------------------------------------------------------------------
+# Manifest:
+#
 # PS1.ksh
 # alias
 # exrc
@@ -15,8 +36,16 @@
 # ssh-copy-id.ksh
 # xt.ksh
 # xt.pl 
-# xtrc
-#-------------------------------------------------------------------------------
+
+line="#---------------"
+line=$line"---------------------------------------------------------------"
+
+EoF="#-- End of File "
+EoF=$EoF"----------------------------------------------------------------"
+
+timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
+
+final_lines="${line}\n${timestamp}\n${EoF}"
 
 # preparations:
 . ./prep.ksh
@@ -26,9 +55,27 @@ print "Setup Commenced:	$(date)"
 print $line
 print
 
-timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
-
 prep_dir=prep
+
+add_last_lines() {
+	file=$1
+
+	if [ "$file" ==  ~/.exrc ]
+	then
+		# .exrc and vi don't tolerate normal comment marker. Use ".
+		last_lines=$(print $final_lines | sed -e 's/#/"/g')
+print "DEBUG:\n"
+print "$final_lines"
+print "$last_lines"
+	else
+		last_lines=$final_lines
+	fi
+
+	print "$last_lines"
+	print "Adding last 3 comment lines to file: $file"
+	print "$last_lines" >> $file
+}
+
 
 set_sym_links() {
 	print
@@ -71,14 +118,8 @@ do
 		$cp dots/${file} ~/.${file}
 	fi
 
-	if [ "$file" == "exrc" ]
-	then
-		# .exrc and vi don't tolerate normal comment marker. Use ".
-		ts=$(print $timestamp | sed -e 's/^#/"/')
-		print $ts >> ~/.${file}
-	else
-		print $timestamp >> ~/.${file}
-	fi
+	add_last_lines ~/.${file}
+
 	print
 done
 print
@@ -105,16 +146,16 @@ do
 	print chmod 755 ~/bin/${file}
 	chmod 755 ~/bin/${file}
 
-	print $timestamp >> ~/bin/${file}
+	add_last_lines ~/bin/${file}
 
 	print
 done
 
 
-print cp ${prep_dir}/xt.pl
-cp ${prep_dir}/xt.pl ~/bin/xt.pl
-print chmod 755 ~/bin/xt.pl
-chmod 755 ~/bin/xt.pl
+# print "cp ${prep_dir}/xt.pl ~/bin/xt.pl"
+# cp ${prep_dir}/xt.pl ~/bin/xt.pl
+# print chmod 755 ~/bin/xt.pl
+# chmod 755 ~/bin/xt.pl
 print
 
 
@@ -128,4 +169,3 @@ print $line
 print "Setup Complete:	$(date)"
 print $line
 print
-#-------------------------------------------------------------------------------

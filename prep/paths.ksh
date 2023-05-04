@@ -1,6 +1,24 @@
 #!/usr/bin/env ksh
 
-programs="ksh perl python xterm"
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	paths.ksh
+#	
+# PURPOSE:
+#	Print the fully qualified paths for various programs.
+#	
+# USAGE:
+#	paths.ksh
+#-------------------------------------------------------------------------------
+
+programs="cc gcc bash sh ksh java perl python xterm"
 
 for program in $(print $programs)
 do

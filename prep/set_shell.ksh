@@ -1,4 +1,23 @@
 #!/usr/bin/env ksh
+
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	set_shell.ksh
+#	
+# PURPOSE:
+#	Make ksh the user's login shell.
+#	
+# USAGE:
+#	set_shell.ksh
+#
+#-------------------------------------------------------------------------------
 chsh=$(which chsh)
 usermod=$(which usermod)
 ksh=$(which ksh)

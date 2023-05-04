@@ -1,12 +1,22 @@
 #-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # PROGRAM:
 #	.profile	
 #	
 # PURPOSE:
 #	ksh profile
 #	
+# USAGE:
+#	Invoked by the operating system at login.
 #-------------------------------------------------------------------------------
-export PATH=$PATH:$HOME/bin:/usr/local/bin:.
+
+export PATH=$PATH:$HOME/bin:/usr/local/bin:$HOME/anaconda3/bin:.
 
 # PS1: command line primary prompt:
 . ~/bin/PS1.ksh
@@ -20,4 +30,3 @@ export PATH=$PATH:$HOME/bin:/usr/local/bin:.
 export HOST=$(uname -n)
 export FCEDIT=vi
 set -o vi
-#-------------------------------------------------------------------------------

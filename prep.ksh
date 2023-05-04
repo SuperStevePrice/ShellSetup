@@ -1,5 +1,25 @@
 #!/usr/bin/env ksh
 
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	prep.ksh
+#	
+# PURPOSE:
+#	This script is part of the installation suite for the ShellSetup project.
+#	It creates the appropriate shebang lines for ksh and perl scripts.
+#	
+# USAGE:
+#	prep.ksh
+#
+#-------------------------------------------------------------------------------
+
 line="#------------------------------------------"
 line="${line}-------------------------------------"
 

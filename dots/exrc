@@ -1,4 +1,23 @@
+"-------------------------------------------------------------------------------
+"         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+"
+"                       GNU GENERAL PUBLIC LICENSE
+"                        Version 3, 29 June 2007
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" PROGRAM:
+"	~/.profile
+"	
+" PURPOSE:
+"	Sets runtime ksh environment.
+"	
+" USAGE:
+"	Invoked at runtime by the operating system as users login.
+"
+"-------------------------------------------------------------------------------
 ab #D # PROGRAM:#	#	# PURPOSE:#	#	# USAGE:##
+ab #E #-- End of File ---------------------------------------------------------------
 ab #a #include <assert.h>
 ab #c #include <ctype.h>
 ab #d #define 
@@ -16,6 +35,7 @@ ab *p System.out.print("");
 ab /f } /* end of function */
 ab /l //------------------------------------------------------------------------------
 ab /m } /* end of main */
+map ^ :r ~/Projects/ShellSetup/docs/copyright
 map * :! chmod u+x %; %
 map + :w! %.save
 map , :w
