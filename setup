@@ -18,4 +18,9 @@
 #	ksh setup 
 #-------------------------------------------------------------------------------
 
+if [ ! -d logs ]
+then
+	mkdir logs
+fi
+
 setup.ksh > logs/setup.out 2>&1
