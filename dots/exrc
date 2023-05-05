@@ -22,6 +22,7 @@ ab #a #include <assert.h>
 ab #c #include <ctype.h>
 ab #d #define 
 ab #i #include <stdio.h>
+ab #k #!/usr/bin/env bash
 ab #k #!/usr/bin/env ksh
 ab #l #-------------------------------------------------------------------------------
 ab #m public static void main(String[] args) {} // end of main()
