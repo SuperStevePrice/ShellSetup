@@ -1,1 +1,1 @@
-/bin/ksh
+/usr/bin/ksh

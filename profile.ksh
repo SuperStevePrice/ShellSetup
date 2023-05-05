@@ -24,7 +24,7 @@ filename=dots/profile
 perl_v=$(which perl)
 brew_path=$(which brew)
 
-if [[ $perl_v == "/usr/bin/perl" || $perl_v == "/bin/perl" ]]; then
+if [[ $perl_v == "/usr/bin/perl" || $perl_v == "/bin/perl"  || $perl_v == "/bin/perl" ]]; then
     perl_installed="bin"
 else
     perl_installed="brew"
