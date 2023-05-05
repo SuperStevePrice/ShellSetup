@@ -15,47 +15,60 @@
 #	Use git to add, commit, and push a project
 #	
 # USAGE:
-#	git_push.ksh repository
+#	git_push.ksh 
+#	
+#	The user will be queried for the repository basename and commit message.
 #
 #-------------------------------------------------------------------------------
-usage="Usage: $0 repository"
 git=$(which git)
 
-if [ ! -x "$git" ]
-then
-	echo "The 'git' executable is not found or is not executable."
-	exit 1
-fi
+# Function to check for errors
+error_check() {
+	if [ $1 -ne 0 ]
+	then
+		print "Fatal Error!"
+		exit $1
+	fi
+}
 
-if [ "$#" == 1 ]
-then
-	repository="$1"
-else
-	echo "$usage"
-	exit 1
-fi
+# Prompt for repository name
+while true; do
+	print -n "Enter repository name: "
+	read -r repository
+	if [ -z "$repository" ]; then
+		print "Repository name cannot be empty. Please try again."
+	else
+		break
+	fi
+done
 
-projects_dir=~/Projects
-repository_dir="$projects_dir/$repository"
+# Prompt for commit message
+while true; do
+	print -n "Enter commit message: "
+	read -r message
+	if [ -z "$message" ]; then
+		print "Commit message cannot be empty. Please try again."
+	else
+		break
+	fi
+done
 
-if [ ! -d "$repository_dir" ]
-then
-	echo "$usage"
-	echo "$repository_dir not found, or is not a directory."
-	exit 1
-fi
+# Change to repository directory
+cd ~/Projects/$repository || error_check $?
 
-echo "cd $projects_dir/$repository"
-cd $projects_dir/$repository
+# Check the repository status
+$git status || error_check $?
 
-# add
-print $git add .
-$git add .
+# Add all files to staging area
+$git add . || error_check $?
+print "Files added to staging area."
 
-# commit the merge changes with a message
-echo "$git commit -m 'Commit project $repository'"
-$git commit -m 'Commit project $repository'
+# Commit changes
+$git commit -m "$message" || error_check $?
+print "Changes committed."
 
-# push the changes to the remote repository
-echo "$git push"
-$git push
+# Push changes to remote repository
+$git push || error_check $?
+print "Changes pushed to remote repository."
+
+print "Done."
