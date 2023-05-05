@@ -28,6 +28,12 @@ sizes=(12 14 16)
 # Output file for good fonts
 output_file=~/Documents/good_fonts.txt
 
+# Backup previous output file
+if [  -f $output_file ]
+then
+	mv $output_file ${output_file}.save 
+fi
+
 # Iterate over fonts and sizes
 for font in "${fonts[@]}"; do
     for size in "${sizes[@]}"; do
