@@ -37,14 +37,9 @@
 # xt.ksh
 # xt.pl 
 
-line="#---------------"
-line=$line"---------------------------------------------------------------"
-
-EoF="#-- End of File "
-EoF=$EoF"----------------------------------------------------------------"
-
 timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
-
+line=$(print "#$(printf -- '-%.0s' {1..79})")
+EoF=$(print "#-- End of File $(printf -- '-%.0s' {1..64})")
 final_lines="${line}\n${timestamp}\n${EoF}"
 
 # preparations:
