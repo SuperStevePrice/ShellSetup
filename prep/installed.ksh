@@ -29,8 +29,10 @@ else
 	file=$1
 fi
 
+hash='#' # trick to prevent this script from finding target string in itself
+
 print "FILE:	$file"
-cat $file | grep -i "# Last installed:"
+cat $file | grep -i "${hash} Last installed:"
 
 if [ $? -ne 0 ]
 then
