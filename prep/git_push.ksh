@@ -72,3 +72,8 @@ $git push || error_check $?
 print "Changes pushed to remote repository."
 
 print "Done."
+
+print
+print "git status"
+$git status
+print
