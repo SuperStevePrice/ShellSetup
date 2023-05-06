@@ -1,1 +1,1 @@
-/usr/bin/perl
+/opt/homebrew/bin/perl
