@@ -13,7 +13,7 @@
 #	
 # PURPOSE:
 #	Configures files and installs them with correct permissons. Creates symbolic
-#	links for *ksh files in ~/bin.
+#	links for *sh files in ~/bin.
 #	
 # USAGE:
 #	Run "ksh setup" to invoke this script, which invokes prep.ksh and logs all.
@@ -57,18 +57,18 @@ add_last_lines() {
 
 set_sym_links() {
 	print
-	print "Creating symbolic links to ksh scripts in ~/bin"
+	print "Creating symbolic links to sh scripts in ~/bin"
 	print
 
 	# create symbolic links
-	for file in $(ls ~/bin/*.ksh)
+	for file in $(ls ~/bin/*.*sh)
 	do
 		if [ "$file" == ~/bin/ssh-copy-id.ksh ]
 		then
 			print "No symbolic link will be created for ${file}."
 			continue
 		fi
-		sym="${file%.ksh}"
+		sym="${file%.*sh}"
 		rm -f ${sym}
 		print ln -s ${file} ${sym}
 		ln -s ${file} ${sym}
