@@ -136,7 +136,7 @@ do
 	# backup
 	ts=$(date +%Y_%m_%d-%H:%M:%S)
 	preped_file=~/bin/$file
-	backup_file=~/bin/backup/$file
+	backup_file=~/bin/backup/.${file}.$ts
 
 	print $cp $preped_file $backup_file
 	$cp $preped_file $backup_file
