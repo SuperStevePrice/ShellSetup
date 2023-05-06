@@ -20,22 +20,8 @@
 #
 #-------------------------------------------------------------------------------
 # Manifest:
-#
-# PS1.ksh
-# alias
-# exrc
-# functions
-# my_machine.ksh
-# os.ksh
-# p.ksh
-# paths.ksh
-# profile
-# remote_tar.ksh
-# scp_this.ksh
-# set_shell.ksh
-# ssh-copy-id.ksh
-# xt.ksh
-# xt.pl 
+#	See contents of folders dots and prep under this project's root folder.
+#-------------------------------------------------------------------------------
 
 timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
 line=$(print "#$(printf -- '-%.0s' {1..79})")
@@ -59,9 +45,6 @@ add_last_lines() {
 	then
 		# .exrc and vi don't tolerate normal comment marker. Use ".
 		last_lines=$(print $final_lines | sed -e 's/#/"/g')
-print "DEBUG:\n"
-print "$final_lines"
-print "$last_lines"
 	else
 		last_lines=$final_lines
 	fi
