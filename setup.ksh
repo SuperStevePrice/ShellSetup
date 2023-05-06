@@ -76,15 +76,36 @@ set_sym_links() {
 }
 
 
+make_backup_dir () {
+
+	for backup_dir in $(print "$HOME/backup $HOME/bin/backup")
+	do
+		if [ ! -e $backup_dir ]
+		then
+			mkdir $backup_dir
+		fi
+	done
+
+	# mv any *save files to backup folders
+	mv ~/.*.save ~/backup/  > /dev/null 2>&1
+	mv ~/bin/*.save ~/bin/backup  > /dev/null 2>&1
+
+} # make_backup_dir()
+
 prep_files="$(ls prep)"
 cp=/bin/cp
+make_backup_dir
 
 # Backup and install dot files:
 for file in $(ls dots)
 do
 	# backup
-	print $cp ~/.${file} ~/.${file}.save
-	$cp ~/.${file} ~/.${file}.save
+	ts=$(date +%Y_%m_%d-%H:%M:%S)
+	dot_file=~/.${file}
+	backup_file=~/backup/.${file}.$ts
+
+	print $cp $dot_file $backup_file
+	$cp $dot_file $backup_file
 
 	# install
 	if [ $file == "profile" ]
@@ -113,12 +134,16 @@ do
 	fi
 
 	# backup
-	print cp ~/bin/${file} ~/bin/${file}.save
-	cp ~/bin/${file} ~/bin/${file}.save
+	ts=$(date +%Y_%m_%d-%H:%M:%S)
+	preped_file=~/bin/$file
+	backup_file=~/bin/backup/$file
+
+	print $cp $preped_file $backup_file
+	$cp $preped_file $backup_file
 
 	# install
-	print cp ${prep_dir}/${file} ~/bin/${file}
-	cp ${prep_dir}/${file} ~/bin/${file}
+	print $cp ${prep_dir}/${file} ~/bin/${file}
+	$cp ${prep_dir}/${file} ~/bin/${file}
 
 	# Make executable
 	print chmod 755 ~/bin/${file}
@@ -130,11 +155,6 @@ do
 done
 
 
-# print "cp ${prep_dir}/xt.pl ~/bin/xt.pl"
-# cp ${prep_dir}/xt.pl ~/bin/xt.pl
-# print chmod 755 ~/bin/xt.pl
-# chmod 755 ~/bin/xt.pl
-print
 
 
 print "date >> docs/README.txt"
