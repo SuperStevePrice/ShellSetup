@@ -31,6 +31,6 @@ export FCEDIT=vi
 # Add to $PATH
 PATH=$PATH:$HOME/bin:/usr/local/bin:$HOME/anaconda3/bin:.
 
-# Rmmove dups from $PATH
+# Remove dups from $PATH
 export PATH=$(echo $PATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
 

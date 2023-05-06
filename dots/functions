@@ -22,6 +22,9 @@ function Si { f | xargs grep -i "$1";  }
 function Sl { f | xargs grep -l "$1"; }
 function Sil { f | xargs grep -il "$1" 2>/dev/null;  }
 
+# Function to move to my Projects folder or any subfolder ($1)
+pj() { eval "cd ~/Projects/$1"; }
+
 alias search=S
 alias searchi=Si
 alias searchl=Sl
