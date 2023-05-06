@@ -4,3 +4,5 @@ logs/
 # Ignore certain documents:
 *.txt
 
+# Ignore which.* files
+prep/which.*
