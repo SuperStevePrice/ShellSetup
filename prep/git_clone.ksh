@@ -23,7 +23,7 @@
 # If this script is used by multiple users, make git_user an input.
 git_user="SuperStevePrice"
 
-usage="Usage: $0 repository branch_name"
+usage="Usage: $0 repository"
 git=$(which git)
 
 if [ ! -x "$git" ]
