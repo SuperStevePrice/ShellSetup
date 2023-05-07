@@ -22,6 +22,7 @@
 # Manifest:
 #	See contents of folders dots and prep under this project's root folder.
 #-------------------------------------------------------------------------------
+typeset -i line_count
 
 timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
 line=$(print "#$(printf -- '-%.0s' {1..79})")
@@ -99,6 +100,8 @@ make_backup_dir
 # Backup and install dot files:
 for file in $(ls dots)
 do
+    home_file=~/.$file
+
 	# backup
 	ts=$(date +%Y_%m_%d-%H:%M:%S)
 	dot_file=~/.${file}
@@ -108,16 +111,33 @@ do
 	$cp $dot_file $backup_file
 
 	# install
-	if [ $file == "profile" ]
+    
+    line_count=$(wc -l $dot_file | awk '{print $1}')
+    if [ "$file" == "profile" ]
+    then
+        line_count+=2
+        head -n $line_count $home_file | grep -v Mlocal::lib | grep -v shellenv > /tmp/$file
+    else
+        # Create a tmp file to be used by diff
+        head -n $line_count $home_file > /tmp/$file
+    fi
+
+	diff -w $dot_file /tmp/$file
+	if [ $? -eq 1 ]
 	then
-		print "~/.profile created/updated"
-		. profile.ksh > ~/.profile
-	else
-		print $cp dots/${file} ~/.${file}
-		$cp dots/${file} ~/.${file}
+		print "Installing $dot_file"
+		if [ $file == "profile" ]
+		then
+			print "~/.profile created/updated"
+			. profile.ksh > ~/.profile
+		else
+			print $cp dots/${file} ~/.${file}
+			$cp dots/${file} ~/.${file}
+		fi
 	fi
 
 	add_last_lines ~/.${file}
+	chmod 755 ~/.${file} > /dev/null 2>&1
 
 	print
 done
@@ -127,11 +147,10 @@ print
 for file in $(print $prep_files)
 do
 	# Filter out which.* files.
-	print $file | grep "which" > /dev/null 2>&1
-	if [ $? = 0 ]
-	then
-		continue
-	fi
+	if [ "${file%.*}" == "which" ]
+    then
+        continue
+    fi
 
 	# backup
 	ts=$(date +%Y_%m_%d-%H:%M:%S)
@@ -141,15 +160,35 @@ do
 	print $cp $preped_file $backup_file
 	$cp $preped_file $backup_file
 
-	# install
-	print $cp ${prep_dir}/${file} ~/bin/${file}
-	$cp ${prep_dir}/${file} ~/bin/${file}
+
+    prep_file=$prep_dir/$file
+    bin_file=~/bin/$file
+
+    line_count=$(wc -l $bin_file | awk '{print $1}')
+    line_count=$((line_count - 3))
+
+    # Create a tmp file to be used by diff
+    head -n $line_count $bin_file > /tmp/$file
+        
+    diff -w /tmp/$file $prep_file
+    if [ $? -eq 1 ]
+    then
+		# install
+        print "Installing $bin_file"
+		print $cp $prep_file $bin_file
+		$cp $prep_file $bin_file
+    else
+        print "File: $bin_file is the latest version."
+    fi
+
+    rm -rf /tmp/$file > /dev/null 2>&1
+
+	add_last_lines ~/bin/${file}
 
 	# Make executable
 	print chmod 755 ~/bin/${file}
 	chmod 755 ~/bin/${file}
 
-	add_last_lines ~/bin/${file}
 
 	print
 done
