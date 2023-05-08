@@ -84,9 +84,13 @@ remove_final_lines() {
 	line_count=$(wc -l $file | awk '{print $1}')
 	line_count=$((line_count - 3))
 
-
-	$head -n $line_count $file | grep -v 'eval'  > "$target_dir/$base"
-
+	# Don't try to reduce a file to less that 1 line.
+	if [ $line_count -lt 1 ]
+	then
+		print "File: $file	less that 4 lines in length."
+	else
+		$head -n $line_count $file | grep -v 'eval'  > "$target_dir/$base"
+	fi
 }  #remove_final_lines()
 
 
