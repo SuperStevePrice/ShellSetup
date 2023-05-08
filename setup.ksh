@@ -43,6 +43,10 @@ bins=$(ls bin)
 bin_dir=bin
 bin_home_dir=~/bin
 
+public_home=~/Public/home
+public_bin=~/Public/bin
+mkdir -p $public_home >/dev/null 2>&1
+mkdir -p $public_bin >/dev/null 2>&1
 
 remove_final_lines() {
 	#---------------------------------------------------------------------------
@@ -60,8 +64,6 @@ remove_final_lines() {
 	#
 	#---------------------------------------------------------------------------
 	typeset -i line_count=0
-	public_home=~/Public/home
-	public_bin=~/Public/bin
 
 	file="$1"
 
@@ -93,9 +95,6 @@ make_installation_list() {
 	installation_list=docs/installation_list.txt
 	> $installation_list
 
-
-	public_home=~/Public/home
-	public_bin=~/Public/bin
 
 	# Loop over all candidate dot files:
 	for file in $(print $dots)

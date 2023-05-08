@@ -36,4 +36,15 @@ export PATH=$(echo $PATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); print
 
 export TERM=xterm
 
+# Detect the operating system and set environment to run perl Tk modules.
+if [ "$(uname)" == "Darwin" ]; then
+    # macOS specific configurations
+    eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
+    eval $(/opt/homebrew/bin/brew shellenv)
+elif [ "$(uname)" == "Linux" ]; then
+	linux=linux
+    # Linux specific configurations
+    # Add any necessary environment setup for Perl or package managers here
+fi
+
 set -o vi
