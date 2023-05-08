@@ -23,4 +23,6 @@ then
 	mkdir logs
 fi
 
-setup.ksh > logs/setup.out 2>&1
+log=logs/setup.log 
+setup.ksh > $log 2>&1
+view $log
