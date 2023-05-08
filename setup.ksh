@@ -22,6 +22,7 @@
 # Manifest:
 #   See contents of folders dots and prep under this project's root folder.
 #-------------------------------------------------------------------------------
+typeset -i line_count
 
 # final lines of each file installed by this script
 timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
@@ -322,7 +323,7 @@ source shebang.ksh
 
 # Make a list of artifacts to be installed as a new or a new version.
 make_installation_list
-#
+
 # Main Loop:
 for file in $(cat $installation_list)
 do
@@ -344,3 +345,12 @@ done
 # Always set symbolic links
 set_symbolic_links
 
+print "date >> docs/README.txt"
+date >> docs/README.txt
+print
+
+
+print $line
+print "Setup Complete:	$(date)"
+print $line
+print

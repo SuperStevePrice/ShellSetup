@@ -34,4 +34,6 @@ PATH=$PATH:$HOME/bin:/usr/local/bin:$HOME/anaconda3/bin:.
 # Remove dups from $PATH
 export PATH=$(echo $PATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
 
+export TERM=xterm
+
 set -o vi
