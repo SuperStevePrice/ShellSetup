@@ -75,7 +75,7 @@ remove_final_lines() {
 
 	base=$(basename $file)
 	if [[ $base == .[^.]* ]]; then
-		base=$(print $base | awk '{gsub(/^\./,"")}1')
+		base=$(print $base | sed -e 's/^\.//')
 		target_dir=$public_home
 	else
 		target_dir=$public_bin
@@ -120,7 +120,7 @@ make_installation_list() {
 		remove_final_lines $dots_home_dir/.$file
 
 		public=$(basename $file)
-		bn=$(print $public | awk '{gsub(/^\./,"")}1')
+		bn=$(print $public | sed -a 's/^\.//')
 		installer=dots/$bn
 		public=$public_home/$bn
 		#if diff "$public" "$installer" > /dev/null 2>&1; then
@@ -132,7 +132,7 @@ make_installation_list() {
 		fi
 
 		file=$(basename $file)
-		file=$(print $file | awk '{gsub(/^\./,"")}1')
+		file=$(print $file | sed -e 's/^\.//')
 		if [ $install == "y" ] 
 		then
 			print "dots/$file" >> $installation_list
@@ -172,7 +172,7 @@ make_installation_list() {
 		remove_final_lines $bin_home_dir/$file
 
 		public=$(basename $file)
-		bn=$(print $public | awk '{gsub(/^\./,"")}1')
+		bn=$(print $public | sed -a 's/^\.//')
 		installer=bin/$bn
 		public=$public_bin/$bn
 		# if diff "$public" "$installer" > /dev/null 2>&1; then
@@ -184,7 +184,7 @@ make_installation_list() {
 		fi
 
 		file=$(basename $file)
-		file=$(print $file | awk '{gsub(/^\./,"")}1')
+		file=$(print $file | sed -e 's/^\.//')
 		if [ $install == "y" ] 
 		then
 			print "bin/$file" >> $installation_list
@@ -206,7 +206,7 @@ add_last_lines() {
 	if [ "$file" ==  ~/.exrc ]
 	then
 		# .exrc and vi don't tolerate normal comment marker. Use ".
-		last_lines=$(print $final_lines | awk '{gsub(/^\./,"")}1')
+		last_lines=$(print $final_lines | sed -e 's/#/"/g')
 	else
 		last_lines=$final_lines
 	fi
