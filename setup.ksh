@@ -69,7 +69,7 @@ remove_final_lines() {
 
 	if [ ! -f $file ]
 	then
-		print "Skipping remove_final_lines for file $flie"
+		print "Skipping remove_final_lines() for file $file.  No such file."
 		return 
 	fi
 
