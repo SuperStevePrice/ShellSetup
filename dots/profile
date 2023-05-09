@@ -39,7 +39,7 @@ export TERM=xterm
 # Detect the operating system and set environment to run perl Tk modules.
 if [ "$(uname)" == "Darwin" ]; then
     # macOS specific configurations
-    eval $(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)
+	eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
     eval $(/usr/local/bin/brew shellenv)
 elif [ "$(uname)" == "Linux" ]; then
 	linux=linux
