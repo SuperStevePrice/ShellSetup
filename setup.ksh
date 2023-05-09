@@ -91,14 +91,13 @@ remove_final_lines() {
 	else
 		$head -n $line_count $file | grep -v 'eval'  > "$target_dir/$base"
 	fi
-}  #remove_final_lines()
+}  # remove_final_lines()
 
 
 
 make_installation_list() {
 	installation_list=docs/installation_list.txt
 	> $installation_list
-
 
 	# Loop over all candidate dot files:
 	for file in $(print $dots)
@@ -108,23 +107,30 @@ make_installation_list() {
 		# check tha target file exists
 		if [ ! -f $dots_home_dir/.${file} -o \
 			! -s $dots_home_dir/.${file} ]
-		then
-			install="y"
-		else
-			install=n
-		fi
+        then
+            install="y"
+            echo "Not found $bin_home_dir/.${file}"
+        else
+            install=n
+            echo "Found $bin_home_dir/.${file}"
+        fi
 
 		# Strip the Last installed markers from the target.
-		#print "$0: remove_final_lines $dots_home_dir/.$file"
+		# print "$0: remove_final_lines $dots_home_dir/.$file"
 		remove_final_lines $dots_home_dir/.$file
-		if [ -f $dots_home_dir/.${file} ]
-		then
-			diff -w  "$dots_dir/$file" "$file" > /dev/null 2>&1
-			if [ $? -eq 1 ]
-			then
-				install=y
-			fi
+
+		public=$(basename $file)
+		bn=$(print $public | sed -a 's/^\.//')
+		installer=dots/$bn
+		public=$public_home/$bn
+		#if diff "$public" "$installer" > /dev/null 2>&1; then
+		if cmp "$public" "$installer"; then
+			echo "No differences between $public and $installer"
+		else
+			install=y
+			echo "Differences found between $public and $installer"
 		fi
+
 		file=$(basename $file)
 		file=$(print $file | sed -e 's/^\.//')
 		if [ $install == "y" ] 
@@ -132,7 +138,7 @@ make_installation_list() {
 			print "dots/$file" >> $installation_list
 		fi
 		print "install=$install $dots_dir/$file"
-
+		print
 	done
 
 	# Loop over all candidate bin files:
@@ -153,32 +159,38 @@ make_installation_list() {
 		
 		# check tha target file exists
 		if [ ! -f $bin_home_dir/${file} -o ! -s $bin_home_dir/${file} ]
-		then
-			install="y"
-		else
-			install=n
-		fi
+        then
+            install="y"
+            echo "Not found $bin_home_dir/.${file}"
+        else
+            install=n
+            echo "Found $bin_home_dir/.${file}"
+        fi
 
 		# Strip the Last installed markers from the target.
-		#print "$0: remove_final_lines $bin_home_dir/$file"
+		# print "$0: remove_final_lines $bin_home_dir/$file"
 		remove_final_lines $bin_home_dir/$file
-		if [ -f $bin_home_dir/${file} ]
-		then
-			diff -w  "$bin_dir/$file" "$file" > /dev/null 2>&1
-			if [ $? -eq 1 ]
-			then
-				install=y
-			fi
+
+		public=$(basename $file)
+		bn=$(print $public | sed -a 's/^\.//')
+		installer=bin/$bn
+		public=$public_bin/$bn
+		# if diff "$public" "$installer" > /dev/null 2>&1; then
+		if cmp "$public" "$installer"; then
+			echo "No differences between $public and $installer"
+		else
+			install=y
+			echo "Differences found between $public and $installer"
 		fi
 
 		file=$(basename $file)
 		file=$(print $file | sed -e 's/^\.//')
-		if [  $install == "y" ] 
+		if [ $install == "y" ] 
 		then
 			print "bin/$file" >> $installation_list
 		fi
 		print "install=$install $bin_dir/$file"
-
+		print
 	done
 
 	print
@@ -315,9 +327,10 @@ set_symbolic_links() {
 			continue
 		fi
 		sym="${file%.*sh}"
-		rm -f ${sym}
-		print ln -s ${file} ${sym}
-		ln -s ${file} ${sym}
+		if [ ! -f "$sym" -o ! -h "$sym" ]; then
+			print ln -s ${file} ${sym}
+			ln -s ${file} ${sym}
+		fi
 	done
 } # set_symbolic_links() {
 
@@ -348,6 +361,7 @@ done
 # Always set symbolic links
 set_symbolic_links
 
+print
 print "date >> docs/README.txt"
 date >> docs/README.txt
 print

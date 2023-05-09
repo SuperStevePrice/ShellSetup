@@ -16,16 +16,14 @@
 #	Invoked by ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
-function f { find . -type f -print 2>/dev/null;  }
-function S { f | xargs grep "$1";  }
-function Si { f | xargs grep -i "$1";  }
-function Sl { f | xargs grep -l "$1"; }
-function Sil { f | xargs grep -il "$1" 2>/dev/null;  }
-
-# Function to move to my Projects folder or any subfolder ($1)
-pj() { eval "cd ~/Projects/$1"; }
-
+S() { f | xargs grep "$1";  }
+Si() { f | xargs grep -i "$1";  }
+Sil() { f | xargs grep -il "$1" 2>/dev/null;  }
+Sl() { f | xargs grep -l "$1"; }
 alias search=S
 alias searchi=Si
-alias searchl=Sl
 alias searchil=Sil
+alias searchl=Sl
+f() { find . -type f -print 2>/dev/null;  }
+# Function to move to my Projects folder or any subfolder ($1)
+pj() { eval "cd ~/Projects/$1"; }
