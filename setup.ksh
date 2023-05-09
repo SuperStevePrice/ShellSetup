@@ -89,7 +89,7 @@ remove_final_lines() {
 	then
 		print "File: $file	less that 4 lines in length."
 	else
-		$head -n $line_count $file | grep -v 'eval'  > "$target_dir/$base"
+		$head -n $line_count $file  > "$target_dir/$base"
 	fi
 }  # remove_final_lines()
 
