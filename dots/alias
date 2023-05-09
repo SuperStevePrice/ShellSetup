@@ -31,3 +31,4 @@ alias gl="$(which git) log"	# short for git log
 alias pbcopy='xsel --clipboard --input'		# copy text to clipboard
 alias pbpaste='xsel --clipboard --output'	# paste text from clipboard
 alias vl="view logs/setup.log"				# to view project setup log
+alias get=git				# avoid common typo
