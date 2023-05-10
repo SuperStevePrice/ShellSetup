@@ -60,7 +60,28 @@
 # sudo ddrescue -f /dev/sda /dev/sdb clone.log
 
 #-------------------------------------------------------------------------------
-#!/usr/bin/env bash
+#
+# MacBook-Linux </home/steve/Projects/SS [809]>
+# steve@MacBook-Linux: clone.sh
+# Enter the source HD [/dev/sda]: 
+# Enter the destination SSD [/dev/sdb]: 
+# Enter the log file [clone.log]: 
+# 
+# This script will clone the source HD '/dev/sda'
+# to the destination SSD '/dev/sdb'.
+# Do you want to continue? (y/n): y
+# sudo ddrescue -f /dev/sda /dev/sdb clone.log
+# GNU ddrescue 1.23
+# Press Ctrl-C to interrupt
+# ipos:  500107 MB, non-trimmed:        0 B,  current rate:  32464 kB/s
+# opos:  500107 MB, non-scraped:        0 B,  average rate:  19193 kB/s
+# non-tried:        0 B,  bad-sector:        0 B,    error rate:       0 B/s
+# rescued:  500107 MB,   bad areas:        0,        run time:  7h 14m 15s
+# pct rescued:  100.00%, read errors:        0,  remaining time:         n/a
+# time since last successful read:         n/a
+# Finished                                     
+# Cloning completed successfully.
+#-------------------------------------------------------------------------------
 
 # Default values
 default_source_HD="/dev/sda"
