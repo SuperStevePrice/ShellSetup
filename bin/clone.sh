@@ -13,9 +13,6 @@
 #	clone.ksh
 #
 #-------------------------------------------------------------------------------
-# NOTE:  The source_HD and destination_HD are hard coded in this verion. I will
-# make them variables that are set by guerying the user for future use.
-#-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 # # Install gddrrescue to use as the cloning app:
@@ -44,7 +41,7 @@
 # 		sdb               8:16   0 953.9G  0 disk  
 # 		sr0              11:0    1  1024M  0 rom   
 # 
-# # use fdisk to confirm that /dev/sdb is the destination_HD
+# # use fdisk to confirm that /dev/sdb is the destination_SSD
 # MacBook-Linux </home/steve [645]>
 # steve@MacBook-Linux: sudo fdisk -l /dev/sdb
 # [sudo] password for steve:       
@@ -60,32 +57,49 @@
 
 # Command format and example:
 # sudo ddrescue -f /dev/<source_HD> /dev/<destination_SSD> log.txt
-# sudo ddrescue -f /dev/sda /dev/sdb clonelog.txt
+# sudo ddrescue -f /dev/sda /dev/sdb clone.log
 
 #-------------------------------------------------------------------------------
-source_HD="/dev/sda"
-destination_HD="/dev/sdb"
-log="clone.log"
+#!/usr/bin/env bash
 
-prompt="This script will clone the source HD to the destination SSD."
-prompt+=$'\nDo you want to continue? (y/n): '
+# Default values
+default_source_HD="/dev/sda"
+default_destination_SSD="/dev/sdb"
+default_log="clone.log"
+
+# Prompt for source HD
+read -p "Enter the source HD [$default_source_HD]: " source_HD
+source_HD=${source_HD:-$default_source_HD}
+
+# Prompt for destination SSD
+read -p "Enter the destination SSD [$default_destination_SSD]: " destination_SSD
+destination_SSD=${destination_SSD:-$default_destination_SSD}
+
+# Prompt for log file
+read -p "Enter the log file [$default_log]: " log
+log=${log:-$default_log}
 
 # Confirmation prompt
+cp1="\nThis script will clone the source HD '%s'\n"
+cp2="to the destination SSD '%s'.\n"
+cp3="Do you want to continue? (y/n): "
+prompt=$(printf "${cp1}${cp2}${cp3}" "$source_HD" "$destination_SSD" )
+
+
 read -p "$prompt" choice
 if [ "$choice" != "y" ]; then
-	echo "Cloning canceled."
-	exit 0
+    echo "Cloning canceled."
+    exit 0
 fi
 
 # Cloning command
-# sudo ddrescue -f /dev/sda /dev/sdb clonelog.txt
-echo
-echo "sudo ddrescue -f $source_HD $destineation_HD $log"
-sudo ddrescue -f $source_HD $destineation_HD $log
+echo "sudo ddrescue -f $source_HD $destination_SSD $log"
+sudo ddrescue -f $source_HD $destination_SSD $log
 
 # Check the exit status of ddrescue
 if [ $? -eq 0 ]; then
-	echo "Cloning completed successfully."
+    echo "Cloning completed successfully."
 else
-	echo "Cloning failed. Please check the logs for more information."
+    echo "Cloning failed. Please check the log, $log, for more information."
 fi
+
