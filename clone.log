@@ -1,7 +1,7 @@
 # Mapfile. Created by GNU ddrescue version 1.23
 # Command line: ddrescue -f /dev/sda /dev/sdb clone.log
-# Start time:   2023-05-10 14:33:37
-# Current time: 2023-05-10 21:48:01
+# Start time:   2023-05-10 22:24:18
+# Current time: 2023-05-10 22:24:18
 # Finished
 # current_pos  current_status  current_pass
 0x7470C00000     +               1

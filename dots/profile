@@ -20,7 +20,7 @@
 . ~/bin/PS1.ksh
 
 # load my aliases
-. ~/.alias
+. ~/.aliases
 
 # load my functions
 . ~/.functions
