@@ -27,3 +27,4 @@ alias searchl=Sl
 f() { find . -type f -print 2>/dev/null;  }
 # Function to move to my Projects folder or any subfolder ($1)
 pj() { eval "cd ~/Projects/$1"; }
+ts() { eval "cd ~/tests/$1"; }
