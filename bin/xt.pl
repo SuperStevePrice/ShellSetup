@@ -221,7 +221,8 @@ sub Xterm {
     $cmd .= " -geometry $x_geo -fg $x_fg -bg $x_bg -title \"$title\"";
     $cmd .= " -l" if ($log);
 
-    print "DEBUG: cmd=$cmd\n";
+	# Uncomment the line below to see the complete xterm $cmd value:
+    #print "DEBUG: cmd=$cmd\n";
 
     open (XT, "| $cmd &") or die("Cannot execute $xpath/xterm\n");
     print XT "";
@@ -804,3 +805,6 @@ sub define_log_checkbutton {
 } # end of sub define_log_checkbutton
 #-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
+# Last installed: 2023-05-14 16:31:29
+#-- End of File ----------------------------------------------------------------
