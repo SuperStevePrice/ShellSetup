@@ -195,37 +195,44 @@ sub get_host_server_name {
 
 #-------------------------------------------------------------------------------
 sub Xterm {
-    my ($x_bg, $x_fg) = @_;
+	my ($x_bg, $x_fg) = @_;
 
-    # Snatch the date from the scalar localtime():
-    my $date = scalar localtime();
+	# Snatch the date from the scalar localtime():
+	my $date = scalar localtime();
 
-    # Create a window title from $env(LOGNAME), $host, and date:
-    my $title = "$ENV{LOGNAME}\@${host}   ${date}";
+	# Create a window title from $env(LOGNAME), $host, and date:
+	my $title = "$ENV{LOGNAME}\@${host}   ${date}";
 
-    # Create a geometry setting from columns and rows:
-    my $x_geo = "${x_cols}x${x_rows}";
+	# Create a geometry setting from columns and rows:
+	my $x_geo = "${x_cols}x${x_rows}";
 
-    my $cmd = "nohup $xpath/xterm -ls -sb -sl $x_sl";
+	my $cmd = "nohup $xpath/xterm -ls -sb -sl $x_sl";
 
-    if ($x_fn =~ / /) {
-        # Font name has a space, split into font family and font size
-        my ($font_family, $font_size) = $x_fn =~ /^(.+?)\s+(\d+)$/;
-        $cmd .= " -fa \"$font_family\"" if $font_family;
-        $cmd .= " -fs \"$font_size\"" if $font_size;
-    } else {
-        # Font name without spaces, use it as is with -fn
-        $cmd .= " -fn \"$x_fn\"";
-    }
+	if ($x_fn =~ / /) {
+		# Font name has a space, split into font family and font size
+		my ($font_family, $font_size) = $x_fn =~ /^(.+?)\s+(\d+)$/;
+		if ($font_family && $font_size) {
+			$cmd .= " -fa \"$font_family\"";
+			$cmd .= " -fs \"$font_size\"";
+		} else {
+			# Parsing failed. Family and Size undefined.  use fallback font
+			$cmd .= " -fn \"9x15bold\"";
+		}
+	} else {
+		# Parsing failed. $x_tn is null;  use fallback font
+		$x_fn = "9x15bold"
+			if (length($x_tn) == 0);
+		# Font name without spaces, use it as is with -fn
+		$cmd .= " -fn \"$x_fn\"";
+	}
 
-    $cmd .= " -geometry $x_geo -fg $x_fg -bg $x_bg -title \"$title\"";
-    $cmd .= " -l" if ($log);
+	$cmd .= " -geometry $x_geo -fg $x_fg -bg $x_bg -title \"$title\"";
+	$cmd .= " -l" if ($log);
 
-	# Uncomment the line below to see the complete xterm $cmd value:
-    #print "DEBUG: cmd=$cmd\n";
+	print "DEBUG: cmd=$cmd\n";
 
-    open (XT, "| $cmd &") or die("Cannot execute $xpath/xterm\n");
-    print XT "";
+	open (XT, "| $cmd &") or die("Cannot execute $xpath/xterm\n");
+	print XT "";
 }
 #-------------------------------------------------------------------------------
 
@@ -807,4 +814,7 @@ sub define_log_checkbutton {
 
 #-------------------------------------------------------------------------------
 # Last installed: 2023-05-14 16:31:29
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2023-05-14 17:46:50
 #-- End of File ----------------------------------------------------------------
