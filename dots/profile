@@ -36,13 +36,26 @@ PATH=$PATH:$HOME/bin:/usr/local/bin:$HOME/anaconda3/bin:.
 # Remove dups from $PATH
 export PATH=$(echo $PATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
 
-export TERM=xterm
-
 # Detect the operating system and set environment to run perl Tk modules.
 if [ "$(uname)" == "Darwin" ]; then
     # macOS specific configurations.  Not required for Linux.
     eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
-    eval $(/usr/local/bin/brew shellenv)
+
+	# If brew is installed, set the environment:
+	brew=$(which brew)
+	if [ -s "$brew" ]; then
+		eval $(/usr/local/bin/brew shellenv)
+	fi
 fi
 
+# Setting the terminal type for xterm and Terminal windows:
+if [[ -n $DISPLAY ]]; then
+    # Running in X11 environment
+    export TERM=xterm
+else
+    # Running in a non-X11 environment (e.g., Terminal)
+    export TERM=vt100
+fi
+
+# Enable CLI editting of previous commands in history:
 set -o vi
