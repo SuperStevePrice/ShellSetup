@@ -1,3 +1,5 @@
+#!/usr/bin/env ksh
+
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
 #
@@ -16,6 +18,14 @@
 #	Invoked by ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
+
+make_directory () {
+	directory=$1
+	if [ ! -d $directory ]; then
+		mkdir $directory
+	fi
+}
+
 S() { f | xargs grep "$1";  }
 Si() { f | xargs grep -i "$1";  }
 Sil() { f | xargs grep -il "$1" 2>/dev/null;  }
@@ -25,6 +35,9 @@ alias searchi=Si
 alias searchil=Sil
 alias searchl=Sl
 f() { find . -type f -print 2>/dev/null;  }
+
 # Function to move to my Projects folder or any subfolder ($1)
 pj() { eval "cd ~/Projects/$1"; }
-ts() { eval "cd ~/tests/$1"; }
+
+# Function to move to ~/tests
+ts() { eval "make_directory $HOME/tests; cd ~/tests/$1"; }
