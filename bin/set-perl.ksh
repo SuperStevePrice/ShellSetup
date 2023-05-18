@@ -30,53 +30,47 @@ is_perl_executable() {
     fi
 }
 
-# List Perl versions in /usr/bin
-print
-print "Perl versions in /usr/bin:"
-print
-ls /usr/bin/perl* 2>/dev/null | while read -r perl; do
-    if is_perl_executable "$perl" && ! print "$perl" |\
-        grep -qE 'perlbug|perldoc|perlthanks'; then
-        print "$perl"
-    fi
-done
+# Function to list Perl versions target directory
+list_perl_versions() {
+	target_dir=$1
+	print
+	print "Perl versions in $target_dir:"
+	print
+	index=1
+	ls ${target_dir}/perl* 2>/dev/null | while read -r perl; do
+		if is_perl_executable "$perl" && ! print "$perl" |\
+			grep -qE 'perlbug|perlivp|perltidy|perldoc|perlthanks'; then
+			print "$perl"
+			((index++))
+		fi
+	done
+}
 
-# List Perl versions in $HOME
-print
-print "Perl versions in $HOME:"
-print 
-ls "$HOME"/perl*/bin/perl 2>/dev/null | while read -r perl; do
-    if is_perl_executable "$perl" && ! print "$perl" |\
-        grep -qE 'perlbug|perldoc|perlthanks'; then
-    print "$perl"
-    fi
-done
+# Function to dd choice from target directory
+add_choice_from() {
+	target_dir=$1
+	ls ${target_dir}/perl* 2>/dev/null | while read -r perl; do
+		if is_perl_executable "$perl" && ! print "$perl" |\
+			grep -qE 'perlbug|perlivp|perltidy|perldoc|perlthanks'; then
+			choices+=("$perl")
+			print "$index) $perl"
+			((index++))
+		fi
+	done
+}
+
+list_perl_versions /usr/bin
+list_perl_versions "$HOME"/perl*/bin/perl
 
 # Prompt for Perl version selection
 print
 print "Select a Perl version (or 0 to cancel):"
 choices=()
+
 index=1
 
-# Add choices from /usr/bin
-ls /usr/bin/perl* 2>/dev/null | while read -r perl; do
-    if is_perl_executable "$perl" && ! print "$perl" |\
-        grep -qE 'perlbug|perldoc|perlthanks'; then
-        choices+=("$perl")
-        print "$index) $perl"
-        ((index++))
-    fi
-done
-
-# Add choices from $HOME
-ls "$HOME"/perl*/bin/perl 2>/dev/null | while read -r perl; do
-    if is_perl_executable "$perl" && ! print "$perl" |\
-        grep -qE 'perlbug|perldoc|perlthanks'; then
-        choices+=("$perl")
-        print "$index) $perl"
-        ((index++))
-    fi
-done
+add_choice_from /usr/bin
+add_choice_from "$HOME"/perl*/bin/perl
 
 # Add cancel option
 print "$index) Cancel"
@@ -105,3 +99,6 @@ print "Current Perl:"
 perl=$(which perl)
 print $perl
 perl --version
+#-------------------------------------------------------------------------------
+# Last installed: 2023-05-18 00:28:14
+#-- End of File ----------------------------------------------------------------
