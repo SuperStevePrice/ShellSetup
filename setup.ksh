@@ -45,8 +45,12 @@ bin_home_dir=~/bin
 
 public_home=~/Public/home
 public_bin=~/Public/bin
+bin_backup_dir=~/bin/backup
+home_backup_dir=~/backup
 mkdir -p $public_home >/dev/null 2>&1
 mkdir -p $public_bin >/dev/null 2>&1
+mkdir -p $bin_backup_dir >/dev/null 2>&1
+mkdir -p $home_backup_dir >/dev/null 2>&1
 
 remove_final_lines() {
 	#---------------------------------------------------------------------------
@@ -245,8 +249,8 @@ handle_dots() {
 		then
 			print "backup .$file"
 			ts=$(date +%Y_%m_%d-%H:%M:%S)
-			print $cp ~/.${file} ~/backup/.${file}.$ts
-			$cp ~/.${file} ~/backup/.${file}.$ts
+			print $cp ~/.${file} $home_backup_dir/.${file}.$ts
+			$cp ~/.${file} $home_backup_dir/.${file}.$ts
 		fi
 
 		# install 
@@ -292,8 +296,8 @@ handle_bins() {
 		then
 			print "backup ~/bin/${file}"
 			ts=$(date +%Y_%m_%d-%H:%M:%S)
-			print cp ~/bin/${file} ~/bin/backup/${file}.$ts
-			cp ~/bin/${file} ~/bin/backup/${file}.$ts
+			print cp ~/bin/${file} $bin_backup_dir/${file}.$ts
+			cp ~/bin/${file} $bin_backup_dir/${file}.$ts
 		fi
 
 		# install
