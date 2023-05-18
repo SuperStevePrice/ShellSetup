@@ -48,14 +48,9 @@ if [ "$(uname)" == "Darwin" ]; then
 	fi
 fi
 
-# Setting the terminal type for xterm and Terminal windows:
-if [[ -n $DISPLAY ]]; then
-    # Running in X11 environment
-    export TERM=xterm
-else
-    # Running in a non-X11 environment (e.g., Terminal)
-    export TERM=vt100
-fi
+# Setting the terminal type for xterm and Terminal windows. 
+# term=xterm does not work for xterm vi sessions; vt100 does.
+export TERM=vt100
 
 # Enable CLI editting of previous commands in history:
 set -o vi
