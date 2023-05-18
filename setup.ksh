@@ -209,8 +209,8 @@ add_last_lines() {
 
 	if [ "$file" ==  ~/.exrc ]
 	then
-		# .exrc and vi don't tolerate normal comment marker. Use ".
-		last_lines=$(print $final_lines | awk '{gsub(/^\./,"")}1')
+		# .exrc and vi don't tolerate normal comment marker '#'. Use '"'.
+		last_lines=$(print $final_lines | awk '{gsub(/^#/,"\"")}1')
 	else
 		last_lines=$final_lines
 	fi
