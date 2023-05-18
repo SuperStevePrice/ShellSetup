@@ -16,6 +16,9 @@
 #	
 # USAGE:
 #	set-perl.ksh
+#
+# Author:
+#	Steve Price
 #-------------------------------------------------------------------------------`
 # Variable to store the Perl version selection
 selected_perl=""
@@ -46,9 +49,10 @@ list_perl_versions() {
 	done
 }
 
-# Function to dd choice from target directory
+# Function to add choice from target directory
 add_choice_from() {
 	target_dir=$1
+	index=1
 	ls ${target_dir}/perl* 2>/dev/null | while read -r perl; do
 		if is_perl_executable "$perl" && ! print "$perl" |\
 			grep -qE 'perlbug|perlivp|perltidy|perldoc|perlthanks'; then
@@ -67,7 +71,6 @@ print
 print "Select a Perl version (or 0 to cancel):"
 choices=()
 
-index=1
 
 add_choice_from /usr/bin
 add_choice_from "$HOME"/perl*/bin/perl
