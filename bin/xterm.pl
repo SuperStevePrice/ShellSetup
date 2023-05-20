@@ -37,13 +37,13 @@ my $params = {
 
 # Subroutine to prompt user and return input:
 sub prompt_user {
-    my ( $question, $default ) = @_;
-    my $default_prompt = defined $default ? " [$default]" : "";
-    print "$question$default_prompt: ";
-    my $input = <STDIN>;
-    chomp $input;
-    return $input ne "" ? $input : $default;
-}    # sub prompt_user
+	my ( $prompt, $default ) = @_;
+	my $default_text = defined $default ? "[$default]" : "";
+	print sprintf( "%-30s %s: ", $prompt, $default_text );
+	my $input = <STDIN>;
+	chomp $input;
+	return $input || $default;
+}
 
 # Subroutine to launch xterm
 sub Xterm {
@@ -60,7 +60,7 @@ sub Xterm {
     my $font_value = $font_param eq "-fn" ? "\"$params->{fn}\"" : $params->{fn};
 
     # Format the xterm command
-    my $cmd = "$xterm_path -sb -sl $params->{sl} $font_param \"$font_value\" ";
+	my $cmd = "$xterm_path -sb -sl $params->{sl} $font_param $font_value ";
     $cmd .= "-geometry $params->{cols}x$params->{rows} -fg \"$params->{fg}\" ";
     $cmd .= "-bg \"$params->{bg}\" -title \"$title\"";
     $cmd .= " -l" if lc( $params->{log} ) eq 'y';
@@ -113,6 +113,7 @@ sub write_debug_file {
 	my $debug_file = "/Users/steve/Documents/xterm.debug";
 	say "See debug file: $debug_file\n";
 	open(my $fh, '>>', $debug_file) or die "Failed to open $debug_file: $!";
+	$cmd.="\n";
 	say $fh $cmd;
 	close($fh);
 	return $debug_file;
