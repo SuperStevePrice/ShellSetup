@@ -1,5 +1,4 @@
 #!/usr/bin/env ksh
-
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
 #
