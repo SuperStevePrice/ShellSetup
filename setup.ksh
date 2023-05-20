@@ -87,10 +87,10 @@ remove_final_lines() {
 	line_count=$(wc -l $file | awk '{print $1}')
 	line_count=$((line_count - 3))
 
-	# Don't try to reduce a file to less that 1 line.
+	# Don't try to reduce a file to less than 1 line.
 	if [ $line_count -lt 1 ]
 	then
-		print "File: $file	less that 4 lines in length."
+		print "File: $file	less than 4 lines in length."
 	else
 		$head -n $line_count $file  > "$target_dir/$base"
 	fi
