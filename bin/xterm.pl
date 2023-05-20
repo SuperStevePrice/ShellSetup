@@ -53,7 +53,7 @@ sub Xterm {
     my $title = "steve\@ " . localtime();
 
     # Prompt for the shell
-    #my $shell = prompt_user( "Enter the shell (e.g., /bin/ksh)", "/bin/ksh" );
+    #my $shell = prompt_user( "Enter the shell (/bin/ksh)", "/bin/ksh" );
 
     # Determine the font parameter
     my $font_param = $params->{fn} =~ /\s/ ? "-fa"              : "-fn";
@@ -93,13 +93,13 @@ sub get_user_inputs() {
     print "\n";
     $params->{bg} = prompt_user( "Pick a background color", $params->{bg} );
     $params->{fg} = prompt_user( "Pick a foreground color", $params->{fg} );
-    $params->{fn} = prompt_user( "Enter the font)",         $params->{fn} );
+    $params->{fn} = prompt_user( "Enter the font", $params->{fn} );
     $params->{cols} =
-      prompt_user( "Enter the number of columns)", $params->{cols} );
+      prompt_user( "Enter the number of columns", $params->{cols} );
     $params->{rows} =
-      prompt_user( "Enter the number of rows)", $params->{rows} );
+      prompt_user( "Enter the number of rows", $params->{rows} );
     $params->{sl} =
-      prompt_user( "Enter the memory buffer size)", $params->{sl} );
+      prompt_user( "Enter the memory buffer size", $params->{sl} );
     $params->{log} = prompt_user( "Enable logging? (Y/N)", $params->{log} );
     $params->{dbg} = prompt_user( "Enable debugging? (Y/N)", $params->{dbg} );
     print "\n";
