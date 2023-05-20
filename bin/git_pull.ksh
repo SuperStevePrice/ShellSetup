@@ -43,6 +43,9 @@ while true; do
 done
 
 # Change to repository directory
+if [ ! -d ~/Projects/$repository ]; then
+	mkdir ~/Projects/$repository || error_check $?
+fi
 cd ~/Projects/$repository || error_check $?
 
 # Pull
