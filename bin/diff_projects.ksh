@@ -49,5 +49,5 @@ if [ ! -d "$new_project" ]; then
 	fi
 fi
 
-# Run diff recursively on all files in the folders
-diff -r "$old_project" "$new_project"
+# Run diff recursively on all files in the folders, excluding specified folders
+diff -r --exclude=".git" --exclude="logs" "$old_folder" "$new_folder"
