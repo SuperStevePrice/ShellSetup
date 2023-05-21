@@ -49,7 +49,7 @@ def Xterm(params):
     rows = input("Enter the number of rows [45]: ") or "45"
     buffer_size = input("Enter the memory buffer size [200]: ") or "200"
     enable_keystroke_logging = input("Enable keystroke logging? (Y/N) [N]: ") == "Y"
-    enable_command_logging = input("Enable debugging? (Y/N) [N]: ") == "Y"
+    enable_command_logging = input("Enable command logging? (Y/N) [N]: ") == "Y"
 
     # Build the xterm command
     cmd = [

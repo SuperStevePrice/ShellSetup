@@ -32,7 +32,7 @@ my $params = {
     rows => "45",
     sl   => "200",
     log  => 'N',
-    dbg  => 'N',
+    cmd  => 'N',
 };
 
 # Subroutine to prompt user and return input:
@@ -70,13 +70,13 @@ sub Xterm {
 
 	if ($pid == 0) {
 		# Child process
-		system($cmd);
+		system(" " . $cmd);
 		exit(0);
 	} elsif ($pid > 0) {
 		# Parent process
 		print "xterm launched in the background.\n";
-		write_debug_file(${cmd})
-			if (lc($params->{dbg}) eq 'y')
+		write_command_log(${cmd})
+			if (lc($params->{cmd}) eq 'y')
 	} else {
 		# Forking failed
 		die "Failed to fork a child process: $!";
@@ -97,23 +97,23 @@ sub get_user_inputs() {
       prompt_user( "Enter the number of rows", $params->{rows} );
     $params->{sl} =
       prompt_user( "Enter the memory buffer size", $params->{sl} );
-    $params->{log} = prompt_user( "Enable logging? (Y/N)", $params->{log} );
-    $params->{dbg} = prompt_user( "Enable debugging? (Y/N)", $params->{dbg} );
+    $params->{log} = prompt_user( "Enable keystroke logging? (Y/N)", $params->{log} );
+    $params->{cmd} = prompt_user( "Enable command logging? (Y/N)", $params->{cmd} );
     print "\n";
 }    # sub get_user_inputs()
 
 
 
 
-sub write_debug_file {
+sub write_command_log {
     my ($cmd) = @_;
-	my $debug_file = "/Users/steve/Documents/xterm.debug";
-	say "See debug file: $debug_file\n";
-	open(my $fh, '>>', $debug_file) or die "Failed to open $debug_file: $!";
+	my $command_log = "/Users/steve/Documents/xterm.log";
+	say "See debug file: $command_log\n";
+	open(my $fh, '>>', $command_log) or die "Failed to open $command_log: $!";
 	$cmd.="\n";
 	say $fh "\n $cmd";
 	close($fh);
-	return $debug_file;
+	return $command_log;
 }
 
 # Launch xterm
