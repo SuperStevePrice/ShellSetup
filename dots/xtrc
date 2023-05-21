@@ -37,4 +37,4 @@ x_fn=9x15bold
 x_bg=DarkGrey
 x_fg=Navy
 log=0
-xpath=/bin
+xpath=/opt/X11/bin

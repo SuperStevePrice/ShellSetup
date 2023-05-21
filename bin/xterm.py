@@ -1,100 +1,94 @@
 #!/usr/bin/env python
 
+import subprocess
 import os
+import socket
+import shutil
 from datetime import datetime
 
-xterm_path = "/opt/X11/bin/xterm"
-xterm_path = "/usr/bin/xterm"
+def write_command_log_file(cmd):
+    cmd_log_file = os.path.expanduser('~/Documents/xterm.log')
+    print("See xterm commands in the cmd_log file:", cmd_log_file)
 
-# Define and initialize parameters dictionary
-params = {
-    "bg": "CadetBlue",
-    "fg": "Black",
-    "fn": "9x15bold",
-    "cols": "80",
-    "rows": "45",
-    "sl": "200",
-    "log": 'N',
-    "dbg": 'N'
-}
+    os.makedirs(os.path.dirname(cmd_log_file), exist_ok=True)
 
-# Function to prompt user and return input
+    with open(cmd_log_file, 'a') as file:
+        if file.tell() != 0:
+            file.write('\n\n')
+        if isinstance(cmd, str):
+            file.write(cmd + '\n')
+        elif isinstance(cmd, list):
+            file.write(' '.join(cmd) + '\n')
+        else:
+            raise ValueError("Invalid cmd type")
+        if isinstance(cmd, str):
+            file.write('\n')
 
-
-def prompt_user(prompt, default=None):
-    default_text = f"[{default}]" if default else ""
-    return input(f"{prompt:<30s} {default_text}: ") or default
-
-# Function to launch xterm
 
 
 def Xterm(params):
-    # Format the title
-    title = f"steve@ {datetime.now()}"
+    success = 0
+    xterm_path = "/opt/X11/bin/xterm"
 
-    # Determine the font parameter
-    font_param = "-fa" if " " in params["fn"] else "-fn"
-    font_value = f'"{params["fn"]}"' if font_param == "-fn" else params["fn"]
+    if os.path.exists(xterm_path):
+        xterm_executable = xterm_path
+        success = 1
+    else:
+        xterm_executable = shutil.which("xterm")
+        if xterm_executable:
+            success = 1
+        else:
+            print("xterm executable not found.")
+            sys.exit(1)
 
-    # Format the xterm command
-    cmd = f"{xterm_path} -sb -sl {params['sl']} {font_param} {font_value} "
-    cmd += f"-geometry {params['cols']}x{params['rows']} -fg \"{params['fg']}\" "
-    cmd += f"-bg \"{params['bg']}\" -title \"{title}\""
-    cmd += " -l" if params['log'].lower() == 'y' else ""
+    # Gather user preferences
+    background_color = input("Pick a background color [CadetBlue]: ") or "CadetBlue"
+    foreground_color = input("Pick a foreground color [Black]: ") or "Black"
+    font = input("Enter the font [9x15bold]: ") or "9x15bold"
+    columns = input("Enter the number of columns [80]: ") or "80"
+    rows = input("Enter the number of rows [45]: ") or "45"
+    buffer_size = input("Enter the memory buffer size [200]: ") or "200"
+    enable_keystroke_logging = input("Enable keystroke logging? (Y/N) [N]: ") == "Y"
+    enable_command_logging = input("Enable debugging? (Y/N) [N]: ") == "Y"
 
-    # Execute the xterm command in a separate process
+    # Build the xterm command
+    cmd = [
+        xterm_executable,
+        "-sb",
+        "-sl",
+        buffer_size,
+        "-fn",
+        font,
+        "-geometry",
+        f"{columns}x{rows}",
+        "-fg",
+        foreground_color,
+        "-bg",
+        background_color,
+        "-title",
+        f"'{os.environ['USER']}@{socket.gethostname()} {datetime.now()}'"
+    ]
+
+    # Execute the xterm command
     pid = os.fork()
 
     if pid == 0:
         # Child process
-        os.system(cmd)
+        os.system(" ".join(cmd))
         exit(0)
     elif pid > 0:
         # Parent process
         print("xterm launched in the background.")
-        write_debug_file(cmd, params['dbg'])
+        write_command_log_file(cmd)
+        if enable_command_logging:
+            try:
+                write_command_log_file(cmd)
+            except Exception as e:
+                print(f"Error writing to log file: {str(e)}")
     else:
         # Forking failed
         raise RuntimeError("Failed to fork a child process")
 
-# Prompt user for parameter values
+# Call the Xterm function
+Xterm({})
 
-
-def get_user_inputs():
-    print()
-    params['bg'] = prompt_user(
-        "Pick a background color", params['bg'])
-    params['fg'] = prompt_user(
-        "Pick a foreground color", params['fg'])
-    params['fn'] = prompt_user(
-        "Enter the font", params['fn'])
-    params['cols'] = prompt_user(
-        "Enter the number of columns", params['cols'])
-    params['rows'] = prompt_user(
-        "Enter the number of rows", params['rows'])
-    params['sl'] = prompt_user(
-        "Enter the memory buffer size", params['sl'])
-    params['log'] = prompt_user(
-        "Enable logging? (Y/N)", params['log'])
-    params['dbg'] = prompt_user(
-        "Enable debugging? (Y/N)", params['dbg'])
-    print()
-
-# Function to write to the debug file
-def write_debug_file(cmd, dbg):
-    debug_file = os.path.expanduser("~/Documents/xterm.debug")
-    print("See debug file:", debug_file)
-
-    try:
-        with open(debug_file, 'a') as fh:
-            fh.write(cmd + "\n")
-    except Exception as e:
-        print(f"Failed to write to debug file: {str(e)}")
-        print(f"Current directory: {os.getcwd()}")
-
-        return debug_file
-
-
-# Launch xterm
-get_user_inputs()
-Xterm(params)

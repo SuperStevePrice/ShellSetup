@@ -21,7 +21,7 @@ use strict;
 use warnings;
 use feature 'say';
 
-my $xterm_path = "/opt/X11/bin/xterm";
+xterm=$(which xterm)
 
 # Define and initialize parameters object:
 my $params = {
@@ -60,13 +60,10 @@ sub Xterm {
     my $font_value = $font_param eq "-fn" ? "\"$params->{fn}\"" : $params->{fn};
 
     # Format the xterm command
-	my $cmd = "$xterm_path -sb -sl $params->{sl} $font_param $font_value ";
+	my $cmd = "$xterm -sb -sl $params->{sl} $font_param $font_value ";
     $cmd .= "-geometry $params->{cols}x$params->{rows} -fg \"$params->{fg}\" ";
     $cmd .= "-bg \"$params->{bg}\" -title \"$title\"";
     $cmd .= " -l" if lc( $params->{log} ) eq 'y';
-
-    #$cmd .= " -e '$shell'";
-	# Rest of your code...
 
 	# Execute the xterm command in a separate process
 	my $pid = fork();
@@ -114,7 +111,7 @@ sub write_debug_file {
 	say "See debug file: $debug_file\n";
 	open(my $fh, '>>', $debug_file) or die "Failed to open $debug_file: $!";
 	$cmd.="\n";
-	say $fh $cmd;
+	say $fh "\n $cmd";
 	close($fh);
 	return $debug_file;
 }
