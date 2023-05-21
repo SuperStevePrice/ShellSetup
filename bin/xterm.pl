@@ -21,7 +21,7 @@ use strict;
 use warnings;
 use feature 'say';
 
-xterm=$(which xterm)
+my $xterm = qx[which xterm];
 
 # Define and initialize parameters object:
 my $params = {
