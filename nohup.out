@@ -1,4 +1,0 @@
-Warning: locale not supported by Xlib, locale set to C
-Warning: X locale modifiers not supported, using default
-xterm: Failed to open input method
-xterm: fatal IO error 35 (Resource temporarily unavailable) or KillClient on X server "/private/tmp/com.apple.launchd.kEJ6eH6zvH/org.xquartz:0"

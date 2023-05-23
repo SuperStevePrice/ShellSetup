@@ -4,9 +4,10 @@ logs/
 # Ignore certain documents:
 *.txt
 
-# Ignore which.* files
+# Ignore which.* files:
 prep/which.*
 
-# Ignore *.save and *.backup files
+# Ignore *.save, *.backup, and nohup.out  files:
 *.save
 *backup
+nohup.out
