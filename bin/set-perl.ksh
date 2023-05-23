@@ -19,9 +19,33 @@
 #
 # Author:
 #	Steve Price
-#-------------------------------------------------------------------------------`
+#-------------------------------------------------------------------------------
+
+# Global string of all folders that might have perl executables:
+dirs="/usr/bin"
+dirs="$dirs /usr/local/bin"
+dirs="$dirs /usr/local/share"
+dirs="$dirs $HOME/perl*/bin"
+dirs="$dirs /opt/perl*/bin"
+dirs="$dirs /opt/homebrew/bin"
+
 # Variable to store the Perl version selection
 selected_perl=""
+
+# Function to show current version of Perl used by the shell:
+display_current_perl() {
+	# Display the current Perl
+	print
+	print "Current Perl:"
+	perl=$(which perl)
+	print $perl
+	if [ $1 == "full" ]; then
+		perl --version
+	fi
+	print
+}
+
+display_current_perl brief
 
 # Function to check if a given file path is a Perl executable
 is_perl_executable() {
@@ -36,13 +60,11 @@ is_perl_executable() {
 # Function to list Perl versions target directory
 list_perl_versions() {
 	target_dir=$1
-	print
 	print "Perl versions in $target_dir:"
-	print
 	ls ${target_dir}/perl* 2>/dev/null | while read -r perl; do
 		if is_perl_executable "$perl" && ! print "$perl" |\
 			grep -qE 'perlbug|perlivp|perltidy|perldoc|perlthanks'; then
-			print "$perl"
+			print "\t$perl"
 			((index++))
 		fi
 	done
@@ -62,45 +84,38 @@ add_choice_from() {
 }
 
 index=1
-list_perl_versions /usr/bin
-list_perl_versions "$HOME"/perl*/bin/perl
+# Loop over directories and invoke list_perl_versions function
+for dir in $dirs; do
+  list_perl_versions "$dir"
+done
 
 # Prompt for Perl version selection
-print
-print "Select a Perl version (or 0 to cancel):"
-choices=()
+while true; do
+	print "Select a Perl version (or 0 to cancel):"
+	choices=()
 
-index=1
-add_choice_from /usr/bin
-add_choice_from "$HOME"/perl*/bin/perl
+	index=1
+	for dir in $dirs; do
+		add_choice_from  "$dir"
+	done
 
-# Add cancel option
-print "$index) Cancel"
+	# Prompt for selection
+	print -n "#? "
+	read -r selection
+	print
 
-# Prompt for selection
-print -n "#? "
-read -r selection
-print
+	# Handle the selection
+	if [[ "$selection" == "0" ]]; then
+		print "No changes made to Perl."
+		exit 0
+	elif ((selection >= 1 && selection <= index-1)); then
+		selected_perl="${choices[selection]}"
+		sudo ln -sf "$selected_perl" /usr/local/bin/perl
+		print "Perl successfully set to: $selected_perl"
+		break  # Exit the loop after a valid selection
+	else
+		print "Invalid selection. Please try again."
+	fi
+done
 
-# Handle the selection
-if [[ "$selection" == "0" ]]; then
-    print "No changes made to Perl."
-    exit 0
-elif ((selection >= 1 && selection <= index-1)); then
-    selected_perl="${choices[selection]}"
-    sudo ln -sf "$selected_perl" /usr/local/bin/perl
-    print "Perl successfully set to: $selected_perl"
-else
-    print "Invalid selection. Please try again."
-    exit 1
-fi
-
-# Display the current Perl
-print
-print "Current Perl:"
-perl=$(which perl)
-print $perl
-perl --version
-#-------------------------------------------------------------------------------
-# Last installed: 2023-05-18 00:28:14
-#-- End of File ----------------------------------------------------------------
+display_current_perl full

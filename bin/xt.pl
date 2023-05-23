@@ -98,8 +98,8 @@ sub set_globals {
                 $log = $env_variable_value;
             }
 
-            if ($env_variable_name =~ /xpath/) {
-                $xpath = $env_variable_value;
+            if ($env_variable_name =~ /x_path/) {
+                $x_path = $env_variable_value;
             }
         }
     };
@@ -121,17 +121,17 @@ sub set_globals {
         if (!defined($log) || !$log);
 
     # Define the fullpath to the xterm executables on this server:
-    $xpath = "/usr/openwin/bin/"
-        if (!defined($xpath) || !$xpath);
+    $x_path = "/opt/X11/bin"
+        if (!defined($x_path) || !$x_path);
 
-    $xterm="$xpath/xterm";
+    $xterm="$x_path/xterm";
     my($dev, $ino, $mode, $nlink, $uid, $gid, $rdev,
         $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat($xterm);
 
     $errMsg =
         "\n$xterm cannot be found.\n" .
-        "If $ENV{'HOME'}/.xtrc exists correct xpath.\n" .
-        "If $ENV{'HOME'}/.xtrc does not exist create it with correct xpath.\n";
+        "If $ENV{'HOME'}/.xtrc exists correct x_path.\n" .
+        "If $ENV{'HOME'}/.xtrc does not exist create it with correct x_path.\n";
 
     die("$errMsg\n")
         if (! $size);
@@ -206,7 +206,7 @@ sub Xterm {
     # Create a geometry setting from columns and rows:
     my $x_geo = "${x_cols}x${x_rows}";
 
-    my $cmd = "nohup $xpath/xterm -ls -sb -sl $x_sl";
+    my $cmd = "nohup $x_path/xterm -ls -sb -sl $x_sl";
 
     if ($x_fn =~ / /) {
         # Font name has a space, split into font family and font size
@@ -229,10 +229,10 @@ sub Xterm {
     $cmd .= " -geometry $x_geo -fg $x_fg -bg $x_bg -title \"$title\"";
     $cmd .= " -l" if ($log);
 
-	# Uncomment the line below to debug the $cmd:
+    # Uncomment the line below to debug the $cmd:
     #print "DEBUG: cmd=$cmd\n";
 
-    open (XT, "| $cmd &") or die("Cannot execute $xpath/xterm\n");
+    open (XT, "| $cmd &") or die("Cannot execute $x_path/xterm\n");
     print XT "";
 }
 #-------------------------------------------------------------------------------
@@ -736,7 +736,7 @@ sub get_xlsfonts {
 
     my $idx = 0;
 
-    my $cmd = "$xpath/xlsfonts" . " | sort -u |";
+    my $cmd = "$x_path/xlsfonts" . " | sort -u |";
     open(FONTS, "$cmd") or return "$xlsfonts[0]";
 
     while (<FONTS>) {
