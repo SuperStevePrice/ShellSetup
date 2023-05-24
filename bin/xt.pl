@@ -95,7 +95,7 @@ sub set_globals {
             }
 
             if ($env_variable_name =~ /log/) {
-                $log = $env_variable_value;
+                $x_log = $env_variable_value;
             }
 
             if ($env_variable_name =~ /x_path/) {
@@ -117,8 +117,8 @@ sub set_globals {
         if (!defined($x_bg) || !$x_bg);
     $x_fg    = "Navy"
         if (!defined($x_fg) || !$x_fg);
-    $log    = 0        # default is no logging
-        if (!defined($log) || !$log);
+    $x_log    = 0        # default is no logging
+        if (!defined($x_log) || !$x_log);
 
     # Define the fullpath to the xterm executables on this server:
     $x_path = "/opt/X11/bin"
@@ -227,7 +227,7 @@ sub Xterm {
     }
 
     $cmd .= " -geometry $x_geo -fg $x_fg -bg $x_bg -title \"$title\"";
-    $cmd .= " -l" if ($log);
+    $cmd .= " -l" if ($x_log);
 
     # Uncomment the line below to debug the $cmd:
     #print "DEBUG: cmd=$cmd\n";
@@ -807,7 +807,7 @@ sub define_log_checkbutton {
         -pady    => 3,
         -relief    => 'sunken',
         -text    => 'Enable XtermLog.* creation',
-        -variable    => \$log,
+        -variable    => \$x_log,
     );
     $log_checkbutton->pack();
 } # end of sub define_log_checkbutton
