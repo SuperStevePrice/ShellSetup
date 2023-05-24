@@ -23,7 +23,7 @@
 #        x_fn=9x15bold           # xterm font
 #        x_bg=DarkGrey           # background color
 #        x_fg=Navy               # foreground color
-#        log=0                   # 0 = no logging; 1 = logging on
+#        x_log=0                 # 0 = no logging; 1 = logging on
 #        x_path=/usr/bin         # path to xterm and xlsfonts executables
 #
 #    All except x_sl and x_path may be configured by the user anytime after 
@@ -36,5 +36,5 @@ x_sl=200
 x_fn=9x15bold
 x_bg=DarkGrey
 x_fg=Navy
-log=0
+x_log=0
 x_path=/opt/X11/bin
