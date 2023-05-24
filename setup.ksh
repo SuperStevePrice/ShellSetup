@@ -29,7 +29,8 @@ line=$(print "#$(printf -- '-%.0s' {1..79})")
 EoF=$(print "#-- End of File $(printf -- '-%.0s' {1..64})")
 final_lines="${line}\n${timestamp}\n${EoF}"
 
-# full path to cp and head
+# full path to cat, cp, and head
+cat=$(which cat)
 cp=$(which cp)
 head=$(which head)
 
@@ -198,8 +199,8 @@ make_installation_list() {
 
 	print
 	print $line
-	print "cat $installation_list"
-	cat $installation_list
+	print "$cat $installation_list"
+	$cat $installation_list
 	print $line
 } # make_installation_list() 
 
@@ -254,7 +255,14 @@ handle_dots() {
 
 		# install 
 		print $cp dots/${file} ~/.${file}
-		$cp dots/${file} ~/.${file}
+		if [ "$file" == "xtrc" ]
+		then
+			x_path=$(which xterm)
+			x_path=$(dirname $x_path)
+			sed "s!^x_path=.*!x_path=$x_path!" dots/xtrc > ~/.${file}
+		else
+			$cp dots/${file} ~/.${file}
+		fi
 
 		print "add_last_lines ~/.${file}"
 		add_last_lines ~/.${file}
@@ -344,7 +352,7 @@ source shebang.ksh
 make_installation_list
 
 # Main Loop:
-for file in $(cat $installation_list)
+for file in $($cat $installation_list)
 do
 	folder=$(dirname $file)
 	file=$(basename $file)
