@@ -40,7 +40,7 @@ my $params = {
 sub prompt_user {
     my ($question, $default) = @_;
 	my $default_prompt = defined $default ? " [$default]" : "";
-	my $padding = " " x (35 - length($question) - length($default_prompt));
+	my $padding = " " x (40 - length($question) - length($default_prompt));
 	printf("%s%s%s: ", $question, $padding, $default_prompt);
 	my $input = <STDIN>;
 	chomp $input;
