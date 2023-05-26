@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-
 import subprocess
 import os
 import socket
 import shutil
+import sys
 from datetime import datetime
+
 
 def write_command_log_file(cmd):
     cmd_log_file = os.path.expanduser('~/Documents/xterm.log')
@@ -25,7 +25,6 @@ def write_command_log_file(cmd):
             file.write('\n')
 
 
-
 def Xterm(params):
     success = 0
     xterm_path = "/opt/X11/bin/xterm"
@@ -42,28 +41,41 @@ def Xterm(params):
             sys.exit(1)
 
     # Gather user preferences
-    background_color = input("Pick a background color [CadetBlue]: ") or "CadetBlue"
+    background_color = input(
+        "Pick a background color [CadetBlue]: ") or "CadetBlue"
     foreground_color = input("Pick a foreground color [Black]: ") or "Black"
-    font = input("Enter the font [9x15bold]: ") or "9x15bold"
+    font = input("Enter the font [Courier New Bold: ") or "Courier New Bold"
+    font_size = input("Enter the font  size [16]: ") or "16"  
     columns = input("Enter the number of columns [80]: ") or "80"
     rows = input("Enter the number of rows [45]: ") or "45"
     buffer_size = input("Enter the memory buffer size [200]: ") or "200"
-    enable_keystroke_logging = input("Enable keystroke logging? (Y/N) [N]: ") == "Y"
-    enable_command_logging = input("Enable command logging? (Y/N) [N]: ") == "Y"
 
+    enable_keystroke_logging = input(
+        "Enable keystroke logging? (Y/N) [N]: ") == "Y"
+    enable_command_logging = input(
+        "Enable command logging? (Y/N) [N]: ") == "Y"
+
+    if enable_keystroke_logging == 'Y':
+        log = " -l "
+    else:
+        log = ""
+        
     # Build the xterm command
     cmd = [
         xterm_executable,
         "-sb",
         "-sl",
         buffer_size,
-        "-fn",
+        "-fa",
         font,
+        "-fs",
+        font_size,
         "-geometry",
         f"{columns}x{rows}",
         "-fg",
         foreground_color,
         "-bg",
+        log,
         background_color,
         "-title",
         f"'{os.environ['USER']}@{socket.gethostname()} {datetime.now()}'"
@@ -79,6 +91,7 @@ def Xterm(params):
     elif pid > 0:
         # Parent process
         print("xterm launched in the background.")
+        print("Try write to command log")
         write_command_log_file(cmd)
         if enable_command_logging:
             try:
@@ -89,6 +102,6 @@ def Xterm(params):
         # Forking failed
         raise RuntimeError("Failed to fork a child process")
 
+
 # Call the Xterm function
 Xterm({})
-
