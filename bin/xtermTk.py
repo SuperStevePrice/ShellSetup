@@ -84,16 +84,20 @@ def launch_xterm():
     foreground_color = accepted_values["foreground_color"]
     background_color = accepted_values["background_color"]
 
+	# NOTE: font and title values must be enclosed in quotation marks.
     title = f'{os.environ["USER"]}@{socket.gethostname()} {datetime.now()}'
     cmd = [
         "/usr/bin/env", "xterm",
-        "-sb", "-sl", scrollback_lines,
-        "-fa", font, "-fs", font_size,
+        "-sb",
+        "-sl", scrollback_lines,
+        "-fa", f'"{font}"',
+        "-fs", font_size,
         "-geometry", geometry,
-        "-fg", foreground_color, "-bg", background_color,
-        "-title", title
+        "-fg", foreground_color,
+        "-bg", background_color,
+        "-title", f'"{title}"'
     ]
-    
+
     if enable_keystroke_logging_var.get():
         cmd.append("-l")
         
