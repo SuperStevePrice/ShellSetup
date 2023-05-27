@@ -2,12 +2,9 @@
 
 import os
 import socket
-import shutil
-import sys
 from datetime import datetime
 import tkinter as tk
-import getpass
-import shlex
+import subprocess
 
 # Default values
 default_values = {
@@ -28,8 +25,6 @@ accepted_values = default_values.copy()
 # Create the main window
 root = tk.Tk()
 root.title("xterm Configuration")
-#root.configure(background="CadetBlue")  # Set the background color
-
 
 # Define global variables
 enable_keystroke_logging_var = None
@@ -75,6 +70,11 @@ def accept_changes():
     accepted_values["enable_keystroke_logging"] = enable_keystroke_logging_var.get()
     accepted_values["enable_command_logging"] = enable_command_logging_var.get()
 
+def log_command(cmd):
+    log_file = os.path.expanduser("~/Documents/xterm.log")
+    with open(log_file, "a") as f:
+        f.write("\n" + cmd + "\n")
+
 def launch_xterm():
     # Build the xterm command
     scrollback_lines = accepted_values["scrollback_lines"]
@@ -85,26 +85,32 @@ def launch_xterm():
     background_color = accepted_values["background_color"]
 
     title = f'{os.environ["USER"]}@{socket.gethostname()} {datetime.now()}'
-    cmd = (
-        f'/usr/bin/env xterm '
-        f'-sb -sl {scrollback_lines} '
-        f'-fa "{font}" -fs {font_size} '
-        f'-geometry {geometry} '
-        f'-fg {foreground_color} -bg {background_color} '
-        f'-title "{title}"'
-    )
+    cmd = [
+        "/usr/bin/env", "xterm",
+        "-sb", "-sl", scrollback_lines,
+        "-fa", font, "-fs", font_size,
+        "-geometry", geometry,
+        "-fg", foreground_color, "-bg", background_color,
+        "-title", title
+    ]
+    
+    if (accepted_values["enable_keystroke_logging"]):
+        cmd + " -l"
 
- 
-    # Uncomment the following line to debug:
-    #print(f"DEBUG: 'cmd=' [{cmd}]")
 
     try:
-        return_code = os.system(cmd)
-        if return_code != 0:
-            print(f"Command execution failed with return code: {return_code}")
+        process = subprocess.Popen(cmd)
+
+        if accepted_values["enable_command_logging"]:
+            log_command(" ".join(cmd))  # Log the command
+
+        process.communicate()  # Wait for the process to finish
+
+    except subprocess.CalledProcessError as e:
+        print(f"Command execution failed with return code: {e.returncode}")
+        print(f"Error output: {e.output}")
     except Exception as e:
         print(f"Command execution failed with exception: {str(e)}")
-
 
 def quit_app():
     root.quit()

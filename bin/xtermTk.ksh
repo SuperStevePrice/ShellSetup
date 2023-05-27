@@ -11,4 +11,5 @@
 #	xtermTk[.ksh]
 #-------------------------------------------------------------------------------
 . ~/.profile
-nohup perl ~/bin/xtermTk.py  &
+. ~/.locale
+nohup /usr/bin/env python ~/bin/xtermTk.py  &
