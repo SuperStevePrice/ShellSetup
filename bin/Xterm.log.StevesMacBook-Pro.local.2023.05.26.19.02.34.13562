@@ -1,0 +1,37 @@
+StevesMacBook-Pro </Users/steve/Projects/SS/bin [748]>
+steve@StevesMacBook-Pro.local: ls
+PS1.ksh
+Xterm.log.StevesMacBook-Pro.local.2023.05.26.19.02.34.13562
+clone.sh
+diff_projects.ksh
+finder.ksh
+git_clone.ksh
+git_mail.ksh
+git_merge.ksh
+git_new.ksh
+git_pull.ksh
+git_push.ksh
+good_fonts.sh
+installed.ksh
+list-brew-mods.ksh
+my_machine.ksh
+nohup.out
+os.ksh
+p.ksh
+paths.ksh
+remote_tar.ksh
+scp_this.ksh
+set-perl.ksh
+set_shell.ksh
+ssh-copy-id.ksh
+xt.ksh
+xt.pl
+xterm-examples.ksh
+xterm.pl
+xterm.py
+xtermTk.ksh
+xtermTk.py
+xterm_good_fonts.py
+xterms.ksh
+StevesMacBook-Pro </Users/steve/Projects/SS/bin [749]>
+steve@StevesMacBook-Pro.local: exit

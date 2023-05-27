@@ -94,9 +94,11 @@ def launch_xterm():
         "-title", title
     ]
     
-    if (accepted_values["enable_keystroke_logging"]):
-        cmd + " -l"
-
+    if enable_keystroke_logging_var.get():
+        cmd.append("-l")
+        
+    #print("Final cmd:", cmd)  # Add this line
+    #print("DEBUG: cmd=", cmd, accepted_values["enable_keystroke_logging"])
 
     try:
         process = subprocess.Popen(cmd)
