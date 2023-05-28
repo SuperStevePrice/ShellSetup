@@ -18,7 +18,6 @@
 #
 # HISTORY:
 #    07/23/01 rp3138    Created
-#    02/18/16 rp3138    Switched to ActivePerl-5.22 on Steve's iMac
 #
 # HISTORY:
 #    $Id: xt.pl 6 2014-05-07 00:52:30Z SuperStevePrice $
@@ -48,7 +47,7 @@ sub fonts_manager;
 sub get_host_server_name;
 sub get_xlsfonts;
 sub pick_font;
-
+sub trim;
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -68,7 +67,11 @@ sub set_globals {
             next if (/^#|^\w*$|^$|^\n$/);
 
             chomp();
-            my ( $env_variable_name, $env_variable_value ) = split /=/;
+
+
+			my ($env_variable_name, $env_variable_value) = /([^=]+)=(.*)/;
+			$env_variable_value = trim($env_variable_value);
+
             if ( $env_variable_name =~ /x_cols/ ) {
                 $x_cols = $env_variable_value;
             }
@@ -213,31 +216,27 @@ sub Xterm {
 
     if ($x_fa) {
         $cmd .= " -fa \"$x_fa\"";
-		print "DEBUG1: $cmd \n";
     }
 
     if ($x_fs) {
         $cmd .= " -fs \"$x_fs\"";
-		print "DEBUG2: $cmd \n";
     }
 
     if ( $x_fa  eq "" ) {
         # Parsing failed. Use fallback font.
         $cmd .= " -fa \"9x15bold\"";
-		print "DEBUG3: $cmd \n";
     }
 
     if ( $x_fs  eq "" ) {
         # Parsing failed. Use fallback font.
         $cmd .= " -fa 16";
-		print "DEBUG4: $cmd \n";
     }
 
     $cmd .= " -geometry $x_geo -fg $x_fg -bg $x_bg -title \"$title\"";
     $cmd .= " -l" if ($x_log);
 
     # Uncomment the line below to debug the $cmd:
-    print "DEBUG5: cmd=$cmd\n";
+    #print "DEBUG: cmd=$cmd\n";
 
     open( XT, "| $cmd &" ) or die("Cannot execute $x_path/xterm\n");
     print XT "";
@@ -762,5 +761,14 @@ sub define_log_checkbutton {
     $log_checkbutton->pack();
 }    # end of sub define_log_checkbutton
 
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# Remove all space from string and return it.
+sub trim {
+    my $string = shift;
+	$string =~ s/\s+//g;
+	return $string;
+}
 #-------------------------------------------------------------------------------
 
