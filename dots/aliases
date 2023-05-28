@@ -28,7 +28,9 @@ alias lr="ls -ltr"			# short for long list time reversed ls
 alias py="$(which python)"	# short for python
 alias g="$(which git)"		# short for git
 alias gl="$(which git) log"	# short for git log
-alias pbcopy='xsel --clipboard --input'		# copy text to clipboard
-alias pbpaste='xsel --clipboard --output'	# paste text from clipboard
 alias vl="view logs/setup.log"				# to view project setup log
 alias get=git				# avoid common typo
+
+# perltidy requires special handling:
+pt_path="/opt/homebrew/Cellar/perl/5.36.1/bin"
+alias perltidy="${pt_path}/perltidy -pro=~/.perltidyrc"
