@@ -81,7 +81,7 @@ sub Xterm {
 	} elsif ($pid > 0) {
 		# Parent process
 		print "xterm launched in the background.\n";
-		write_debug_file(${cmd})
+		write_command_log(${cmd})
 			if (lc($params->{cmd_log}) eq 'y')
 	} else {
 		# Forking failed
@@ -115,14 +115,14 @@ sub get_user_inputs() {
 
 
 
-sub write_debug_file {
+sub write_command_log {
     my ($cmd) = @_;
-	my $debug_file = "/Users/steve/Documents/xterm.debug";
-	say "See debug file: $debug_file\n";
-	open(my $fh, '>>', $debug_file) or die "Failed to open $debug_file: $!";
-	say $fh $cmd;
+	my $command_log = "/Users/steve/Documents/xterm.log";
+	say "See debug file: $command_log\n";
+	open(my $fh, '>>', $command_log) or die "Failed to open $command_log: $!";
+	say $fh $cmd . "\n";
 	close($fh);
-	return $debug_file;
+	return $command_log;
 }
 
 # Launch xterm
