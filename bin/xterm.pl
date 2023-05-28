@@ -104,7 +104,7 @@ sub get_user_inputs() {
     $params->{rows} =
       prompt_user( "Enter the number of rows)", $params->{rows} );
     $params->{sl} =
-      prompt_user( "Enter the memory buffer size)", $params->{sl} );
+      prompt_user( "Enter the scrollback lines size)", $params->{sl} );
     $params->{log} = 
         prompt_user( "Enable keystroke logging? (Y/N)", $params->{log} );
     $params->{cmd_log} = 

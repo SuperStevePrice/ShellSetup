@@ -14,7 +14,7 @@ default_values = {
     "font_size": "16",
     "columns": "80",
     "rows": "45",
-    "buffer_size": "200",
+    "scrollback_lines": "200",
     "enable_keystroke_logging": False,
     "enable_command_logging": False
 }
@@ -72,8 +72,8 @@ def Xterm(params):
     font_size = prompt_user("Enter the font size", default_values["font_size"])
     columns = prompt_user("Enter the number of columns", default_values["columns"])
     rows = prompt_user("Enter the number of rows", default_values["rows"])
-    buffer_size = prompt_user("Enter the memory buffer size",
-                              default_values["buffer_size"])
+    scrollback_lines = prompt_user("Enter the scrollback lines size",
+                              default_values["scrollback_lines"])
 
     enable_keystroke_logging = prompt_user(
         "Enable keystroke logging? (Y/N)", "Y" if default_values["enable_keystroke_logging"] else "N") == "Y"
@@ -90,7 +90,7 @@ def Xterm(params):
         xterm_executable,
         "-sb",
         "-sl",
-        buffer_size,
+        scrollback_lines,
         "-fa",
         f"'{font}'",
         "-fs",
