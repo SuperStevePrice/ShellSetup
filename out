@@ -238,7 +238,7 @@ sub Xterm {
     $cmd .= " -l" if ($x_log);
 
     # Uncomment the line below to debug the $cmd:
-    #print "DEBUG: cmd=$cmd\n";
+    print "DEBUG: cmd=$cmd\n";
 
     open( XT, "| $cmd &" ) or die("Cannot execute $x_path/xterm\n");
     print XT "";
@@ -493,6 +493,37 @@ sub define_entries {
 
     #--------------------------------------------------
 
+    # "Font Size" Label and Entry:
+    #--------------------------------------------------
+    # "Font Size" Label and Entry:
+    #--------------------------------------------------
+    $Label{'font_size'} = $frame{'sizes'}->Label(
+        -text        => 'Font Size',
+        -padx        => 5,
+        -borderwidth => 3,
+        -relief      => 'sunken',
+        -bg          => 'DarkGrey',
+    );
+
+    $Label{'font_size'}->pack( -side => 'left' );
+
+    $Entry{'font_size'} = $frame{'sizes'}->Entry(
+        -font         => $x_fa,
+        -bg           => 'tan',
+        -fg           => 'black',
+        -width        => 3,
+        -textvariable => \$x_fs,
+    );
+
+    $Entry{'font_size'}->pack(
+        -side  => 'left',
+        -after => $Label{'font_size'},
+    );
+
+    #--------------------------------------------------
+
+    #--------------------------------------------------
+
 }    # end of sub define_entries
 
 #-------------------------------------------------------------------------------
@@ -513,6 +544,7 @@ sub define_focus_bindings {
     $Entry{'columns'}->bind( '<Return>', sub { $Entry{'rows'}->focus } );
     $Entry{'rows'}->bind( '<Return>', sub { $Entry{'font'}->focus } );
     $Entry{'font'}->bind( '<Return>', sub { $Entry{'foreground'}->focus } );
+    $Entry{'font_size'}->bind( '<Return>', sub { $Entry{'font_size'}->focus } );
 }    # end of sub define_focus_bindings
 
 #-------------------------------------------------------------------------------
@@ -539,6 +571,7 @@ sub Xterm_button {
     $x_bg   = $Entry{'background'}->get;
     $x_cols = $Entry{'columns'}->get;
     $x_rows = $Entry{'rows'}->get;
+    $x_fs   = $Entry{'font_size'}->get;
 
     # Create an xterm window:
     Xterm( $x_bg, $x_fg );
