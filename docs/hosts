@@ -1,0 +1,12 @@
+#
+# Host Database
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+127.0.0.1	localhost
+255.255.255.255	broadcasthost
+::1             localhost
+10.0.0.147	Steves-iMac.localdomain	Steves-iMac iMac
+10.0.0.212	MacBook-Linux.localdomain MacBook-Linux StevesMacBook-Linux
+10.0.0.198	iMac-Linux.localdomain	iMac-Linux StevesiMac-Linux
+10.0.0.245	StevesMacBook-Pro.local	StevesMacBook-Pro MacBook
