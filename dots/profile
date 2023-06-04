@@ -53,12 +53,12 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # Setting the terminal type for xterm and Terminal windows. 
-# term=xterm does not work for xterm vi sessions; vt100 does.
-#export TERM=vt100
 export TERM=xterm-256color
+
+# DEPRECATION WARNING: The system version of Tk is deprecated and may be 
+# removed in a future release. Please don't rely on it. 
+# Set TK_SILENCE_DEPRECATION=1 to suppress this warning.
+export TK_SILENCE_DEPRECATION=1
 
 # Enable CLI editing of previous commands in history:
 set -o vi
-#-------------------------------------------------------------------------------
-# Last installed: 2023-05-25 19:15:34
-#-- End of File ----------------------------------------------------------------
