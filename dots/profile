@@ -55,10 +55,27 @@ fi
 # Setting the terminal type for xterm and Terminal windows. 
 export TERM=xterm-256color
 
+# Python Tk Warning:
 # DEPRECATION WARNING: The system version of Tk is deprecated and may be 
 # removed in a future release. Please don't rely on it. 
 # Set TK_SILENCE_DEPRECATION=1 to suppress this warning.
 export TK_SILENCE_DEPRECATION=1
+
+# Conda initialization for ksh:
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup=$('/home/steve/anaconda3/bin/conda' 'shell.ksh' 'hook' 2> /dev/null)
+if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/home/steve/anaconda3/etc/profile.d/conda.sh" ]; then
+            . "/home/steve/anaconda3/etc/profile.d/conda.sh"
+        else
+            export PATH="/home/steve/anaconda3/bin:$PATH"
+        fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 
 # Enable CLI editing of previous commands in history:
 set -o vi
