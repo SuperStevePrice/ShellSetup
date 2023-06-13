@@ -25,7 +25,6 @@ alias h="fc -l"				    # history command for ksh
 alias l="ls -l"				    # short for long list ls
 alias ll="ls -l"			    # short for long list ls
 alias lr="ls -ltr"			    # short for long list time reversed ls
-alias py="$(which python)"	    # short for python
 alias g="$(which git)"		    # short for git
 alias gl="$(which git) log"	    # short for git log
 alias gs="$(which git) status"	# short for git status
@@ -35,3 +34,10 @@ alias get=g  				    # avoid common typo
 # perltidy requires special handling:
 pt_path="/opt/homebrew/Cellar/perl/5.36.1/bin"
 alias perltidy="${pt_path}/perltidy -pro=~/.perltidyrc"
+
+if [ "$(uname)" == "Darwin" ]; then
+    alias python=/Users/steve/anaconda3/bin/python3.10
+else
+    alias /Users/steve/anaconda3/bin/python
+fi
+alias py=python
