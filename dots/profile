@@ -50,7 +50,14 @@ if [ "$(uname)" == "Darwin" ]; then
     if [ -n "$brew" ]; then
         eval "$("$brew" shellenv)"
     fi
+    PYTHONPATH="/Users/steve/anaconda3/lib/python3.10"
+    PYTHONPATH="${PYTHONPATH}/site-packages/tkmacosx:$PYTHONPATH"
+    export PYTHONPATH
 fi
+
+# Remove duplicates from PYTHONPATH
+export PYTHONPATH=$(echo $PYTHONPATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
+
 
 # Setting the terminal type for xterm and Terminal windows. 
 export TERM=xterm-256color
@@ -79,3 +86,6 @@ unset __conda_setup
 
 # Enable CLI editing of previous commands in history:
 set -o vi
+#-------------------------------------------------------------------------------
+# Last installed: 2023-06-12 12:41:08
+#-- End of File ----------------------------------------------------------------
