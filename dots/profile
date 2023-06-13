@@ -86,6 +86,3 @@ unset __conda_setup
 
 # Enable CLI editing of previous commands in history:
 set -o vi
-#-------------------------------------------------------------------------------
-# Last installed: 2023-06-12 12:41:08
-#-- End of File ----------------------------------------------------------------
