@@ -38,6 +38,6 @@ alias perltidy="${pt_path}/perltidy -pro=~/.perltidyrc"
 if [ "$(uname)" == "Darwin" ]; then
     alias python=/Users/steve/anaconda3/bin/python3.10
 else
-    alias /Users/steve/anaconda3/bin/python
+    alias python="$(which python3)"
 fi
 alias py=python
