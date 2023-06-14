@@ -1,19 +1,31 @@
-#!/Users/steve/anaconda3/bin/python3.10
+#!/usr/bin/env python3
+
+import platform
+import sys
+
+if platform.system() == "Windows":
+    shebang = "#!/path/to/windows/python"
+elif platform.system() == "Darwin":
+    shebang = "#!/path/to/macos/python"
+elif platform.system() == "Linux":
+    shebang = "#!/Users/steve/anaconda3/bin/python3.10"
+    shebang = "#!/path/to/linux/python"
+else:
+    sys.exit("Unsupported platform.")
+
 """
 xt.py
 
 This Python program will create a dashboard to enable rapid xterm creation.
 
-No inputs or outputs
+Configuration:  See ~/.xtrc
 """
 
 import subprocess
 import os
-import sys
 import tkinter as tk
 from tkinter import messagebox
 import xtrc as xt
-import platform
 
 colors = xt.set_colors()
 xtrc = xt.set_xtrc()
