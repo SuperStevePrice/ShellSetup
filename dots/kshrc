@@ -13,7 +13,7 @@
 #   
 # PURPOSE:
 #   This ksh script makes sure that when Terminal or xterm windows are spawned
-~/#   that .profile is invoked.
+#   that ~/.profile is invoked.
 #   
 # USAGE:
 #   This is sourced with Terminal or xterm windows are spawned.
