@@ -69,8 +69,8 @@ def on_button_click(bg, fg, custom_xterm):
             
             cmd = xt.set_cmd(xtrc)
             
-            print("Button clicked!")
-            print(cmd)
+            #print("Button clicked!")
+            #print(cmd)
             subprocess.Popen(cmd, shell=True)
         except Exception as exception:
             print("Error occurred while executing the command:", exception)
