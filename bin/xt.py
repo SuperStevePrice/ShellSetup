@@ -58,7 +58,7 @@ def on_button_click(bg, fg, custom_xterm):
 
     """
     def click():
-        print("DEBUG: ")
+        #print("DEBUG: ")
         xtrc['x_bg'] = bg
         xtrc['x_fg'] = fg
         
@@ -86,12 +86,12 @@ def enable_logging():
     None.
 
     """
-    print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
+    #print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
     
     if xtrc['x_log'] == 0:
         xtrc['x_log'] = 1
     
-    print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
+    #print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
 
 def quit_application():
     """
