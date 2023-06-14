@@ -1,55 +1,41 @@
 #!/Users/steve/anaconda3/bin/python3.10
+"""
+xt.py
 
-#-------------------------------------------------------------------------------
-#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
-#
-#                       GNU GENERAL PUBLIC LICENSE
-#                        Version 3, 29 June 2007
-#-------------------------------------------------------------------------------
+This Python program will create a dashboard to enable rapid xterm creation.
 
-#-------------------------------------------------------------------------------
-# PROGRAM:
-#   xt.py
-#   
-# PURPOSE:
-#   This Python program will create a dashboard to enable rapid xterm creation.
-#   
-# USAGE:
-#   xt.py
-#
-#   No inputs or outputs
-#-------------------------------------------------------------------------------
+No inputs or outputs
+"""
+
 import subprocess
 import os
 import sys
 import tkinter as tk
 from tkinter import messagebox
+import xtrc as xt
 import platform
 
-
-# Check the operating system
-if platform.system() == "Darwin":
-    try:
-        from tkmacosx import MacButton as Button
-    except ImportError:
-        from tkinter import Button
-else:
-    from tkinter import Button
-
-import xtrc as xt
 colors = xt.set_colors()
 xtrc = xt.set_xtrc()
 
-def on_button_click(bg, fg, custom_xterm):
+# Check the operating system
+if platform.system() == "Darwin":
+    from tkmacosx import Button as TkButton
+else:
+    from tkinter import Button as TkButton
+
+def on_button_click(bg_color, fg_color, custom_xterm):
     """
     Handle the spawning of xterm windows with desired attributes.
 
     Parameters
     ----------
-    bg, fg, custom_term
-    bg = bakground color
-    fg = foreground color
-    custom_xterm = booleen
+    bg_color : TYPE
+        DESCRIPTION.
+    fg_color : TYPE
+        DESCRIPTION.
+    custom_xterm : BooleenVar
+        True if Create Custom Xterm button pressed
 
     Returns
     -------
@@ -57,25 +43,30 @@ def on_button_click(bg, fg, custom_xterm):
         DESCRIPTION.
 
     """
+
     def click():
-        #print("DEBUG: ")
-        xtrc['x_bg'] = bg
-        xtrc['x_fg'] = fg
-        
         try:
+            # Always use the current font size in entry box:
+            xtrc['x_fs'] = entry_font_size.get()
+
+            # If custome button pressed, use entry box color pair:
             if custom_xterm:
-                xtrc['x_bg'] = "DarkGrey"
-                xtrc['x_fg'] = "Navy"
-            
+                xtrc['x_bg'] = entry_bg.get()
+                xtrc['x_fg'] = entry_fg.get()
+            else:
+                xtrc['x_bg'] = bg_color
+                xtrc['x_fg'] = fg_color
+
             cmd = xt.set_cmd(xtrc)
             
-            #print("Button clicked!")
-            #print(cmd)
+            print("Button clicked!")
+            print(cmd)
             subprocess.Popen(cmd, shell=True)
         except Exception as exception:
             print("Error occurred while executing the command:", exception)
 
     return click
+
 
 def enable_logging():
     """
@@ -86,12 +77,15 @@ def enable_logging():
     None.
 
     """
-    #print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
+    print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
     
     if xtrc['x_log'] == 0:
         xtrc['x_log'] = 1
     
-    #print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
+    print("DEBUG: enable_logging: x_log: ", xtrc['x_log'])
+
+
+
 
 def quit_application():
     """
@@ -103,15 +97,10 @@ def quit_application():
         else:
             root.quit()
 
-def create_custom_xterm():
-    # Insert custom values here:
-    on_button_click(entry_bg, entry_fg, True)
-      
 root = tk.Tk()
 root.configure(bg='black')
 root.geometry('400x700')
 root.title('Color Buttons')
-custom_xterm = tk.BooleanVar(value=False)
 
 
 # Create a frame to hold the buttons grid
@@ -129,12 +118,12 @@ for i, color_pair in enumerate(colors):
     row = i // NUM_COLUMNS
     column = i % NUM_COLUMNS
 
-    button = Button(frame_buttons,
+    button = TkButton(frame_buttons,
         text=f'Xterm Window {str(i + 1).zfill(2)}',
         bg=color_pair[0], fg=color_pair[1],
         activebackground="DarkGrey")
-    button.configure(
-        command=on_button_click(color_pair[0], color_pair[1], False))
+    button.configure(command=on_button_click(color_pair[0], 
+        color_pair[1], False))
     button.grid(row=row, column=column, padx=4, pady=2, sticky=tk.EW)
 
 # Create a frame to hold the additional elements
@@ -240,12 +229,10 @@ checkbox_logging.grid(row=7, column=0, columnspan=2,
 
 
 # F: Create Custom Font button
-button_create_custom_xterm = Button(frame_additional,
+button_create_custom_xterm = TkButton(frame_additional,
     text="Create Custom Xterm",
-    command=create_custom_xterm(),
-        background=xtrc['x_bg'], foreground=xtrc['x_fg'])
-button_create_custom_xterm.configure(
-    command=on_button_click(xtrc['x_bg'], xtrc['x_fg'], True))
+    command=on_button_click(entry_bg.get(), entry_bg.get(), True),
+        background=entry_bg.get(), foreground=entry_fg.get())
 button_create_custom_xterm.grid(
     row=8, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
