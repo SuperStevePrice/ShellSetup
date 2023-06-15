@@ -23,6 +23,8 @@
 #-------------------------------------------------------------------------------
 typeset -i line_count
 
+platform=$(uname)
+
 # final lines of each file installed by this script
 timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
 line=$(print "#$(printf -- '-%.0s' {1..79})")
@@ -339,10 +341,21 @@ set_symbolic_links() {
 		fi
 		sym="${file%.*sh}"
 		if [ ! -f "$sym" -o ! -h "$sym" ]; then
-			print ln -s ${file} ${sym}
+			print "ln -s ${file} ${sym}"
 			ln -s ${file} ${sym}
 		fi
 	done
+
+    print "rm  ~/bin/xt.py"
+    rm  ~/bin/xt.py
+    if [ X"$platform" == X"Darwin" ]
+    then
+        print "ln -s ~/bin/xt.macosx.py ~/bin/xt.py"
+        ln -s ~/bin/xt.macosx.py ~/bin/xt.py
+    else
+        print "ln -s ~/bin/xt.linux.py ~/bin/xt.py"
+        ln -s ~/bin/xt.linux.py ~/bin/xt.py
+    fi
 } # set_symbolic_links() {
 
 # Make shebang lines for ksh and perl
