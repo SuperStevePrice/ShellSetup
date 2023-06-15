@@ -1,3 +1,0 @@
-#!/usr/bin/env ksh
-
-/bin/python3 ~/bin/xt.py &
