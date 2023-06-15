@@ -54,6 +54,33 @@ mkdir -p $public_bin >/dev/null 2>&1
 mkdir -p $bin_backup_dir >/dev/null 2>&1
 mkdir -p $home_backup_dir >/dev/null 2>&1
 
+create_xt_py() {
+    #---------------------------------------------------------------------------
+    # Function create_xt_py()
+    # Purpose:
+    #   Create a platform specific version of xt.py.
+    #
+    # Usage:
+    #   create_xt_py
+    #---------------------------------------------------------------------------
+    
+    if [ X"$platform" == X"Darwin" ]
+    then
+        version=MacOSX
+        shebang="#!/Users/steve/anaconda3/bin/python3.10"
+        tksource="tkmacosx"
+    else
+        version=Linux
+        shebang="#!/usr/bin/env python3"
+        tksource="tkinter"
+    fi
+
+    cat templates/xt.py.template |\
+        sed -e "s~XXX_SHEBANG~$shebang~" |\
+        sed -e "s/XXX_VERSION/$version/"                                    |\
+        sed -e "s/XXX_TKSOURCE/$tksource/" > bin/xt.py
+} # create_xt_py() 
+
 remove_final_lines() {
 	#---------------------------------------------------------------------------
 	# Function:
@@ -64,10 +91,8 @@ remove_final_lines() {
 	#	lines.	The 3 lines removed are the Last installed trailing lines of 
 	#	installed files. See final_lines variable.
 	#	
-	#	
 	# USAGE:
 	#	remove_final_lines file
-	#
 	#---------------------------------------------------------------------------
 	typeset -i line_count=0
 
@@ -345,21 +370,13 @@ set_symbolic_links() {
 			ln -s ${file} ${sym}
 		fi
 	done
-
-    print "rm  ~/bin/xt.py"
-    rm  ~/bin/xt.py
-    if [ X"$platform" == X"Darwin" ]
-    then
-        print "ln -s ~/bin/xt.macosx.py ~/bin/xt.py"
-        ln -s ~/bin/xt.macosx.py ~/bin/xt.py
-    else
-        print "ln -s ~/bin/xt.linux.py ~/bin/xt.py"
-        ln -s ~/bin/xt.linux.py ~/bin/xt.py
-    fi
 } # set_symbolic_links() {
 
 # Make shebang lines for ksh and perl
 source shebang.ksh
+
+# Create bin/xt.py:
+create_xt_py
 
 # Make a list of artifacts to be installed as a new or a new version.
 make_installation_list

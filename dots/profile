@@ -59,8 +59,8 @@ fi
 export PYTHONPATH=$(echo $PYTHONPATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
 
 
-# Setting the terminal type for xterm and Terminal windows. 
-export TERM=xterm-256color
+# Setting the terminal type for xterm and Terminal windows:
+export TERM=vt100
 
 # Python Tk Warning:
 # DEPRECATION WARNING: The system version of Tk is deprecated and may be 
@@ -86,3 +86,6 @@ unset __conda_setup
 
 # Enable CLI editing of previous commands in history:
 set -o vi
+#-------------------------------------------------------------------------------
+# Last installed: 2023-06-14 10:49:23
+#-- End of File ----------------------------------------------------------------
