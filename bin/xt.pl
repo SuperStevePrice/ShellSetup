@@ -47,6 +47,7 @@ sub fonts_manager;
 sub get_host_server_name;
 sub get_xlsfonts;
 sub pick_font;
+sub set_xtrc_values;
 sub trim;
 
 #-------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ sub trim;
 # Default global xterm parameters.
 # Set 'em before creating any create_specific_Xterm_buttons:
 #
-sub set_globals {
+sub set_xtrc_values {
     @frame = ();
     $host  = get_host_server_name();
 
@@ -146,13 +147,13 @@ sub set_globals {
     die("$errMsg\n")
         if ( !$size );
 
-}    # end of sub set_globals
+}    # end of sub set_xtrc_values
 
 #
 #-------------------------------------------------------------------------------
 
 # MAIN BLOCK -------------------------------------------------------------------
-set_globals();
+set_xtrc_values();
 
 # Create top Main Window:
 $top = MainWindow->new();
@@ -238,7 +239,7 @@ sub Xterm {
     $cmd .= " -l" if ($x_log);
 
     # Uncomment the line below to debug the $cmd:
-    print "DEBUG: cmd=$cmd\n";
+    #print "DEBUG: cmd=$cmd\n";
 
     open( XT, "| $cmd &" ) or die("Cannot execute $x_path/xterm\n");
     print XT "";
