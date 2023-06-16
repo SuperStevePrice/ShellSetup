@@ -53,6 +53,8 @@ mkdir -p $public_home >/dev/null 2>&1
 mkdir -p $public_bin >/dev/null 2>&1
 mkdir -p $bin_backup_dir >/dev/null 2>&1
 mkdir -p $home_backup_dir >/dev/null 2>&1
+mkdir docs >/dev/null 2>&1
+mkdir templates >/dev/null 2>&1
 
 create_xt_py() {
     #---------------------------------------------------------------------------
