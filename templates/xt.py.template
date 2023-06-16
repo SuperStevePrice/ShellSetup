@@ -294,6 +294,3 @@ button_quit = tk.Button(frame_quit, text="Quit", command=quit_application,
 button_quit.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 root.mainloop()
-#-------------------------------------------------------------------------------
-# Last installed: 2023-06-15 16:53:23
-#-- End of File ----------------------------------------------------------------
