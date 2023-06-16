@@ -36,6 +36,18 @@ from tkinter import messagebox
 from XXX_TKSOURCE import Button as TkButton
 import xtrc as xt
 import locale 
+import argparse
+
+    
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser(description='Run xterm command')
+
+# Add an argument for enabling debug mode
+parser.add_argument('-d', '--debug', action='store_true', 
+    help='Enable debug mode')
+
+args = parser.parse_args()
+debug=args.debug
 
 # Get the system's default locale
 system_locale = locale.getdefaultlocale()
@@ -89,9 +101,11 @@ def on_button_click(bg_color, fg_color, custom_xterm):
 
             cmd = xt.set_cmd(xtrc)
             
-            #print("Button clicked!")
-            #print(cmd)
+            if debug:
+                print("DEBUG: Running xterm cmd:", cmd)
+
             subprocess.Popen(cmd, shell=True)
+
         except Exception as exception:
             print("Error occurred while executing the command:", exception)
 
@@ -107,14 +121,16 @@ def toggle_logging():
     None.
 
     """
-    #print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'])
+    if debug:
+        print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'])
     
     if xtrc['x_log'] == 0:
         xtrc['x_log'] = 1
     else:
         xtrc['x_log'] = 0
 
-    #print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'])
+    if debug:
+        print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'])
 
 
 
@@ -278,3 +294,6 @@ button_quit = tk.Button(frame_quit, text="Quit", command=quit_application,
 button_quit.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 root.mainloop()
+#-------------------------------------------------------------------------------
+# Last installed: 2023-06-15 16:53:23
+#-- End of File ----------------------------------------------------------------

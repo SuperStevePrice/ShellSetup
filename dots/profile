@@ -31,14 +31,17 @@ export HOST=$(uname -n)
 export FCEDIT=vi
 
 # Set the standard locations for common utilities
-PATH="/bin:/usr/bin:/usr/local/bin:/usr/sbin:/sbin"
+PATH="usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 # Add additional directories if needed
-PATH="$PATH:/opt/X11/bin:/opt/homebrew/bin"
-PATH="$PATH:$HOME/bin:$HOME/anaconda3/bin:."
+PATH="$PATH:$HOME/bin:$HOME/anaconda3/bin"
+PATH="$PATH:/opt/homebrew/bin"
 
 # Remove duplicates from PATH
 export PATH=$(echo $PATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
+
+# Be sure the correct xterm path is first:
+PATH="/opt/X11/bin:$PATH:."
 
 # Detect the operating system and set environment to run perl Tk modules.
 if [ "$(uname)" == "Darwin" ]; then
