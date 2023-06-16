@@ -9,7 +9,7 @@
 
 #-------------------------------------------------------------------------------
 # PROGRAM:
-#    xt.pl
+#    xt.pl [--debug]
 #
 # PURPOSE:
 #    This Perl/Tk program creates a GUI panel of buttons, input fields and
@@ -26,6 +26,15 @@
 #    $Author: SuperStevePrice $
 #-------------------------------------------------------------------------------
 use Tk;
+use Getopt::Long;
+
+# Set default value for the debug flag
+my $debug = 0;
+
+# Define the command-line options
+GetOptions('debug' => \$debug);
+
+# Add your script code here
 
 #-------------------------------------------------------------------------------
 # Forward subroutine declarations:
@@ -127,7 +136,6 @@ sub set_xtrc_values {
     $x_fg = "Navy"
         if ( !defined($x_fg) || !$x_fg );
     $x_log = 0    # default is no logging
-
         if ( !defined($x_log) || !$x_log );
 
     # Define the fullpath to the xterm executables on this server:
@@ -239,7 +247,8 @@ sub Xterm {
     $cmd .= " -l" if ($x_log);
 
     # Uncomment the line below to debug the $cmd:
-    #print "DEBUG: cmd=$cmd\n";
+    print "DEBUG: cmd=$cmd\n"
+        if ($debug);
 
     open( XT, "| $cmd &" ) or die("Cannot execute $x_path/xterm\n");
     print XT "";
