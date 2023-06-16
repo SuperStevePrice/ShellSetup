@@ -102,7 +102,7 @@ def on_button_click(bg_color, fg_color, custom_xterm):
             cmd = xt.set_cmd(xtrc)
             
             if debug:
-                print("DEBUG: Running xterm cmd:", cmd)
+                print("\nDEBUG: Running xterm cmd:", cmd)
 
             subprocess.Popen(cmd, shell=True)
 
@@ -122,7 +122,7 @@ def toggle_logging():
 
     """
     if debug:
-        print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'])
+        print("\nDEBUG: toggle_logging: x_log: ", xtrc['x_log'])
     
     if xtrc['x_log'] == 0:
         xtrc['x_log'] = 1
@@ -130,7 +130,7 @@ def toggle_logging():
         xtrc['x_log'] = 0
 
     if debug:
-        print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'])
+        print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'], "\n")
 
 
 
