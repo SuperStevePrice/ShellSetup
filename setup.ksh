@@ -167,6 +167,7 @@ make_installation_list() {
 	installation_list=docs/installation_list.txt
 	> $installation_list
 
+    print "\nHandling dot files:\n"
 	# Loop over all candidate dot files:
 	for file in $(print $dots)
 	do
@@ -209,6 +210,7 @@ make_installation_list() {
 		print
 	done
 
+    print "\nHandling bin files:\n"
 	# Loop over all candidate bin files:
 	for file in $(print $bins)
 	do
