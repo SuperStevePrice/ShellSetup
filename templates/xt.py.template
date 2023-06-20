@@ -27,7 +27,6 @@ XXX_SHEBANG
 # VERSION:
 #   XXX_VERSION
 #-------------------------------------------------------------------------------
-
 import subprocess
 import os
 import sys
@@ -35,8 +34,8 @@ import tkinter as tk
 from tkinter import messagebox
 from XXX_TKSOURCE import Button as TkButton
 import xtrc as xt
-import locale 
 import argparse
+import font_selector
 
     
 # Create an ArgumentParser object
@@ -49,19 +48,20 @@ parser.add_argument('-d', '--debug', action='store_true',
 args = parser.parse_args()
 debug=args.debug
 
-# Get the system's default locale
-system_locale = locale.getdefaultlocale()
 
-# Set a fallback default locale if the system locale is None
-fallback_locale = ('en_US', 'UTF-8')
-if system_locale[0] is None:
-    system_locale = fallback_locale
+# # Get the system's default locale
+# system_locale = locale.getdefaultlocale()
 
-    # Set the locale based on the system's default locale
-    locale.setlocale(locale.LC_ALL, system_locale)
+# # Set a fallback default locale if the system locale is None
+# fallback_locale = ('en_US', 'UTF-8')
+# if system_locale[0] is None:
+#     system_locale = fallback_locale
 
-    # Set the LC_ALL environment variable
-    os.environ['LC_ALL'] = system_locale[0]  # Use only language part of locale
+#     # Set the locale based on the system's default locale
+#     locale.setlocale(locale.LC_ALL, system_locale)
+
+#     # Set the LC_ALL environment variable
+#     os.environ['LC_ALL'] = system_locale[0]  # Use only language part of locale
 
 colors = xt.set_colors()
 xtrc = xt.set_xtrc()
@@ -111,7 +111,6 @@ def on_button_click(bg_color, fg_color, custom_xterm):
 
     return click
 
-
 def toggle_logging():
     """
     Turn xterm logging on and off.
@@ -132,9 +131,6 @@ def toggle_logging():
     if debug:
         print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'], "\n")
 
-
-
-
 def quit_application():
     """
     Gracefully quit the application and free all resources.
@@ -145,11 +141,20 @@ def quit_application():
         else:
             root.quit()
 
+def select_font():
+    selected_font = font_selector.run_font_selector()
+    if selected_font is not None:
+        entry_font_name.delete(0, tk.END)
+        entry_font_name.insert(0, selected_font)
+        xtrc['x_fa'] = selected_font
+
+    if debug:
+        print("Font: ", xtrc['x_fa'], " ", selected_font)
+        
 root = tk.Tk()
 root.configure(bg='black')
 root.geometry('400x700')
 root.title('Color Buttons')
-
 
 # Create a frame to hold the buttons grid
 frame_buttons = tk.Frame(root, bg='black')
@@ -183,14 +188,18 @@ label_fg = tk.Label(frame_additional,
             text="Foreground:", foreground="DarkGrey", background="black")
 label_fg.grid(row=0, column=0, padx=5, pady=5, sticky=tk.E)
 entry_fg = tk.Entry(
-    frame_additional, textvariable=tk.StringVar(value=xtrc['x_fg']))
+    frame_additional, 
+    foreground = "Yellow", background = "DarkGrey",
+    textvariable=tk.StringVar(value=xtrc['x_fg']))
 entry_fg.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
 label_bg = tk.Label(frame_additional, text="Background:",
     foreground="DarkGrey", background="black")
 label_bg.grid(row=1, column=0, padx=5, pady=5, sticky=tk.E)
 entry_bg = tk.Entry(
-    frame_additional, textvariable=tk.StringVar(value=xtrc['x_bg']))
+    frame_additional, 
+    foreground = "Yellow", background = "DarkGrey",
+    textvariable=tk.StringVar(value=xtrc['x_bg']))
 entry_bg.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 
 # B: Cols, Rows, Font size labels and inputs
@@ -198,21 +207,27 @@ label_cols = tk.Label(frame_additional, text="Cols:",
     foreground="DarkGrey", background="black")
 label_cols.grid(row=2, column=0, padx=5, pady=5, sticky=tk.E)
 entry_cols = tk.Entry(
-    frame_additional, textvariable=tk.StringVar(value=xtrc['x_cols']))
+    frame_additional, 
+    foreground = "Yellow", background = "DarkGrey",
+    textvariable=tk.StringVar(value=xtrc['x_cols']))
 entry_cols.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
 
 label_rows = tk.Label(frame_additional, text="Rows:",
     foreground="DarkGrey", background="black")
 label_rows.grid(row=3, column=0, padx=5, pady=5, sticky=tk.E)
 entry_rows = tk.Entry(
-    frame_additional, textvariable=tk.StringVar(value=xtrc['x_rows']))
+    frame_additional, 
+    foreground = "Yellow", background = "DarkGrey",
+    textvariable=tk.StringVar(value=xtrc['x_rows']))
 entry_rows.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
 
 label_font_size = tk.Label(frame_additional,
     text="Font Size:", foreground="DarkGrey", background="black")
 label_font_size.grid(row=4, column=0, padx=5, pady=5, sticky=tk.E)
 entry_font_size = tk.Entry(
-    frame_additional, textvariable=tk.StringVar(value=xtrc['x_fs']))
+    frame_additional, 
+    foreground = "Yellow", background = "DarkGrey",
+    textvariable=tk.StringVar(value=xtrc['x_fs']))
 entry_font_size.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
 
 # C: Font Name entry box
@@ -220,7 +235,9 @@ label_font_name = tk.Label(frame_additional, text="Font Name:",
     foreground="DarkGrey", background="black")
 label_font_name.grid(row=5, column=0, padx=5, pady=5, sticky=tk.E)
 entry_font_name = tk.Entry(
-    frame_additional, textvariable=tk.StringVar(value=xtrc['x_fa']))
+    frame_additional, 
+    foreground = "Yellow", background = "DarkGrey",
+    textvariable=tk.StringVar(value=xtrc['x_fa']))
 entry_font_name.grid(row=5, column=1, padx=5, pady=5, sticky=tk.W)
 
 
@@ -264,9 +281,15 @@ def populate_entry_boxes():
         entry_font_name.delete(0, tk.END)
         entry_font_name.insert(0, xtrc_values.get('x_fa', ''))
 
-
 # Call the function to populate the entry boxes
 populate_entry_boxes()
+
+# Font Selection button
+font_selection_button = TkButton(
+    frame_additional, text="Font Selection",
+    bg="lightSteelBlue", fg="Navy", borderless=1,
+    command=select_font)
+font_selection_button.grid(row=6, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
 # E: Enable Logging check box
 checkbox_logging = tk.Checkbutton(frame_additional,
@@ -275,10 +298,10 @@ checkbox_logging = tk.Checkbutton(frame_additional,
 checkbox_logging.grid(row=7, column=0, columnspan=2,
     padx=5, pady=5, sticky=tk.N)
 
-
 # F: Create Custom Font button
 button_create_custom_xterm = TkButton(frame_additional,
     text="Create Custom Xterm",
+    bg="darkGrey", fg="Navy", borderless=1,
     command=on_button_click(entry_bg.get(), entry_bg.get(), True),
         background=entry_bg.get(), foreground=entry_fg.get())
 button_create_custom_xterm.grid(
@@ -289,8 +312,9 @@ frame_quit = tk.Frame(root, bg='black')
 frame_quit.pack(padx=10, pady=10, anchor=tk.CENTER)
 
 # G: Quit button
-button_quit = tk.Button(frame_quit, text="Quit", command=quit_application,
-                        bg="lightSteelBlue", fg="red")
+button_quit = TkButton(frame_quit, text="Quit",
+                        bg="DarkGreen", fg="White",
+                        command=quit_application)
 button_quit.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 root.mainloop()

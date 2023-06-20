@@ -4,7 +4,34 @@ import os
 import socket
 from datetime import datetime
 import tkinter as tk
+from tkinter import ttk
 import subprocess
+import locale 
+import argparse
+
+# # Get the system's default locale
+# system_locale = locale.getdefaultlocale()
+
+# # Set a fallback default locale if the system locale is None
+# fallback_locale = ('en_US', 'UTF-8')
+# if system_locale[0] is None:
+#     system_locale = fallback_locale
+
+#     # Set the locale based on the system's default locale
+#     locale.setlocale(locale.LC_ALL, system_locale)
+
+#     # Set the LC_ALL environment variable
+#     os.environ['LC_ALL'] = system_locale[0]  # Use only language part of locale
+
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser(description='Run xterm command')
+
+# Add an argument for enabling debug mode
+parser.add_argument('-d', '--debug', action='store_true',
+                    help='Enable debug mode')
+
+args = parser.parse_args()
+debug = args.debug
 
 # Default values
 default_values = {
@@ -84,7 +111,7 @@ def launch_xterm():
     foreground_color = accepted_values["foreground_color"]
     background_color = accepted_values["background_color"]
 
-	# NOTE: font and title values must be enclosed in quotation marks.
+    # NOTE: font and title values must be enclosed in quotation marks.
     title = f'{os.environ["USER"]}@{socket.gethostname()} {datetime.now()}'
     cmd = [
         "/usr/bin/env", "xterm",
@@ -100,11 +127,10 @@ def launch_xterm():
 
     if enable_keystroke_logging_var.get():
         cmd.append("-l")
-        
-    #print("Final cmd:", cmd)  # Add this line
-    #print("DEBUG: cmd=", cmd, accepted_values["enable_keystroke_logging"])
 
     try:
+        if debug:
+            print("DEBUG: cmd: ", cmd)
         process = subprocess.Popen(cmd)
 
         if accepted_values["enable_command_logging"]:
@@ -122,46 +148,54 @@ def quit_app():
     root.quit()
 
 # Create the user interface elements
+style = ttk.Style()
+style.configure(
+    "CustomEntry.TEntry",
+    fieldbackground="light grey",
+    foreground="navy",
+    font=("Courier New", 12, "bold")
+)
+
 background_color_label = tk.Label(root, text="Background Color:")
 background_color_label.grid(row=0, column=0, sticky=tk.E)
 
-background_color_entry = tk.Entry(root)
+background_color_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 background_color_entry.grid(row=0, column=1)
 
 foreground_color_label = tk.Label(root, text="Foreground Color:")
 foreground_color_label.grid(row=1, column=0, sticky=tk.E)
 
-foreground_color_entry = tk.Entry(root)
+foreground_color_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 foreground_color_entry.grid(row=1, column=1)
 
 font_label = tk.Label(root, text="Font:")
 font_label.grid(row=2, column=0, sticky=tk.E)
 
-font_entry = tk.Entry(root)
+font_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 font_entry.grid(row=2, column=1)
 
 font_size_label = tk.Label(root, text="Font Size:")
 font_size_label.grid(row=3, column=0, sticky=tk.E)
 
-font_size_entry = tk.Entry(root)
+font_size_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 font_size_entry.grid(row=3, column=1)
 
 columns_label = tk.Label(root, text="Columns:")
 columns_label.grid(row=4, column=0, sticky=tk.E)
 
-columns_entry = tk.Entry(root)
+columns_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 columns_entry.grid(row=4, column=1)
 
 rows_label = tk.Label(root, text="Rows:")
 rows_label.grid(row=5, column=0, sticky=tk.E)
 
-rows_entry = tk.Entry(root)
+rows_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 rows_entry.grid(row=5, column=1)
 
 scrollback_lines_label = tk.Label(root, text="Buffer Size:")
 scrollback_lines_label.grid(row=6, column=0, sticky=tk.E)
 
-scrollback_lines_entry = tk.Entry(root)
+scrollback_lines_entry = ttk.Entry(root, style="CustomEntry.TEntry")
 scrollback_lines_entry.grid(row=6, column=1)
 
 enable_keystroke_logging_var = tk.BooleanVar()
