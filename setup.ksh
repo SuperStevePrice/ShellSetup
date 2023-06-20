@@ -100,7 +100,7 @@ create_xt_ksh() {
 
     perl_executables=$(find / -name "perl*" -type f -executable 2>/dev/null)
 
-    print "Function create_xt_ksh(): Creating bin/xtu.ksh\n"
+    print "Function create_xt_ksh(): Creating bin/xt.ksh\n"
     for perl_executable in $perl_executables; do
         perl_lib_path=$(dirname $(dirname $perl_executable))/lib
 
