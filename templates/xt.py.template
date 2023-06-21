@@ -287,7 +287,7 @@ populate_entry_boxes()
 # Font Selection button
 font_selection_button = TkButton(
     frame_additional, text="Font Selection",
-    bg="lightSteelBlue", fg="Navy", borderless=1,
+    bg="lightSteelBlue", fg="Navy", 
     command=select_font)
 font_selection_button.grid(row=6, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
@@ -301,7 +301,7 @@ checkbox_logging.grid(row=7, column=0, columnspan=2,
 # F: Create Custom Font button
 button_create_custom_xterm = TkButton(frame_additional,
     text="Create Custom Xterm",
-    bg="darkGrey", fg="Navy", borderless=1,
+    bg="darkGrey", fg="Navy", 
     command=on_button_click(entry_bg.get(), entry_bg.get(), True),
         background=entry_bg.get(), foreground=entry_fg.get())
 button_create_custom_xterm.grid(
