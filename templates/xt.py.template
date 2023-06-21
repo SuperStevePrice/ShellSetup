@@ -174,7 +174,7 @@ for i, color_pair in enumerate(colors):
     button = TkButton(frame_buttons,
         text=f'Xterm Window {str(i + 1).zfill(2)}',
         bg=color_pair[0], fg=color_pair[1],
-        activebackground="DarkGrey")
+        activebackground="DarkGrey", relief='raised')
     button.configure(command=on_button_click(color_pair[0], 
         color_pair[1], False))
     button.grid(row=row, column=column, padx=4, pady=2, sticky=tk.EW)
@@ -189,7 +189,7 @@ label_fg = tk.Label(frame_additional,
 label_fg.grid(row=0, column=0, padx=5, pady=5, sticky=tk.E)
 entry_fg = tk.Entry(
     frame_additional, 
-    foreground = "Yellow", background = "DarkGrey",
+    foreground = "Yellow", background = "DarkGreen",
     textvariable=tk.StringVar(value=xtrc['x_fg']))
 entry_fg.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
@@ -198,7 +198,7 @@ label_bg = tk.Label(frame_additional, text="Background:",
 label_bg.grid(row=1, column=0, padx=5, pady=5, sticky=tk.E)
 entry_bg = tk.Entry(
     frame_additional, 
-    foreground = "Yellow", background = "DarkGrey",
+    foreground = "Yellow", background = "DarkGreen",
     textvariable=tk.StringVar(value=xtrc['x_bg']))
 entry_bg.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 
@@ -208,7 +208,7 @@ label_cols = tk.Label(frame_additional, text="Cols:",
 label_cols.grid(row=2, column=0, padx=5, pady=5, sticky=tk.E)
 entry_cols = tk.Entry(
     frame_additional, 
-    foreground = "Yellow", background = "DarkGrey",
+    foreground = "Yellow", background = "DarkGreen",
     textvariable=tk.StringVar(value=xtrc['x_cols']))
 entry_cols.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
 
@@ -217,7 +217,7 @@ label_rows = tk.Label(frame_additional, text="Rows:",
 label_rows.grid(row=3, column=0, padx=5, pady=5, sticky=tk.E)
 entry_rows = tk.Entry(
     frame_additional, 
-    foreground = "Yellow", background = "DarkGrey",
+    foreground = "Yellow", background = "DarkGreen",
     textvariable=tk.StringVar(value=xtrc['x_rows']))
 entry_rows.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
 
@@ -226,7 +226,7 @@ label_font_size = tk.Label(frame_additional,
 label_font_size.grid(row=4, column=0, padx=5, pady=5, sticky=tk.E)
 entry_font_size = tk.Entry(
     frame_additional, 
-    foreground = "Yellow", background = "DarkGrey",
+    foreground = "Yellow", background = "DarkGreen",
     textvariable=tk.StringVar(value=xtrc['x_fs']))
 entry_font_size.grid(row=4, column=1, padx=5, pady=5, sticky=tk.W)
 
@@ -236,7 +236,7 @@ label_font_name = tk.Label(frame_additional, text="Font Name:",
 label_font_name.grid(row=5, column=0, padx=5, pady=5, sticky=tk.E)
 entry_font_name = tk.Entry(
     frame_additional, 
-    foreground = "Yellow", background = "DarkGrey",
+    foreground = "Yellow", background = "DarkGreen",
     textvariable=tk.StringVar(value=xtrc['x_fa']))
 entry_font_name.grid(row=5, column=1, padx=5, pady=5, sticky=tk.W)
 
@@ -288,7 +288,7 @@ populate_entry_boxes()
 font_selection_button = TkButton(
     frame_additional, text="Font Selection",
     bg="lightSteelBlue", fg="Navy", borderless=1,
-    command=select_font)
+    command=select_font, relief='raised')
 font_selection_button.grid(row=6, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
 # E: Enable Logging check box
@@ -303,7 +303,8 @@ button_create_custom_xterm = TkButton(frame_additional,
     text="Create Custom Xterm",
     bg="darkGrey", fg="Navy", borderless=1,
     command=on_button_click(entry_bg.get(), entry_bg.get(), True),
-        background=entry_bg.get(), foreground=entry_fg.get())
+        background=entry_bg.get(), foreground=entry_fg.get(), 
+        relief='raised')
 button_create_custom_xterm.grid(
     row=8, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
@@ -313,8 +314,11 @@ frame_quit.pack(padx=10, pady=10, anchor=tk.CENTER)
 
 # G: Quit button
 button_quit = TkButton(frame_quit, text="Quit",
-                        bg="DarkGreen", fg="White",
-                        command=quit_application)
+                        bg="DarkGreen", fg="Yellow",
+                        command=quit_application, relief='raised')
 button_quit.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 root.mainloop()
+#-------------------------------------------------------------------------------
+# Last installed: 2023-06-20 14:52:47
+#-- End of File ----------------------------------------------------------------
