@@ -56,33 +56,37 @@ mkdir -p $home_backup_dir >/dev/null 2>&1
 mkdir docs >/dev/null 2>&1
 mkdir templates >/dev/null 2>&1
 
-create_xt_py() {
+create_python_script() {
     #---------------------------------------------------------------------------
-    # Function create_xt_py()
+    # Function create_python_script()
     # Purpose:
-    #   Create a platform specific version of xt.py.
+    #   Create a platform specific version of all python scripts referenced in
+    #   ~Projects/*/templates
     #
     # Usage:
-    #   create_xt_py
+    #   create_python_script
     #---------------------------------------------------------------------------
-    
-    print "Function create_xt_py(): Creating bin/xt.py\n"
+    template=$1
+    python_script=$2
+
+    print "Create_python_script():   $template -> $python_script"
+
     if [ X"$platform" == X"Darwin" ]
     then
-        version=MacOSX
+        this_platform=MacOSX
         shebang="#!/Users/steve/anaconda3/bin/python3.10"
         tksource="tkmacosx"
     else
-        version=Linux
+        this_platform=Linux
         shebang="#!/usr/bin/env python3"
         tksource="tkinter"
     fi
 
-    cat templates/xt.py.template |\
+    cat $template |\
         sed -e "s~XXX_SHEBANG~$shebang~" |\
-        sed -e "s/XXX_VERSION/$version/"                                    |\
-        sed -e "s/XXX_TKSOURCE/$tksource/" > bin/xt.py
-} # create_xt_py() 
+        sed -e "s/XXX_PLATFORM/$this_platform/" |\
+        sed -e "s/XXX_TKSOURCE/$tksource/" > $python_script
+} # create_python_script() 
 
 remove_final_lines() {
 	#---------------------------------------------------------------------------
@@ -380,11 +384,15 @@ set_symbolic_links() {
 # Make shebang lines for ksh and perl
 source shebang.ksh
 
-# Create bin/xt.py:
-create_xt_py
-
-# Create bin/xt.ksh:
-create_xt_ksh
+# Create platform specific Python scripts from templates:
+for file in $(ls templates/*.py.template)
+do
+    # Remove ".template":
+    py_file=$(print $file |\
+        sed -e 's!templates/!!' |\
+        sed -e 's/.template//')
+    create_python_script $file bin/$py_file
+done
 
 # Make a list of artifacts to be installed as a new or a new version.
 make_installation_list

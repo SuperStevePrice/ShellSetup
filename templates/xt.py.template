@@ -24,8 +24,8 @@ XXX_SHEBANG
 # USAGE:
 #   xt.py
 #
-# VERSION:
-#   XXX_VERSION
+# PLATFORM:
+#   XXX_PLATFORM
 #-------------------------------------------------------------------------------
 import subprocess
 import os
@@ -33,6 +33,7 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 from XXX_TKSOURCE import Button as TkButton
+
 import xtrc as xt
 import argparse
 import font_selector
@@ -153,12 +154,12 @@ def select_font():
         
 root = tk.Tk()
 root.configure(bg='black')
-root.geometry('400x800')
+root.geometry('400x750')
 root.title('Xterm Window Maker')
 
 # Create a frame to hold the buttons grid
 frame_buttons = tk.Frame(root, bg='black')
-frame_buttons.pack(padx=10, pady=10, anchor=tk.CENTER)
+frame_buttons.pack(padx=10, pady=5, anchor=tk.CENTER)
 
 # Calculate the number of rows and columns for the buttons grid
 # Add 1 for the extra row if there are an odd number of buttons
@@ -177,11 +178,12 @@ for i, color_pair in enumerate(colors):
         activebackground="DarkGrey", relief='raised', bd=6)
     button.configure(command=on_button_click(color_pair[0], 
         color_pair[1], False))
-    button.grid(row=row, column=column, padx=4, pady=2, sticky=tk.EW)
+    button.grid(row=row, column=column, padx=4, pady=1, sticky=tk.EW)
+
 
 # Create a frame to hold the additional elements
 frame_additional = tk.Frame(root, bg='black')
-frame_additional.pack(padx=10, pady=10, anchor=tk.CENTER)
+frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
 
 # A: Foreground and Background entry labels and boxes
 label_fg = tk.Label(frame_additional,
@@ -310,7 +312,7 @@ button_create_custom_xterm.grid(
 
 # Create a frame to hold the Quit button
 frame_quit = tk.Frame(root, bg='black')
-frame_quit.pack(padx=10, pady=10, anchor=tk.CENTER)
+frame_quit.pack(padx=10, pady=5, anchor=tk.CENTER)
 
 # G: Quit button
 button_quit = TkButton(frame_quit, text="Quit",
