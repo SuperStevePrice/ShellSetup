@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+XXX_SHEBANG
 
 ## Linux use: "#!/usr/bin/env python3".
 ## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
@@ -22,7 +22,7 @@
 #   xterm.py
 #
 # PLATFORM:
-#   Linux
+#   XXX_PLATFORM
 #-------------------------------------------------------------------------------
 import os
 import socket
