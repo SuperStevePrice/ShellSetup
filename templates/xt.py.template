@@ -154,7 +154,7 @@ def select_font():
         
 root = tk.Tk()
 root.configure(bg='black')
-root.geometry('400x750')
+root.geometry('450x750')
 root.title('Xterm Window Maker')
 
 # Create a frame to hold the buttons grid
