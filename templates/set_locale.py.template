@@ -29,12 +29,6 @@ XXX_SHEBANG
 #
 #   Call the set_locale function with your desired locale
 #   set_locale("en_US.UTF-8")
-the following import statement:
-#
-#   from set_locale import set_locale
-#
-#   Call the set_locale function with your desired locale
-#   set_locale("en_US.UTF-8")
 #
 # PLATFORM:
 #   XXX_PLATFORM
