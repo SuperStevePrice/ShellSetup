@@ -34,8 +34,8 @@
 x_cols=80
 x_rows=44
 x_sl=200
-x_fa=Courier New Bold
-x_fs=14
+x_fa=DejaVu Sans Mono 
+x_fs=16
 x_bg=DarkGrey
 x_fg=Navy
 x_log=0
