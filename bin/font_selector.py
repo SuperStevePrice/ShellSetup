@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/Users/steve/anaconda3/bin/python3.10
 
 ## Linux use: "#!/usr/bin/env python3".
 ## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
@@ -27,7 +27,7 @@
 #                           selected_font = font_selector.run_font_selector()
 #
 # PLATFORM:
-#   Linux
+#   MacOSX
 #-------------------------------------------------------------------------------
 
 

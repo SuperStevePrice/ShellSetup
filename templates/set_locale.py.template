@@ -1,0 +1,47 @@
+XXX_SHEBANG
+
+## Linux use: "#!/usr/bin/env python3".
+## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
+
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	set_locale.py
+#	
+# PURPOSE:
+#   Set the environental data structure, locale.
+#	
+# USAGE:
+#   set_locale.py       As a stand alone Python script.
+#
+#   As an imported method in another Python script. 
+#   Import the set_locale function into other Python scripts by placing 
+#   set_locale.py in the same directory as your other scripts and using 
+#   the following import statement:
+#
+#   from set_locale import set_locale
+#
+#   Call the set_locale function with your desired locale
+#   set_locale("en_US.UTF-8")
+#
+# PLATFORM:
+#   XXX_PLATFORM
+#-------------------------------------------------------------------------------
+import locale
+
+def set_locale(locale_name):
+    try:
+        locale.setlocale(locale.LC_ALL, locale_name)
+    except locale.Error:
+        print("Failed to set locale.")
+
+# Example usage
+if __name__ == "__main__":
+    desired_locale = "en_US.UTF-8"  # Replace with your desired locale
+    set_locale(desired_locale)
