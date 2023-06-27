@@ -85,8 +85,10 @@ def on_button_click(bg_color, fg_color, custom_xterm):
 
     def click():
         try:
-            # Always use the current font size in entry box:
+            # Always use the current font size and geometry from entry box:
             xtrc['x_fs'] = entry_font_size.get()
+            xtrc['x_rows'] = entry_rows.get()
+            xtrc['x_cols'] = entry_cols.get()
 
             # If custome button pressed, use entry box color pair:
             if custom_xterm:

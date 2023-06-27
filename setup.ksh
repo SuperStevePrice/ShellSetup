@@ -45,16 +45,51 @@ bins=$(ls bin)
 bin_dir=bin
 bin_home_dir=~/bin
 
+docs_dir=docs
+docs_home_dir=~/Documents 
+docs_backup_dir=~/Documents/backup
+
 public_home=~/Public/home
 public_bin=~/Public/bin
+public_docs=~/Public/docs
 bin_backup_dir=~/bin/backup
 home_backup_dir=~/backup
+
 mkdir -p $public_home >/dev/null 2>&1
 mkdir -p $public_bin >/dev/null 2>&1
+mkdir -p $public_docs >/dev/null 2>&1
 mkdir -p $bin_backup_dir >/dev/null 2>&1
 mkdir -p $home_backup_dir >/dev/null 2>&1
-mkdir docs >/dev/null 2>&1
-mkdir templates >/dev/null 2>&1
+mkdir -p docs >/dev/null 2>&1
+mkdir -p templates >/dev/null 2>&1
+mkdir -p $docs_dir
+mkdir -p $docs_home_dir
+mkdir -p $docs_backup_dir
+
+install_document() {
+    file=$1
+    src=docs/$file
+    target=~/Documents/$file
+
+    # backup
+    if [ -s $target ]
+    then
+        print "backup $target"
+        ts=$(date +%Y_%m_%d-%H:%M:%S)
+        print cp $target $docs_backup_dir/${file}.$ts
+        cp $target $docs_backup_dir/${file}.$ts
+    fi
+
+    print "\nInstalling $target"
+    print "cp $src $target"
+    cp $src $target
+
+    print "chmod 644 $target"
+    chmod 644 $target
+
+    print "add_last_lines $target\n"
+    add_last_lines $target
+} # install_document() 
 
 create_python_script() {
     #---------------------------------------------------------------------------
@@ -131,8 +166,6 @@ remove_final_lines() {
 	fi
 }  # remove_final_lines()
 
-
-
 make_installation_list() {
 	installation_list=docs/installation_list.txt
 	> $installation_list
@@ -160,14 +193,14 @@ make_installation_list() {
 
 		public=$(basename $file)
 		bn=$(print $public | awk '{gsub(/^\./,"")}1')
-		installer=dots/$bn
+		installation_file=dots/$bn
 		public=$public_home/$bn
-		#if diff "$public" "$installer" > /dev/null 2>&1; then
-		if cmp "$public" "$installer"; then
-			echo "No differences between $public and $installer"
+		#if diff "$public" "$installation_file" > /dev/null 2>&1; then
+		if cmp "$public" "$installation_file"; then
+			echo "No differences between $public and $installation_file"
 		else
 			install=y
-			echo "Differences found between $public and $installer"
+			echo "Differences found between $public and $installation_file"
 		fi
 
 		file=$(basename $file)
@@ -213,14 +246,14 @@ make_installation_list() {
 
 		public=$(basename $file)
 		bn=$(print $public | awk '{gsub(/^\./,"")}1')
-		installer=bin/$bn
+		installation_file=bin/$bn
 		public=$public_bin/$bn
-		# if diff "$public" "$installer" > /dev/null 2>&1; then
-		if cmp "$public" "$installer"; then
-			echo "No differences between $public and $installer"
+		# if diff "$public" "$installation_file" > /dev/null 2>&1; then
+		if cmp "$public" "$installation_file"; then
+			echo "No differences between $public and $installation_file"
 		else
 			install=y
-			echo "Differences found between $public and $installer"
+			echo "Differences found between $public and $installation_file"
 		fi
 
 		file=$(basename $file)
@@ -232,6 +265,37 @@ make_installation_list() {
 		print "install=$install $bin_dir/$file"
 		print
 	done
+
+    # NOTE: Unlike, bin amd dots files, not all files in docs are installed.
+    # Candidates are listed here:
+    docs="font_list.txt"
+
+    print "\nHandling docs files:\n"
+    for file in $(print $docs) 
+    do
+        public=$public_docs/$file
+        installation_file=docs/$file
+        target=$docs_home_dir/$file
+
+		# Strip the Last installed markers from the target.
+		remove_final_lines $target
+
+		if cmp "$public" "$installation_file" 2>/dev/null; then
+			echo "No differences between $public and $installation_file"
+		else
+			install=y
+			echo "Differences found between $public and $installation_file"
+		fi
+
+		if [ $install == "y" ] 
+		then
+			print "$installation_file" >> $installation_list
+            bn=$(basename $file)
+            install_document $bn
+		fi
+		print "install=$install $installation_file"
+		print
+    done
 
 	print
 	print $line
@@ -254,7 +318,7 @@ add_last_lines() {
 	# print "last_line:	$last_lines"
 	print "Adding last 3 comment lines to file: $file"
 	print "$last_lines" >> $file
-} # add_last_lines() {
+} # add_last_lines() 
 
 handle_dots() {
 	folder=$1
@@ -305,7 +369,7 @@ handle_dots() {
 
 		print   
 	done
-} # handle_dots
+} # handle_dots()
 
 
 handle_bins() {
@@ -315,7 +379,6 @@ handle_bins() {
 
 	print "handle_bins"
 	print "Folder: $folder	File: $file"
-
 
 	# Backup, install, chmod bin_files files:
 	for file in $(cat $installation_list)
@@ -356,9 +419,7 @@ handle_bins() {
 
 		print
 	done
-
-}	# handle_bins() {
-
+}	# handle_bins() 
 
 set_symbolic_links() {
 	print

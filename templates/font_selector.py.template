@@ -2,7 +2,7 @@ XXX_SHEBANG
 
 ## Linux use: "#!/usr/bin/env python3".
 ## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
-     
+
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
 #
@@ -15,10 +15,10 @@ XXX_SHEBANG
 #	font_selector.py
 #	
 # PURPOSE:
-#	Present a scrollable pick list of all xlsfonts. User may Select, Submit, or
-#   Cancel.  Submit returns selected font; Cancel returns None. Both buttons
-#   close this app.   The current font will be illustrated by "Sample Text" in
-#   the current font.
+#	Present a scrollable pick list of all fonts in font_list.txt. The user may 
+#   Select, Submit, or Cancel.  Submit returns selected font; 
+#   Cancel returns None. Both buttons close this app.   The current font will 
+#   be illustrated by "Sample Text" in the current font.
 #	
 # USAGE:
 #   font_selector.py        At the CLI as a stand alone app.
@@ -26,17 +26,30 @@ XXX_SHEBANG
 #                           The importer should use this line: 
 #                           selected_font = font_selector.run_font_selector()
 #
+#
 # PLATFORM:
 #   XXX_PLATFORM
 #-------------------------------------------------------------------------------
 
-
-
-import subprocess
+import argparse
+import os
 import tkinter as tk
-import xtrc as xt
 
 
+
+# DEBUGGING enabled:
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser(description='Run xterm command')
+
+# Add an argument for enabling debug mode
+parser.add_argument('-d', '--debug', action='store_true',
+                    help='Enable debug mode')
+
+args = parser.parse_args()
+debug = args.debug
+
+# font_list.txt handling
+font_list = []
 
 class FontSelectorDialog:
     def __init__(self):
@@ -81,13 +94,31 @@ class FontSelectorDialog:
         self.listbox.bind('<<ListboxSelect>>', self.select_font)
 
     def get_available_fonts(self):
-        xtrc = xt.set_xtrc()
-        xlsfonts = xtrc['x_path'] + "/xlsfonts"
-        process = subprocess.Popen([xlsfonts], 
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        output, _ = process.communicate()
-        available_fonts = output.decode('utf-8').splitlines()
-        return available_fonts
+        # Path to the font_list.txt file
+        font_list_path = "~/Documents/font_list.txt"
+        
+        # Expand the user's home directory
+        font_list_path = os.path.expanduser(font_list_path)
+        
+        # Always start with an empty list:
+        font_list = []
+        
+        # Read the font_list.txt file
+        with open(font_list_path, "r") as file:
+            for line in file:
+                # Strip leading/trailing whitespace
+                line = line.strip()
+                
+                # Skip commentary lines and blank lines
+                if not line.startswith("#") and line:
+                    # Add the font to the list
+                    font_list.append(line)
+
+        # Print the font list (for testing)
+        if debug:
+            print("DEBUG: font_list:\n",font_list)
+
+        return font_list
 
     def select_font(self, event=None):
         selected_index = self.listbox.curselection()
@@ -97,6 +128,10 @@ class FontSelectorDialog:
             self.font_entry.delete(0, tk.END)
             self.font_entry.insert(tk.END, font_name)
             self.font_label.config(font=(font_name, 12))
+            
+            if debug:
+                print("DEBUG: select_font() index: ", index, 
+                      "font: ", font_name)
 
     def submit_selection(self):
         self.selected_font = self.font_entry.get()

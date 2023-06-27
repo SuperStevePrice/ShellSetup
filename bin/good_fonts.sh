@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-
-
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
 #
@@ -10,18 +8,20 @@
 
 #-------------------------------------------------------------------------------
 # PROGRAM:
-#	good_fonts.ksh
+#	good_fonts.sh
 #	
 # PURPOSE:
 #	Display a series of xterm windows of differnet fonts and sizes.  Ask the
 #	user to accept or reject each font and size. Store good fonts in the 
-#	output files.
+#	output file.
+#
+# FILES:
+#   ~/Documents/font_list.txt   A list of fonts to use with xterm
+#   ~/Documents/good_fonts.txt  Output of this script based on user approval
 #	
 # USAGE:
-#
+#   good_fonts.sh
 #-------------------------------------------------------------------------------
-
-
 # List of font names and sizes to test
 fonts=("DejaVu Sans Mono" "Monospace" "Courier New")
 sizes=(12 14 16)
