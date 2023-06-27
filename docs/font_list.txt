@@ -1,0 +1,92 @@
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# FILE:   
+#	~/Documents/font_list.txt
+#	
+# PURPOSE:
+#	Provide a list of tested fonts for use with xterm.
+#   This is a curated list of font families that are commonly used and known 
+#   for their legibility and suitability for coding and software engineering 
+#   tasks. 
+#
+#   These fonts should work well on Unix, Mac, and Linux systems.
+#	
+# USAGE:
+#   Programs may read this file, filtering out the comment lines, to create a
+#   list oF usable fonts. See uncommented font names at the end of this file.
+#-------------------------------------------------------------------------------
+# 1. Monospace Fonts:
+#   - Consolas
+#   - Menlo
+#   - Source Code Pro
+#   - Inconsolata
+#   - DejaVu Sans Mono
+#   - Liberation Mono
+#   - Fira Mono
+#   - Ubuntu Mono
+#   
+#   2. Serif Fonts:
+#   - Times New Roman
+#   - Georgia
+#   - Palatino
+#   - Liberation Serif
+#   - Baskerville
+#   
+#   3. Sans-Serif Fonts:
+#   - Arial
+#   - Helvetica
+#   - Verdana
+#   - Calibri
+#   - Liberation Sans
+#   - Open Sans
+#   - Roboto
+#   - Lato
+#   - Noto Sans
+#   - PT Sans
+#   
+#   4. Programming Fonts:
+#   - Hack
+#   - Fira Code
+#   - JetBrains Mono
+#   - IBM Plex Mono
+#   - Operator Mono
+#   - Anonymous Pro
+#   - ProFont
+#   - Droid Sans Mono
+#-------------------------------------------------------------------------------
+Anonymous Pro
+Arial
+Baskerville
+Calibri
+Consolas
+DejaVu Sans Mono
+Droid Sans Mono
+Fira Code
+Fira Mono
+Georgia
+Hack
+Helvetica
+IBM Plex Mono
+Inconsolata
+JetBrains Mono
+Lato
+Liberation Mono
+Liberation Sans
+Liberation Serif
+Menlo
+Noto Sans
+Open Sans
+Operator Mono
+PT Sans
+Palatino
+ProFont
+Roboto
+Source Code Pro
+Times New Roman
+Ubuntu Mono
+Verdana
