@@ -1,0 +1,48 @@
+StevesMacBook-Pro </Users/steve/Projects/SS/bin [553]>
+steve@StevesMacBook-Pro.local: lr
+total 496
+-rwxr-xr-x  1 steve  staff   4775 Jun 14 18:35 clone.sh
+-rwxr-xr-x  1 steve  staff   1945 Jun 14 18:35 diff_projects.ksh
+-rwxr-xr-x  1 steve  staff    209 Jun 14 18:35 finder.ksh
+-rwxr-xr-x  1 steve  staff    645 Jun 14 18:35 get_ip.ksh
+-rwxr-xr-x  1 steve  staff   1590 Jun 14 18:35 git_clone.ksh
+-rwxr-xr-x  1 steve  staff    950 Jun 14 18:35 git_mail.ksh
+-rwxr-xr-x  1 steve  staff   1587 Jun 14 18:35 git_merge.ksh
+-rwxr-xr-x  1 steve  staff   1973 Jun 14 18:35 git_new.ksh
+-rw-r--r--  1 steve  staff   1327 Jun 14 18:35 git_pull.ksh
+-rw-r--r--  1 steve  staff   1738 Jun 14 18:35 git_push.ksh
+-rwxr-xr-x  1 steve  staff    994 Jun 14 18:35 hosts_test.ksh
+-rw-r--r--  1 steve  staff    992 Jun 14 18:35 installed.ksh
+-rwxr-xr-x  1 steve  staff    345 Jun 14 18:35 list-brew-mods.ksh
+-rwxr-xr-x  1 steve  staff    683 Jun 14 18:35 my_machine.ksh
+-rwxr-xr-x  1 steve  staff    873 Jun 14 18:35 os.ksh
+-rwxr-xr-x  1 steve  staff     32 Jun 14 18:35 p.ksh
+-rwxr-xr-x  1 steve  staff   1073 Jun 14 18:35 paths.ksh
+-rwxr-xr-x  1 steve  staff   3709 Jun 14 18:35 remote_tar.ksh
+-rwxr-xr-x  1 steve  staff   1972 Jun 14 18:35 scp_this.ksh
+-rwxr-xr-x  1 steve  staff   2972 Jun 14 18:35 set-perl.ksh
+-rwxr-xr-x  1 steve  staff    929 Jun 14 18:35 set_shell.ksh
+-rwxr-xr-x  1 steve  staff   1186 Jun 14 18:35 ssh-copy-id.ksh
+-rwxr-xr-x  1 steve  staff    502 Jun 14 18:35 xterm-examples.ksh
+-rwxr-xr-x  1 steve  staff   3836 Jun 14 18:35 xterm.pl
+-rwxr-xr-x  1 steve  staff    397 Jun 14 18:35 xtermTk.ksh
+-rwxr-xr-x  1 steve  staff   1827 Jun 14 18:35 xterms.ksh
+-rwxr-xr-x  1 steve  staff   1218 Jun 16 10:29 compat_perl.ksh
+-rw-r--r--  1 steve  staff     33 Jun 24 10:22 xtpy
+-rwxr-xr-x  1 steve  staff   1854 Jun 26 19:55 good_fonts.sh
+-rw-r--r--  1 steve  wheel    160 Jun 27 11:23 xt.ksh
+-rw-r--r--  1 steve  wheel    720 Jun 27 11:23 PS1.ksh
+-rw-r--r--  1 steve  staff   5331 Jun 27 11:23 font_selector.py
+-rw-r--r--  1 steve  staff   1504 Jun 27 11:23 set_locale.py
+-rw-r--r--  1 steve  staff  10840 Jun 27 11:23 xt.py
+-rw-r--r--  1 steve  staff   4754 Jun 27 11:23 xterm.py
+-rw-r--r--  1 steve  staff   8768 Jun 27 11:23 xtermTk.py
+-rw-r--r--  1 steve  staff   2565 Jun 27 11:23 xterm_good_fonts.py
+-rw-r--r--  1 steve  staff   1181 Jun 27 11:23 xterm_path.py
+-rw-r--r--  1 steve  staff   5235 Jun 27 11:23 xtrc.py
+-rw-------  1 steve  staff      0 Jun 28 17:51 nohup.out
+-rw-r--r--  1 steve  staff  25554 Jun 28 17:54 xt.pl.save
+-rw-r--r--  1 steve  staff  25670 Jun 28 17:57 xt.pl
+-rw-r--r--  1 steve  staff     91 Jun 28 17:58 Xterm.log.StevesMacBook-Pro.local.2023.06.28.17.58.01.1695
+StevesMacBook-Pro </Users/steve/Projects/SS/bin [554]>
+steve@StevesMacBook-Pro.local: 

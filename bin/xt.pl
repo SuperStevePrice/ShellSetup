@@ -54,7 +54,7 @@ sub destroy_ErrMsgWindow;
 sub destroy_ListBoxWindow;
 sub fonts_manager;
 sub get_host_server_name;
-sub get_xlsfonts;
+sub get_fonts;
 sub pick_font;
 sub set_xtrc_values;
 sub trim;
@@ -627,8 +627,8 @@ sub fonts_manager {
     # Remember the font value in case user hits Cancel button:
     $x_fa_reset = $x_fa;
 
-    # get_xlsfonts() will load @fonts with the results of the xlsfonts command
-    (@fonts) = get_xlsfonts();
+    # get_fonts() will load @fonts with the results of the xlsfonts command
+    (@fonts) = get_fonts();
 
     if ( $#fonts == 0 ) {
         $err_msg = "No results for xlsfonts found.";
@@ -731,23 +731,31 @@ sub destroy_ListBoxWindow {
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-sub get_xlsfonts {
+sub get_fonts {
     my @xlsfonts = ();
+    my %xlsfonts_idx = ();
 
     my $idx = 0;
 
-    my $cmd = "$x_path/xlsfonts" . " | sort -u |";
-    open( FONTS, "$cmd" ) or return "$xlsfonts[0]";
+    my $cmd = "sort -u $ENV{'HOME'}/Documents/font_list.txt";
+    open(my $FONTS, "-|", $cmd) or return $xlsfonts[0];
 
-    while (<FONTS>) {
-        chomp();
-        push( @xlsfonts, $_ );
-        $xlsfonts_idx{$_} = $idx++;
+    while (my $line = <$FONTS>) {
+        chomp($line);
+        next if $line =~ /^#/;
+        # Relace white space with dash;
+        $line =~ s/\s/-/g;
+        push(@xlsfonts, $line);
+        $xlsfonts_idx{$line} = $idx++;
     }
 
-    return @xlsfonts;
-}    # end of sub get_xlsfonts
+    print "DEBUG: cmd=$cmd\n"
+        if ($debug);
 
+    close $FONTS;
+
+    return @xlsfonts;
+} # end of get_fonts()
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -818,3 +826,6 @@ sub trim {
 
 #-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
+# Last installed: 2023-06-26 11:47:07
+#-- End of File ----------------------------------------------------------------
