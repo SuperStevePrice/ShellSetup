@@ -33,7 +33,9 @@ XXX_SHEBANG
 
 import argparse
 import os
+import subprocess
 import tkinter as tk
+import xtrc as xt
 
 
 
@@ -50,6 +52,9 @@ debug = args.debug
 
 # font_list.txt handling
 font_list = []
+
+# xtrc contains relative path to xlsfonts
+xtrc = xt.set_xtrc()
 
 class FontSelectorDialog:
     def __init__(self):
@@ -103,16 +108,18 @@ class FontSelectorDialog:
         # Always start with an empty list:
         font_list = []
         
-        # Read the font_list.txt file
-        with open(font_list_path, "r") as file:
-            for line in file:
-                # Strip leading/trailing whitespace
-                line = line.strip()
-                
-                # Skip commentary lines and blank lines
-                if not line.startswith("#") and line:
-                    # Add the font to the list
-                    font_list.append(line)
+        # Check if the font_list.txt file exists
+        if os.path.isfile(font_list_path):
+            # Read the font_list.txt file
+            with open(font_list_path, "r") as file:
+                font_list = [line.strip() for line in file if line.strip() and not line.startswith("#")]
+        else:
+            # Fallback to using xlsfonts
+            xlsfonts_executable = f"{xtrc['x_path']}/xlsfonts"
+            command = [xlsfonts_executable]
+            process = subprocess.Popen(command, stdout=subprocess.PIPE)
+            output, _ = process.communicate()
+            font_list = output.decode().splitlines()
 
         # Print the font list (for testing)
         if debug:
