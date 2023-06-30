@@ -20,3 +20,7 @@ bin/set_globals.py
 
 # Ignore bin/*.py. These will be created from templates used by setup.ksh:
 bin/*.py
+
+# Ignore *.swp
+*.swp
+

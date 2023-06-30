@@ -1,4 +1,4 @@
-#!/Users/steve/anaconda3/bin/python3.10
+#!/usr/bin/env python3
 
 ## Linux use: "#!/usr/bin/env python3".
 ## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
@@ -24,7 +24,7 @@
 #    ~/Documents/good_fonts.txt is hard coded here.  This script takes no args.
 #
 # PLATFORM:
-#   MacOSX
+#   Linux
 #-------------------------------------------------------------------------------
 import os
 import subprocess

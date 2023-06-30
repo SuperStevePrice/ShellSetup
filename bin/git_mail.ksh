@@ -12,7 +12,7 @@
 #	git_mail.ksh
 #	
 # PURPOSE:
-#	Set git user name and email
+#	Set git user name and email and editor.
 #	
 # USAGE:
 #	git_mail.ksh
@@ -45,3 +45,12 @@ if [ $? -eq 0 ]
 then
 	print "Success"
 fi
+
+cmd="git config --global core.editor 'vim'"
+print $cmd
+$cmd
+if [ $? -eq 0 ]
+then
+	print "Success"
+fi
+
