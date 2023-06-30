@@ -9,13 +9,13 @@
 
 #-------------------------------------------------------------------------------
 # PROGRAM:
-#	git_mail.ksh
+#	git_config.ksh
 #	
 # PURPOSE:
 #	Set git user name and email and editor.
 #	
 # USAGE:
-#	git_mail.ksh
+#	git_config.ksh
 #
 #-------------------------------------------------------------------------------
 
