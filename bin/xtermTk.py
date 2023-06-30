@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/Users/steve/anaconda3/bin/python3.10
 
 ## Linux use: "#!/usr/bin/env python3".
 ## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
@@ -21,7 +21,7 @@
 #   xtermTk.py
 #
 # PLATFORM:
-#   Linux
+#   MacOSX
 #-------------------------------------------------------------------------------
 import os
 import socket
