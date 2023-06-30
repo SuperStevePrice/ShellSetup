@@ -66,6 +66,21 @@ mkdir -p $docs_dir
 mkdir -p $docs_home_dir
 mkdir -p $docs_backup_dir
 
+check_file_existence() {
+    file=$1
+    print "file_exits(): $file"
+
+    # check that target file exists
+    if [ ! -f $file -o ! -s $file ]
+    then
+        install="y"
+        echo "Not found $file"
+    else
+        install=n
+        echo "Found $file"
+    fi
+} # check_file_existence() 
+
 install_document() {
     file=$1
     src=docs/$file
@@ -133,12 +148,17 @@ remove_final_lines() {
 	#	lines.	The 3 lines removed are the Last installed trailing lines of 
 	#	installed files. See final_lines variable.
 	#	
+	#	The file minus the final_lines is copied to a Public folder and used
+    #   subsequently in a comparison with a candidate file to determine if it
+    #   requires installation or not.
+	#	
 	# USAGE:
-	#	remove_final_lines file
+	#	remove_final_lines file full_path
 	#---------------------------------------------------------------------------
 	typeset -i line_count=0
 
 	file="$1"
+    path=$(dirname $file)
 
 	if [ ! -f $file ]
 	then
@@ -154,6 +174,11 @@ remove_final_lines() {
 		target_dir=$public_bin
 	fi
 	
+    if [ X"$path" == X"$docs_home_dir" ]
+    then
+		target_dir=$public_docs
+    fi
+
 	line_count=$(wc -l $file | awk '{print $1}')
 	line_count=$((line_count - 3))
 
@@ -161,7 +186,10 @@ remove_final_lines() {
 	if [ $line_count -lt 1 ]
 	then
 		print "File: $file	less than 4 lines in length."
+        # If $file does not exist it must be installed.
+        install="force"
 	else
+        print "remove_file_lines: $target_dir/$base"
 		$head -n $line_count $file  > "$target_dir/$base"
 	fi
 }  # remove_final_lines()
@@ -176,16 +204,17 @@ make_installation_list() {
 	do
 		#print "$0: $dots_dir/$file"
 
-		# check tha target file exists
-		if [ ! -f $dots_home_dir/.${file} -o \
-			! -s $dots_home_dir/.${file} ]
-        then
-            install="y"
-            echo "Not found $bin_home_dir/.${file}"
-        else
-            install=n
-            echo "Found $bin_home_dir/.${file}"
-        fi
+        check_file_existence $dots_home_dir/.${file}
+		# check that target file exists
+#		if [ ! -f $dots_home_dir/.${file} -o \
+#			! -s $dots_home_dir/.${file} ]
+#        then
+#            install="y"
+#            echo "Not found $bin_home_dir/.${file}"
+#        else
+#            install=n
+#            echo "Found $bin_home_dir/.${file}"
+        #fi
 
 		# Strip the Last installed markers from the target.
 		# print "$0: remove_final_lines $dots_home_dir/.$file"
@@ -230,15 +259,16 @@ make_installation_list() {
 			continue
 		fi
 		
-		# check tha target file exists
-		if [ ! -f $bin_home_dir/${file} -o ! -s $bin_home_dir/${file} ]
-        then
-            install="y"
-            echo "Not found $bin_home_dir/${file}"
-        else
-            install=n
-            echo "Found $bin_home_dir/${file}"
-        fi
+        check_file_existence $bin_home_dir/${file}
+		# check that target file exists
+#		if [ ! -f $bin_home_dir/${file} -o ! -s $bin_home_dir/${file} ]
+#        then
+#            install="y"
+#            echo "Not found $bin_home_dir/${file}"
+#        else
+#            install=n
+#            echo "Found $bin_home_dir/${file}"
+#        fi
 
 		# Strip the Last installed markers from the target.
 		# print "$0: remove_final_lines $bin_home_dir/$file"
@@ -276,6 +306,8 @@ make_installation_list() {
         public=$public_docs/$file
         installation_file=docs/$file
         target=$docs_home_dir/$file
+
+        check_file_existence $target
 
 		# Strip the Last installed markers from the target.
 		remove_final_lines $target
