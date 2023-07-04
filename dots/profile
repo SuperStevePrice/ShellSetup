@@ -37,7 +37,7 @@ export HOST=$(uname -n)
 export FCEDIT=vi
 
 # Set the standard locations for common utilities
-PATH="usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 # Add additional directories if needed
 PATH="$PATH:$HOME/bin:$HOME/anaconda3/bin"
