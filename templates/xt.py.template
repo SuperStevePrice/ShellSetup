@@ -306,11 +306,10 @@ entry_font_name = tk.Entry(
 entry_font_name.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
 
 # Add row for Font Selection button:
-font_selection_button = TkButton(frame_additional, text="Font Selection",
+font_selection_button = TkButton(root, text="Font Selection",
    bg="lightSteelBlue", fg="Navy", 
    command=select_font, relief='raised', bd=6)
-font_selection_button.grid(
-    row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
+font_selection_button.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 # Add row for Checkbutton to Enable Logging:
 checkbox_logging = tk.Checkbutton(frame_additional, text="Enable Logging",
@@ -319,19 +318,15 @@ checkbox_logging.grid(row=5, column=0, columnspan=2,
                       padx=5, pady=5, sticky=tk.N)
 
 # Add row for "Create Custom Xterm: button:
-button_create_custom_xterm = TkButton(frame_additional, 
+button_create_custom_xterm = TkButton(root, 
     text="Create Custom Xterm", bg="darkGrey", fg="Navy", 
     command=on_button_click(
     entry_bg.get(), entry_bg.get(), True), 
     background=entry_bg.get(), foreground=entry_fg.get(), 
     relief='raised', bd=6)
-button_create_custom_xterm.grid(
-    row=6, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
+button_create_custom_xterm.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 # Create a frame to hold the Quit button
-#frame_additional = tk.Frame(root, bg='black')
-#frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
-
 # G: Quit button
 button_quit = TkButton(root, text="Quit",
                        bg="LightGrey", fg="DarkRed",
@@ -348,3 +343,6 @@ create_xterm_specific_buttons()
 populate_entry_boxes()
 
 root.mainloop()
+#-------------------------------------------------------------------------------
+# Last installed: 2023-07-05 17:52:50
+#-- End of File ----------------------------------------------------------------
