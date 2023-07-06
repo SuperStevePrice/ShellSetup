@@ -59,10 +59,9 @@ xtrc = xt.set_xtrc()
 
 root = tk.Tk()
 root.configure(bg='black')
-root.geometry('450x700')
+root.geometry('450x650')
 hostname = socket.gethostname()
 root.title('Xterm Window Maker [' + hostname + ']')
-
 
 # FUNCTIONS:
 def on_button_click(bg_color, fg_color, custom_xterm):
@@ -222,73 +221,73 @@ def populate_entry_boxes():
 #   I.   Buttons to create specific xterm windows based on button colors
 #        "frame_buttons"
 #   II.  Labels and Entry boxes for user editable values foreground and 
-#        background, 
-#        "frame_fg_bg"
-#   III. Columns, Rows, Font Size
-#        "frame_cols_rows_size"
-#   IV.  Additional widgets are check box to enable logging, 
-#        Font Selection button, and Custom xterm button.
+#        background,  Columns, Rows, Font Size, Additional widgets are 
+#        check box to enable logging, Font Selection button, and Custom xterm 
+#        button.
+#        "frame_additional"
+#   III. Quit Button
 #        "frame_additional"
 #
 # Create a frame to hold the buttons grid
 frame_buttons = tk.Frame(root, bg='black')
 frame_buttons.pack(padx=10, pady=5, anchor=tk.CENTER)
 
-# Create a frame for the row containing Foreground and Background labels/entries
-frame_fg_bg = tk.Frame(root, bg='black')
-frame_fg_bg.pack(padx=10, pady=5, anchor=tk.CENTER)
+# Create a Frame for everything except the 2x8 matrix of xterm buttons:
+# Add row containing Foreground and Background labels/entries
+frame_additional = tk.Frame(root, bg='black')
+frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
 
 # Foreground label and entry
-label_fg = tk.Label(frame_fg_bg, text="Foreground:",
+label_fg = tk.Label(frame_additional, text="Foreground:",
                     foreground="DarkGrey", background="black")
 label_fg.pack(side=tk.LEFT, padx=(5, 1))
 
-entry_fg = tk.Entry(frame_fg_bg, foreground="Black",
+entry_fg = tk.Entry(frame_additional, foreground="Black",
                     background="Tan", textvariable=tk.StringVar(value=xtrc['x_fg']),
                     width=8)
 entry_fg.pack(side=tk.LEFT)
 
 # Background label and entry
-label_bg = tk.Label(frame_fg_bg, text="Background:",
+label_bg = tk.Label(frame_additional, text="Background:",
                     foreground="DarkGrey", background="black")
 label_bg.pack(side=tk.LEFT, padx=(1, 1))
 
-entry_bg = tk.Entry(frame_fg_bg, foreground="Black",
+entry_bg = tk.Entry(frame_additional, foreground="Black",
                     background="Tan", textvariable=tk.StringVar(value=xtrc['x_bg']),
                     width=8)
 entry_bg.pack(side=tk.LEFT)
 
-# Create a frame for the row containting Cols, Rows, Size:
-frame_cols_rows_size = tk.Frame(root, bg='black')
-frame_cols_rows_size.pack(padx=10, pady=5, anchor=tk.CENTER)
+# Add row for the Cols, Rows, Size:
+frame_additional = tk.Frame(root, bg='black')
+frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
 # Cols label and entry
-label_cols = tk.Label(frame_cols_rows_size, text="Columns:",
+label_cols = tk.Label(frame_additional, text="Columns:",
                       foreground="DarkGrey", background="black")
 label_cols.pack(side=tk.LEFT, padx=(5, 1))
 
-entry_cols = tk.Entry(frame_cols_rows_size,
+entry_cols = tk.Entry(frame_additional,
                       foreground="Black", background="Tan", width=2)
 entry_cols.insert(tk.END, str(xtrc['x_cols']))
 entry_cols.pack(side=tk.LEFT)
 
 # Rows label and entry
-label_rows = tk.Label(frame_cols_rows_size, text="Rows:",
+label_rows = tk.Label(frame_additional, text="Rows:",
                       foreground="DarkGrey", background="black")
 label_rows.pack(side=tk.LEFT, padx=(1, 1))
 
-entry_rows = tk.Entry(frame_cols_rows_size,
+entry_rows = tk.Entry(frame_additional,
                       foreground="Black", background="Tan", width=2)
 entry_rows.insert(tk.END, str(xtrc['x_rows']))
 entry_rows.pack(side=tk.LEFT)
 
 # Size label and entry
 label_font_size = tk.Label(
-    frame_cols_rows_size, text="Size:", 
+    frame_additional, text="Size:", 
     foreground="DarkGrey", background="black")
 label_font_size.pack(side=tk.LEFT, padx=(1, 1))
 
 entry_font_size = tk.Entry(
-    frame_cols_rows_size, foreground="Black", background="Tan", width=2)
+    frame_additional, foreground="Black", background="Tan", width=2)
 entry_font_size.insert(tk.END, str(xtrc['x_fs']))
 entry_font_size.pack(side=tk.LEFT)
 
@@ -296,7 +295,7 @@ entry_font_size.pack(side=tk.LEFT)
 frame_additional = tk.Frame(root, bg='black')
 frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
 
-# Row 3:  Font Name:
+# Add row for Font Name:
 label_font_name = tk.Label(frame_additional, text="Font Name:",
                            foreground="DarkGrey", background="black")
 label_font_name.grid(row=3, column=0, padx=5, pady=5, sticky=tk.E)
@@ -306,22 +305,20 @@ entry_font_name = tk.Entry(
     textvariable=tk.StringVar(value=xtrc['x_fa']), width=30)
 entry_font_name.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
 
-
-
-# Row 4: Font Selection button
+# Add row for Font Selection button:
 font_selection_button = TkButton(frame_additional, text="Font Selection",
    bg="lightSteelBlue", fg="Navy", 
    command=select_font, relief='raised', bd=6)
 font_selection_button.grid(
     row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
-# Row 5: Enable Logging check box
+# Add row for Checkbutton to Enable Logging:
 checkbox_logging = tk.Checkbutton(frame_additional, text="Enable Logging",
         foreground="DarkGrey", background="black", command=toggle_logging)
 checkbox_logging.grid(row=5, column=0, columnspan=2,
                       padx=5, pady=5, sticky=tk.N)
 
-# Row 6: Create Custom Xterm button
+# Add row for "Create Custom Xterm: button:
 button_create_custom_xterm = TkButton(frame_additional, 
     text="Create Custom Xterm", bg="darkGrey", fg="Navy", 
     command=on_button_click(
@@ -332,19 +329,19 @@ button_create_custom_xterm.grid(
     row=6, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W + tk.E)
 
 # Create a frame to hold the Quit button
-frame_quit = tk.Frame(root, bg='black')
-frame_quit.pack(padx=10, pady=5, anchor=tk.CENTER)
+#frame_additional = tk.Frame(root, bg='black')
+#frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
 
 # G: Quit button
-button_quit = TkButton(frame_quit, text="Quit",
+button_quit = TkButton(root, text="Quit",
                        bg="LightGrey", fg="DarkRed",
                        command=quit_application, relief='raised', bd=6)
 button_quit.pack(padx=5, pady=5, anchor=tk.CENTER)
 
 
 # MAIN:
-# Call top two methongs to generated all buttons, entry forms and checkboxes:
-# Call the functiin to create 2x8 matric of  colored butone for xterm:
+# Call top two methods to generated all buttons, entry forms and checkboxes:
+# Call the function to create 2x8 matric of  colored butone for xterm:
 create_xterm_specific_buttons()
 
 # Call the function to populate the entry boxes
