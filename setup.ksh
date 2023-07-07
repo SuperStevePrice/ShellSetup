@@ -472,7 +472,7 @@ set_symbolic_links() {
 			ln -s ${file} ${sym}
 		fi
 	done
-} # set_symbolic_links() {
+} # set_symbolic_links() 
 
 # Make shebang lines for ksh and perl
 source shebang.ksh
