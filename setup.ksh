@@ -191,7 +191,7 @@ prepare_public_file() {
 	then
 		print "File: $file	less than 4 lines in length."
 	else
-        print "prepare_public_files: $target_dir/$base"
+        print "prepare_public_file(): $target_dir/$base"
 		$head -n $line_count $file  > "$target_dir/$base"
 	fi
 }  # prepare_public_file()
@@ -246,7 +246,7 @@ backup_install() {
         $cp ${installed_path}/${dot}${bn} ${backup_path}/${dot}${bn}.$ts
 
         base=$(basename $file)
-        print -n "prepare_public_file "
+        print -n "prepare_public_file() "
         print "${installed_path}/${dot}${base}"
         prepare_public_file ${installed_path}/${dot}${base}
 
