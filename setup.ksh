@@ -191,7 +191,7 @@ prepare_public_file() {
 	then
 		print "File: $file	less than 4 lines in length."
 	else
-        print "prepare_public_file(): $target_dir/$base"
+        print "prepare_public_file() $target_dir/$base"
 		$head -n $line_count $file  > "$target_dir/$base"
 	fi
 }  # prepare_public_file()
@@ -254,8 +254,6 @@ backup_install() {
         base=$(basename $file)
 		base=$(print $base | awk '{gsub(/^\./,"")}1')
 
-        print
-
         print "diff $path/$base $public_path"
         diff $path/$base $public_path > /dev/null 2>&1
         return_code=$?
@@ -281,8 +279,6 @@ backup_install() {
 
         # Remove public_path file to present false positive.
         rm $public_path/$base > /dev/null 2>&1
-
-        print
     done
     print
 } # backup_install()
