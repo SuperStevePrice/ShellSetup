@@ -273,6 +273,15 @@ backup_install() {
             print "add_last_lines ${file}"
             add_last_lines ${file}
 
+            if [ $path == "docs" ]; then
+                print "chmod 644 $file"
+                chmod 644 $file
+            else
+                print "chmod 755 $file"
+                chmod 755 $file
+            fi
+
+
             print ${file} >> logs/installation_list.log
             print "Installed file: $file"
         fi
