@@ -261,20 +261,22 @@ backup_install() {
 
         # Install if $src and $public_path differ:
         if [ $return_code -ne 0  ]; then
-            #print "DEBUG: file: $file path: $path base: $base"
+            #print "DEBUG0: file: $file path: $path base: $base"
             if [ X"$path" = X"dots" ]; then
+                #print "DEBUG1: file: $file path: $path base: $base"
                 print "$cp ${path}/${base} ~/.${base}"
-                $cp ${path}/${base} ~/.${base}
+                if [ "${base}" == "xtrc" ]
+                then
+                    #print "DEBUG2: file: $file path: $path base: $base"
+                    x_path=$(which xterm)
+                    x_path=$(dirname $x_path)
+                    sed "s!^x_path=.*!x_path=$x_path!" dots/xtrc > ~/.xtrc
+                else
+                    $cp ${path}/${base} ~/.${base}
+                fi
             else
                 print "$cp ${path}/${base} ${installed_path}/${base}"
                 $cp ${path}/${base} ${installed_path}/${base}
-            fi
-
-            if [ "$file" == "xtrc" ]
-            then
-                x_path=$(which xterm)
-                x_path=$(dirname $x_path)
-                sed "s!^x_path=.*!x_path=$x_path!" dots/xtrc > ~/.${file}
             fi
 
             print "add_last_lines ${file}"
@@ -287,7 +289,6 @@ backup_install() {
                 print "chmod 755 $file"
                 chmod 755 $file
             fi
-
 
             print ${file} >> logs/installation_list.log
             print "Installed file: $file"
