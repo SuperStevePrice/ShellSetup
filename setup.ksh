@@ -82,26 +82,9 @@ print
 print "> logs/installation_list.log"
 > logs/installation_list.log
 
-dbg() {
-    #---------------------------------------------------------------------------
-    # Function dbg()
-    #
-    # Purpose:
-    #   Given a string message, log it in $debug_file and print the message.
-    #
-    # Usage:
-    #   dbg message
-    #---------------------------------------------------------------------------
-    debug_file=~/Documents/$0.debug.$$
-
-    if [ ! -f "$debug_file" ]; then
-        echo "Script: $0" >> "$debug_file"
-    fi
-
-    msg="DEBUG: line:$1"
-    echo "$msg"
-    echo "$msg" >> "$debug_file"
-} # dbg()
+# Include the debugging script:
+source ~/bin/dbg.ksh
+#dbg "dbg.ksh sourced by setup.ksh"
 
 create_python_script() {
     #---------------------------------------------------------------------------
