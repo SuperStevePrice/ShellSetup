@@ -24,6 +24,10 @@
 typeset -i line_count
 
 platform=$(uname)
+x_path=$(which xterm)
+x_path=$(dirname $x_path)
+
+log="logs/installation_list.log"
 
 # final lines of each file installed by this script
 timestamp="# Last installed: $(printf "%(%Y-%m-%d %H:%M:%S)T")"
@@ -77,6 +81,27 @@ print
 
 print "> logs/installation_list.log"
 > logs/installation_list.log
+
+dbg() {
+    #---------------------------------------------------------------------------
+    # Function dbg()
+    #
+    # Purpose:
+    #   Given a string message, log it in $debug_file and print the message.
+    #
+    # Usage:
+    #   dbg message
+    #---------------------------------------------------------------------------
+    debug_file=~/Documents/$0.debug.$$
+
+    if [ ! -f "$debug_file" ]; then
+        echo "Script: $0" >> "$debug_file"
+    fi
+
+    msg="DEBUG: line:$1"
+    echo "$msg"
+    echo "$msg" >> "$debug_file"
+} # dbg()
 
 create_python_script() {
     #---------------------------------------------------------------------------
@@ -192,7 +217,18 @@ prepare_public_file() {
 		print "File: $file	less than 4 lines in length."
 	else
         print "prepare_public_file() $target_dir/$base"
-		$head -n $line_count $file  > "$target_dir/$base"
+        #dbg "$LINENO base:$base target:$target_dir/$base file:$file"
+        if [ X"$base" != X"xtrc" ]; then
+            #dbg "$LINENO base:$base target:$target_dir/$base file:$file"
+            $head -n $line_count $file  > "$target_dir/$base"
+        else
+            line_count=$((line_count - 1))
+            $head -n $line_count $file  > "$target_dir/$base"
+            print "x_path=TBD" >> "$target_dir/$base"
+            msg="$LINENO base:$base target:$target_dir/$base file:$file "
+            msg="$msg x_path=TBD"
+            #dbg "$msg"
+        fi
 	fi
 }  # prepare_public_file()
 
@@ -230,7 +266,7 @@ backup_install() {
     for file in ${path}/*; do
         ts=$(date +%Y_%m_%d-%H:%M:%S)
 
-        #print "DEBUG: path: [$path] file: [$file]"
+        #dbg "$LINENO  path: [$path] file: [$file]"
         if [ X"$path" = X"dots" ]; then
             dot="."
         else
@@ -241,13 +277,13 @@ backup_install() {
         print
         bn=$(basename $file)
         # Backup:
-        #print -n "BACKUP: $cp $installed_path/${dot}$bn "
-        #print "${backup_path}/${dot}${bn}.$ts"
+        #msg="$LINENO: $cp $installed_path/${dot}$bn "
+        #msg="$msg ${backup_path}/${dot}${bn}.$ts"
+        #dbg "$msg"
         $cp ${installed_path}/${dot}${bn} ${backup_path}/${dot}${bn}.$ts
 
         base=$(basename $file)
-        print -n "prepare_public_file() "
-        print "${installed_path}/${dot}${base}"
+        print "prepare_public_file() ${installed_path}/${dot}${base}"
         prepare_public_file ${installed_path}/${dot}${base}
 
         file=$(print $file | awk '{gsub(/^\./,"")}1')
@@ -257,19 +293,17 @@ backup_install() {
         print "diff $path/$base $public_path"
         diff $path/$base $public_path > /dev/null 2>&1
         return_code=$?
-        #print "DEBUG: return_code: $return_code"
+        #dbg "$LINENO   return_code: $return_code"
 
         # Install if $src and $public_path differ:
         if [ $return_code -ne 0  ]; then
-            #print "DEBUG0: file: $file path: $path base: $base"
-            if [ X"$path" = X"dots" ]; then
-                #print "DEBUG1: file: $file path: $path base: $base"
-                print "$cp ${path}/${base} ~/.${base}"
+            #dbg "$LINENO   file: $file path: $path base: $base"
+            if [ X"$path" == X"dots" ]; then
+                #dbg "$LINENO file $file path: $path base: $base"
+                #print "$cp ${path}/${base} ~/.${base}"
                 if [ "${base}" == "xtrc" ]
                 then
-                    #print "DEBUG2: file: $file path: $path base: $base"
-                    x_path=$(which xterm)
-                    x_path=$(dirname $x_path)
+                    #dbg "$LINENO file:$file path:$path base:$base"
                     sed "s!^x_path=.*!x_path=$x_path!" dots/xtrc > ~/.xtrc
                 else
                     $cp ${path}/${base} ~/.${base}
@@ -295,7 +329,7 @@ backup_install() {
         fi
 
         # Remove public_path file to present false positive.
-        rm $public_path/$base > /dev/null 2>&1
+        #rm $public_path/$base > /dev/null 2>&1
     done
     print
 } # backup_install()
@@ -349,7 +383,7 @@ do
 
     diff bin/$py_file ~/Public/bin/ > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        #print "DEBUG: create_python_script $template bin/$py_file"
+        #dbg "$LINENO create_python_script $template bin/$py_file"
         create_python_script $template bin/$py_file
     fi
     # Remove public_path file to present false positive.
@@ -365,9 +399,15 @@ source shebang.ksh
 # Always set symbolic links
 set_symbolic_links
 
+print
 print $line
-print "cat logs/installation_list.log"
-cat logs/installation_list.log
+print "Installation Report"
+if [ ! -s $log ]; then
+    print -n "Based on the inspection of all target files, "
+    print "nothing required installation."
+else
+    cat $log
+fi
 print $line
 
 print

@@ -30,6 +30,32 @@
 #    All except x_sl and x_path may be configured by the user anytime after 
 #    xt.pl lauches the user control panel.
 #
+#    The x_path value will be determined by "which xterm" in setup.ksh.
+#    In addition to "/opt/X11/bin" and "/usr/bin", the xterm executable can 
+#    typically be found in the following locations in Linux and Unix systems:
+#
+#    "/opt/X11/bin": This is the usual location for MacOSX.
+#
+#    "/usr/X11R6/bin": This is a common location for X11 binaries, 
+#    including xterm, in older Unix systems. However, it may not be present in 
+#    more recent distributions.
+#
+#    "/usr/local/bin": This directory is often used for locally installed 
+#    binaries that are not part of the operating system's default package 
+#    management system. It's possible to find xterm here if it was manually 
+#    installed.
+#
+#    "/bin": This directory contains essential binaries required for basic 
+#    system functionality. Some distributions may include xterm here.
+#
+#    "/usr/sbin" or "/sbin": These directories typically hold system 
+#    administration binaries. While it's less common to find xterm here, it's 
+#    worth checking, especially if you're logged in as the root user.
+#
+#    Please note that the locations mentioned above are typical, but they can 
+#    vary depending on the specific distribution and configuration of your 
+#    system. You can use the "which" or "whereis" commands to help locate the 
+#    xterm executable on your specific Linux or Unix system.
 #-------------------------------------------------------------------------------
 x_cols=80
 x_rows=44
@@ -39,4 +65,4 @@ x_fs=14
 x_bg=DarkGrey
 x_fg=Navy
 x_log=0
-x_path=to-be-determined
+x_path=TBD
