@@ -44,8 +44,8 @@ map ; :w
 map = :wq!
 map [ :f
 map \ :n
-map ] :r ~/Projects/ShellSetup/docs/header
-map ^ :r ~/Projects/ShellSetup/docs/copyright
+map ] :r ~/Projects/ShellSetup/local_docs/header
+map ^ :r ~/Projects/ShellSetup/local_docs/copyright
 set ai
 set autoindent
 set expandtab   " Use spaces instead of tabs
