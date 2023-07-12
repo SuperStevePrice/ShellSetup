@@ -312,7 +312,7 @@ backup_install() {
         fi
 
         # Remove public_path file to present false positive.
-        #rm $public_path/$base > /dev/null 2>&1
+        rm $public_path/$base > /dev/null 2>&1
     done
     print
 } # backup_install()
