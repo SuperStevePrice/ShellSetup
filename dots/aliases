@@ -30,6 +30,7 @@ alias gl="$(which git) log"	    # short for git log
 alias gs="$(which git) status"	# short for git status
 alias vl="view logs/setup.log"	# to view project setup log
 alias get=g  				    # avoid common typo
+alias gits="g status"		    # shorthand for 'git status'
 
 # perltidy requires special handling:
 pt_path="/opt/homebrew/Cellar/perl/5.36.1/bin"
