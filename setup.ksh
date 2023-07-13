@@ -82,9 +82,14 @@ print
 print "> logs/installation_list.log"
 > logs/installation_list.log
 
+# Parse the command line:
+source ~/bin/parse_args.ksh
+
 # Include the debugging script:
 source ~/bin/dbg.ksh
-#dbg "dbg.ksh sourced by setup.ksh"
+if [ $debug == true ]; then
+    dbg "$LINENO    dbg.ksh sourced by setup.ksh"
+fi
 
 create_python_script() {
     #---------------------------------------------------------------------------
@@ -200,17 +205,23 @@ prepare_public_file() {
 		print "File: $file	less than 4 lines in length."
 	else
         print "prepare_public_file() $target_dir/$base"
-        #dbg "$LINENO base:$base target:$target_dir/$base file:$file"
+        if [ $debug == true ]; then
+            dbg "$LINENO base:$base target:$target_dir/$base file:$file"
+        fi
         if [ X"$base" != X"xtrc" ]; then
-            #dbg "$LINENO base:$base target:$target_dir/$base file:$file"
+            if [ $debug == true ]; then
+                dbg "$LINENO base:$base target:$target_dir/$base file:$file"
+            fi
             $head -n $line_count $file  > "$target_dir/$base"
         else
             line_count=$((line_count - 1))
             $head -n $line_count $file  > "$target_dir/$base"
             print "x_path=TBD" >> "$target_dir/$base"
-            msg="$LINENO base:$base target:$target_dir/$base file:$file "
-            msg="$msg x_path=TBD"
-            #dbg "$msg"
+            if [ $debug == true ]; then
+                msg="$LINENO base:$base target:$target_dir/$base file:$file "
+                msg="$msg x_path=TBD"
+                dbg "$msg"
+            fi
         fi
 	fi
 }  # prepare_public_file()
@@ -249,7 +260,9 @@ backup_install() {
     for file in ${path}/*; do
         ts=$(date +%Y_%m_%d-%H:%M:%S)
 
-        #dbg "$LINENO  path: [$path] file: [$file]"
+        if [ $debug == true ]; then
+            dbg "$LINENO  path: [$path] file: [$file]"
+        fi
         if [ X"$path" = X"dots" ]; then
             dot="."
         else
@@ -260,9 +273,11 @@ backup_install() {
         print
         bn=$(basename $file)
         # Backup:
-        #msg="$LINENO: $cp $installed_path/${dot}$bn "
-        #msg="$msg ${backup_path}/${dot}${bn}.$ts"
-        #dbg "$msg"
+        if [ $debug == true ]; then
+            msg="$LINENO: $cp $installed_path/${dot}$bn "
+            msg="$msg ${backup_path}/${dot}${bn}.$ts"
+            dbg "$msg"
+        fi
         $cp ${installed_path}/${dot}${bn} ${backup_path}/${dot}${bn}.$ts
 
         base=$(basename $file)
@@ -276,17 +291,25 @@ backup_install() {
         print "diff $path/$base $public_path"
         diff $path/$base $public_path > /dev/null 2>&1
         return_code=$?
-        #dbg "$LINENO   return_code: $return_code"
+        if [ $debug == true ]; then
+            dbg "$LINENO   return_code: $return_code"
+        fi
 
         # Install if $src and $public_path differ:
         if [ $return_code -ne 0  ]; then
-            #dbg "$LINENO   file: $file path: $path base: $base"
+            if [ $debug == true ]; then
+                dbg "$LINENO   file: $file path: $path base: $base"
+            fi
             if [ X"$path" == X"dots" ]; then
-                #dbg "$LINENO file $file path: $path base: $base"
-                #print "$cp ${path}/${base} ~/.${base}"
+                if [ $debug == true ]; then
+                    dbg "$LINENO file $file path: $path base: $base"
+                    print "$cp ${path}/${base} ~/.${base}"
+                fi
                 if [ "${base}" == "xtrc" ]
                 then
-                    #dbg "$LINENO file:$file path:$path base:$base"
+                    if [ $debug == true ]; then
+                        dbg "$LINENO file:$file path:$path base:$base"
+                    fi
                     sed "s!^x_path=.*!x_path=$x_path!" dots/xtrc > ~/.xtrc
                 else
                     $cp ${path}/${base} ~/.${base}
@@ -366,7 +389,9 @@ do
 
     diff bin/$py_file ~/Public/bin/ > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        #dbg "$LINENO create_python_script $template bin/$py_file"
+        if [ $debug == true ]; then
+            dbg "$LINENO create_python_script $template bin/$py_file"
+        fi
         create_python_script $template bin/$py_file
     fi
     # Remove public_path file to present false positive.
@@ -398,3 +423,7 @@ print $line
 date
 print $line
 print
+print "debug:$debug"
+if [ $debug == true ]; then
+    dbg "$LINENO    $0 completed"
+fi

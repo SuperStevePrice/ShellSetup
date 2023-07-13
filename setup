@@ -17,6 +17,13 @@
 # USAGE:
 #	ksh setup 
 #-------------------------------------------------------------------------------
+source ~/bin/parse_args.ksh
+if [ "$debug" == true ]; then
+    echo "Debug mode is enabled."
+    dbg="--debug"
+else
+    dbg=""
+fi
 
 if [ ! -d logs ]
 then
@@ -24,5 +31,5 @@ then
 fi
 
 log=logs/setup.log 
-setup.ksh > $log 2>&1
+setup.ksh "$dbg" > $log 2>&1
 view $log
