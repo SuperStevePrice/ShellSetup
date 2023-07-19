@@ -7,14 +7,13 @@
 
 "-------------------------------------------------------------------------------
 " PROGRAM:
-"	~/.profile
+"	~/.exrc
 "	
 " PURPOSE:
-"	Sets runtime ksh environment.
+"	Defines settings, mappings, and abbreviations for vi editor.
 "	
 " USAGE:
-"	Invoked at runtime by the operating system as users login.
-"
+"	Invoked when vi is launched.
 "-------------------------------------------------------------------------------
 ab #D # PROGRAM:#	#	# PURPOSE:#	#	# USAGE:##
 ab #E #-- End of File ---------------------------------------------------------------
