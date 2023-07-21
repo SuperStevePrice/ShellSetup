@@ -141,7 +141,7 @@ add_last_lines() {
     #---------------------------------------------------------------------------
 	file=$1
 
-	if [ "$file" ==  ~/.exrc ]
+	if [ "$file" ==  ~/.exrc -o  "$file" ==  ~/.vimrc ]
 	then
 		# .exrc and vi don't tolerate normal comment marker '#'. Use '"'.
 		last_lines=$(print $final_lines | awk '{gsub(/^#/,"\"")}1')
