@@ -1,0 +1,38 @@
+
+"-------------------------------------------------------------------------------
+"         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+"
+"                       GNU GENERAL PUBLIC LICENSE
+"                        Version 3, 29 June 2007
+"-------------------------------------------------------------------------------
+
+"-------------------------------------------------------------------------------
+" PROGRAM:
+"	~/.vimrc
+"	
+" PURPOSE:
+"	Sets runtime environment for GVIM/VIM editor.
+"	
+" USAGE:
+"	Invoked when GVIM/VIM editor is run.
+"-------------------------------------------------------------------------------
+if has('gui_running')
+    " GUI-specific settings here
+    syntax enable
+    set guioptions+=a
+    set guifont="DejaVu Sans Mono":h11
+    set guioptions-=T
+    set guitablabel=%M\ %t
+    set laststatus=2
+    set ruler
+    set clipboard+=unnamedplus
+    colorscheme desert
+    colorscheme ron
+    colorscheme delek
+    colorscheme pablo
+    " Add more color schemes if needed
+else
+    " Terminal settings here
+    syntax off
+endif
+source ~/.exrc
