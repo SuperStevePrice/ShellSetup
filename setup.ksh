@@ -1,3 +1,4 @@
+
 #!/usr/bin/env ksh
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
@@ -54,7 +55,7 @@ docs_dir=docs
 docs_home_dir=~/Documents 
 docs_backup_dir=~/Documents/backup
 
-local_docs=local_docs
+project_docs=project_docs
 
 public_home=~/Public/home
 public_bin=~/Public/bin
@@ -72,7 +73,7 @@ mkdir -p templates >/dev/null 2>&1
 mkdir -p $docs_dir >/dev/null 2>&1
 mkdir -p $docs_home_dir >/dev/null 2>&1
 mkdir -p $docs_backup_dir >/dev/null 2>&1
-mkdir -p $local_docs >/dev/null 2>&1
+mkdir -p $project_docs >/dev/null 2>&1
 
 print "#-----------------------------------------------------------------------"
 date
