@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/Users/steve/anaconda3/bin/python3.11
 
 ## Linux use: "#!/usr/bin/env python3".
-## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
+## MacOS use: "#!/Users/steve/anaconda3/bin/python3.11"
 
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
@@ -24,7 +24,7 @@
 #    ~/Documents/good_fonts.txt is hard coded here.  This script takes no args.
 #
 # PLATFORM:
-#   Linux
+#   MacOSX
 #-------------------------------------------------------------------------------
 import os
 import subprocess

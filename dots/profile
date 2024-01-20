@@ -59,8 +59,8 @@ if [ "$(uname)" == "Darwin" ]; then
     if [ -n "$brew" ]; then
         eval "$("$brew" shellenv)"
     fi
-    PYTHONPATH="/Users/steve/anaconda3/lib/python3.10"
-    PYTHONPATH="${PYTHONPATH}/site-packages/tkmacosx:$PYTHONPATH"
+    PYTHONPATH="/Users/steve/anaconda3/lib/python3.11"
+    PYTHONPATH="/site-packages/tkmacosx:$PYTHONPATH"
     export PYTHONPATH
 fi
 
