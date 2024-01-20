@@ -37,7 +37,7 @@ pt_path="/opt/homebrew/Cellar/perl/5.36.1/bin"
 alias perltidy="${pt_path}/perltidy -pro=~/.perltidyrc"
 
 if [ "$(uname)" == "Darwin" ]; then
-    alias python=/Users/steve/anaconda3/bin/python3.10
+    alias python=/Users/steve/anaconda3/bin/python3.11
 else
     alias python="$(which python3)"
 fi
