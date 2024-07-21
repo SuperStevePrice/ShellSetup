@@ -18,19 +18,20 @@
 #	Invoked by ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
-alias c="tput clear"		    # clear the screen
-alias print="echo"			    # bash has no print
-alias clr="tput clear"		    # clear the screen
-alias h="fc -l"				    # history command for ksh
-alias l="ls -l"				    # short for long list ls
-alias ll="ls -l"			    # short for long list ls
-alias lr="ls -ltr"			    # short for long list time reversed ls
-alias g="$(which git)"		    # short for git
-alias gl="$(which git) log"	    # short for git log
+alias a="amber"					# Use Amber program to generate bash scripts.
+alias c="tput clear"			# clear the screen
+alias print="echo"				# bash has no print
+alias clr="tput clear"			# clear the screen
+alias h="fc -l"					# history command for ksh
+alias l="ls -l"					# short for long list ls
+alias ll="ls -l"				# short for long list ls
+alias lr="ls -ltr"				# short for long list time reversed ls
+alias g="$(which git)"			# short for git
+alias gl="$(which git) log"		# short for git log
 alias gs="$(which git) status"	# short for git status
 alias vl="view logs/setup.log"	# to view project setup log
-alias get=g  				    # avoid common typo
-alias gits="g status"		    # shorthand for 'git status'
+alias get=g  					# avoid common typo
+alias gits="g status"			# shorthand for 'git status'
 
 # perltidy requires special handling:
 pt_path="/opt/homebrew/Cellar/perl/5.36.1/bin"
