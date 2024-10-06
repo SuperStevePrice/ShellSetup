@@ -20,17 +20,16 @@
 
 # Always set locale:
 export LANG=en_US.UTF-8
-LANG=en_US.UTF-8
-LC_ALL=en_US.UTF-8
-LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
 
 # PS1: command line primary prompt:
 . ~/bin/PS1.ksh
 
-# load my aliases
+# Load my aliases
 . ~/.aliases
 
-# load my functions
+# Load my functions
 . ~/.functions
 
 export HOST=$(uname -n)
@@ -40,58 +39,101 @@ export FCEDIT=vi
 PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 # Add additional directories if needed
-PATH="$PATH:$HOME/bin:$HOME/anaconda3/bin"
-PATH="$PATH:/opt/homebrew/bin"
+PATH="$PATH:$HOME/bin:$HOME/anaconda3/bin:/opt/homebrew/bin:/opt/X11/bin:."
 
-# Remove duplicates from PATH
+# Remove duplicates from PATH (do this after fully constructing PATH)
 export PATH=$(echo $PATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
 
-# Be sure the correct xterm path is first:
-PATH="/opt/X11/bin:$PATH:."
-
-# Detect the operating system and set environment to run perl Tk modules.
+# Detect the operating system and set environment to run Perl Tk modules
 if [ "$(uname)" == "Darwin" ]; then
-    # macOS specific configurations. Not required for Linux.
+    # macOS specific configurations
+
+    # Add Perl local::lib environment variables
+	export PATH="/opt/homebrew/bin:$PATH"
+	export PERL5LIB="/opt/homebrew/lib/perl5:/opt/homebrew/lib/perl5/site_perl"
+    export PERL5LIB="$HOME/.cpanm/work/1728126447.24554/Tk-804.036/Tk.pm:$PERL5LIB"
+	export PERL_LOCAL_LIB_ROOT="/opt/homebrew/lib/perl5"
+	export PERL_MB_OPT="--install_base=/opt/homebrew/lib/perl5"
+	export PERL_MM_OPT="INSTALL_BASE=/opt/homebrew/lib/perl5"
     eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
 
-    # If brew is installed, set the environment:
-    brew=$(command -v brew)
-    if [ -n "$brew" ]; then
-        eval "$("$brew" shellenv)"
-    fi
-    PYTHONPATH="/Users/steve/anaconda3/lib/python3.11"
-    PYTHONPATH="/site-packages/tkmacosx:$PYTHONPATH"
+    # Add Homebrew to PATH
+    export PATH="/opt/homebrew/bin:$PATH"
+
+    # Perlbrew environment setup
+    export PATH="$HOME/perl5/perlbrew/bin:$PATH"
+    export PERLBREW_HOME="$HOME/perl5/perlbrew"
+    export PERLBREW_ROOT="$HOME/perl5/perlbrew"
+
+    # Check if perlbrew installed Perl versions and set PATH accordingly
+    if [[ -d "$PERLBREW_ROOT/perls" ]]; then
+        export PATH="$PERLBREW_ROOT/perls/perl-5.38/bin:$PATH"
+    fi  
+
+    # Add Python-related paths
+    PYTHONPATH="/Users/steve/anaconda3/lib/python3.11:/site-packages/tkmacosx:$PYTHONPATH"
     export PYTHONPATH
+
+    # Remove duplicates from PYTHONPATH
+    export PYTHONPATH=$(echo $PYTHONPATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
+
+    # Add Tk and X11 related paths and flags for compiling
+    export CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -arch arm64 -I/opt/homebrew/opt/tcl-tk/include -I/opt/homebrew/opt/libx11/include -I/opt/homebrew/opt/jpeg/include -I/opt/X11/include"
+    export PATH="/opt/homebrew/opt/jpeg/bin:$PATH"
+    export LDFLAGS="-L/opt/homebrew/opt/jpeg/lib"
+    export CPPFLAGS="-I/opt/homebrew/opt/jpeg/include"
+    export INC="-I/opt/homebrew/opt/tcl-tk/include"
+    export LIBS="-L/opt/homebrew/opt/tcl-tk/lib"
+    export CPATH="/opt/homebrew/include:/opt/homebrew/opt/jpeg/include:/opt/homebrew/opt/libx11/include"
+    export LIBX11_INCLUDE_DIR="/opt/homebrew/include"
+    export LIBX11_LIB_DIR="/opt/homebrew/lib"
+    export X11_INC_PATH="-I/opt/homebrew/include"
+    export X11_LIB_PATH="-L/opt/homebrew/lib"
+
+    # Set zlib flags for compiling
+    export LDFLAGS="-L/opt/homebrew/opt/tcl-tk/lib -L/opt/homebrew/opt/libx11/lib -L/opt/homebrew/opt/jpeg/lib -L/opt/X11/lib -L/opt/homebrew/opt/zlib/lib -arch arm64"
+    export CPPFLAGS="-I/opt/homebrew/opt/zlib/include"
+
+    # Use clang instead of gcc
+    export CC=clang
+    export CXX=clang++
 fi
-
-# Remove duplicates from PYTHONPATH
-export PYTHONPATH=$(echo $PYTHONPATH | awk -v RS=':' '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0)}')
-
 
 # Setting the terminal type for xterm and Terminal windows:
 export TERM=vt100
 
-# Python Tk Warning:
-# DEPRECATION WARNING: The system version of Tk is deprecated and may be 
-# removed in a future release. Please don't rely on it. 
-# Set TK_SILENCE_DEPRECATION=1 to suppress this warning.
+# Suppress Python Tk deprecation warnings
 export TK_SILENCE_DEPRECATION=1
+export TCL_INCLUDE_PATH="/opt/homebrew/opt/tcl-tk/include"
+export TK_INCLUDE_PATH="/opt/homebrew/opt/tcl-tk/include"
+export TCL_LIB_PATH="/opt/homebrew/opt/tcl-tk/lib"
+export TK_LIB_PATH="/opt/homebrew/opt/tcl-tk/lib"
 
 # Conda initialization for ksh:
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup=$('/home/steve/anaconda3/bin/conda' 'shell.ksh' 'hook' 2> /dev/null)
 if [ $? -eq 0 ]; then
-        eval "$__conda_setup"
+    eval "$__conda_setup"
+else
+    if [ -f "/home/steve/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/steve/anaconda3/etc/profile.d/conda.sh"
     else
-        if [ -f "/home/steve/anaconda3/etc/profile.d/conda.sh" ]; then
-            . "/home/steve/anaconda3/etc/profile.d/conda.sh"
-        else
-            export PATH="/home/steve/anaconda3/bin:$PATH"
-        fi
+        export PATH="/home/steve/anaconda3/bin:$PATH"
+    fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 
 # Enable CLI editing of previous commands in history:
 set -o vi
+
+# Add any other platform-independent configurations below:
+#-------------------------------------------------------------------------------
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Set library and include paths for gdbm
+export LDFLAGS="-L/opt/homebrew/opt/gdbm/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/gdbm/include"
+
