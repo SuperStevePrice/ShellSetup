@@ -49,6 +49,7 @@ set ai
 set autoindent
 set expandtab   " Use spaces instead of tabs
 set noignorecase
+set paste
 set redraw
 set shiftwidth=4   " Set indent width to 4 spaces
 set showmatch

@@ -19,3 +19,14 @@
 #   This is sourced with Terminal or xterm windows are spawned.
 #-------------------------------------------------------------------------------
 . ~/.profile
+
+# Use vi mode for command editing
+set -o vi
+
+# History settings
+HISTFILE=~/.ksh_history
+HISTSIZE=1000
+
+#-------------------------------------------------------------------------------
+# Last installed: 2026-01-12 11:11:11
+#-- End of File ----------------------------------------------------------------
