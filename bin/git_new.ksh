@@ -40,7 +40,7 @@ fi
 
 # Derive the repository name from the repository
 repository=$(basename "$repository")
-projects_dir=~/Projects
+projects_dir="$HOME/Projects"
 target="${projects_dir}/${repository}"
 
 print "cd $target"
