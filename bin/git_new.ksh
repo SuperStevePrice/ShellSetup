@@ -1,12 +1,10 @@
 #!/usr/bin/env ksh
-
 #-------------------------------------------------------------------------------
 # Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
 #
 #                  GNU GENERAL PUBLIC LICENSE
 #                     Version 3, 29 June 2007
 #-------------------------------------------------------------------------------
-
 #-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_new.ksh
@@ -20,7 +18,6 @@
 # NOTE:
 # If this script is used by multiple users, make git_user an input.
 git_user="SuperStevePrice"
-
 usage="Usage: $0 repository"
 git=$(which git)
 
@@ -43,18 +40,14 @@ repository=$(basename "$repository")
 projects_dir="$HOME/Projects"
 target="${projects_dir}/${repository}"
 
+if [ ! -d "$target" ]
+then
+	print "$target not found, or is not a directory."
+	exit 1
+fi
+
 print "cd $target"
-cd $target
-
-#if [ -d "$HOME/${projects_dir}/${repository}" ]
-#then
-#	print "$HOME/${projects_dir}/${repository} exists."
-#	exit 1
-#fi
-
-# Use SSH for no password login to GitHub:
-print "$git remote set-url $repository git@github.com:$git_user/$repository.git"
-$git remote set-url $repository git@github.com:$git_user/$repository.git
+cd "$target"
 
 print "$git init"
 $git init
@@ -65,11 +58,10 @@ $git add .
 print "$git commit -m 'Initial commit of $repository'"
 $git commit -m "Initial commit of $repository"
 
-print "$git remote add $repository git@github.com:$git_user/$repository.git"
-$git remote add $repository git@github.com:$git_user/$repository.git 
+print "$git remote add origin git@github.com:$git_user/$repository.git"
+$git remote add origin git@github.com:$git_user/$repository.git
 
-#print "$git remote add $repository https://github.com/$git_user/$repository.git"
-#$git remote add $repository https://github.com/$git_user/$repository.git
-
-print "$git push -u $repository main"
-$git push -u $repository main
+print "$git push -u origin main"
+$git push -u origin main
+#-------------------------------------------------------------------------------
+#-- End of File ----------------------------------------------------------------

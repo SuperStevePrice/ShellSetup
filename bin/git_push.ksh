@@ -1,12 +1,10 @@
 #!/usr/bin/env ksh
-
 #-------------------------------------------------------------------------------
 # Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
 #
 #                  GNU GENERAL PUBLIC LICENSE
 #                     Version 3, 29 June 2007
 #-------------------------------------------------------------------------------
-
 #-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_push.ksh
@@ -21,6 +19,7 @@
 #
 #-------------------------------------------------------------------------------
 git=$(which git)
+projects_dir="$HOME/Projects"
 
 # Function to check for errors
 error_check() {
@@ -53,8 +52,15 @@ while true; do
 	fi
 done
 
+# Verify repository directory exists
+if [ ! -d "${projects_dir}/${repository}" ]
+then
+	print "${projects_dir}/${repository} not found. Cannot push."
+	exit 1
+fi
+
 # Change to repository directory
-cd ~/Projects/$repository || error_check $?
+cd "${projects_dir}/${repository}" || error_check $?
 
 # Check the repository status
 $git status || error_check $?
@@ -63,17 +69,28 @@ $git status || error_check $?
 $git add . || error_check $?
 print "Files added to staging area."
 
-# Commit changes
-$git commit -m "$message" || error_check $?
-print "Changes committed."
+# Commit changes — exit code 1 means nothing to commit, not a fatal error
+$git commit -m "$message"
+commit_status=$?
+if [ $commit_status -eq 0 ]
+then
+	print "Changes committed."
+elif [ $commit_status -eq 1 ]
+then
+	print "Nothing to commit, continuing to push."
+else
+	print "Fatal Error on commit!"
+	exit $commit_status
+fi
 
 # Push changes to remote repository
 $git push || error_check $?
 print "Changes pushed to remote repository."
 
 print "Done."
-
 print
 print "git status"
 $git status
 print
+#-------------------------------------------------------------------------------
+#-- End of File ----------------------------------------------------------------

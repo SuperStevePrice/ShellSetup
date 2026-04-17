@@ -1,12 +1,10 @@
 #!/usr/bin/env ksh
-
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
 #
 #                       GNU GENERAL PUBLIC LICENSE
 #                        Version 3, 29 June 2007
 #-------------------------------------------------------------------------------
-
 #-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_config.ksh
@@ -30,27 +28,22 @@ fi
 
 git=$(which git)
 
-cmd="$git config --global user.name '"$user"'"
-print $cmd
-$cmd
+$git config --global user.name "$user"
 if [ $? -eq 0 ]
 then
-	print "Success"
+	print "user.name set to $user"
 fi
 
-cmd="$git config --global user.email '"$mail"'"
-print $cmd
-$cmd
+$git config --global user.email "$mail"
 if [ $? -eq 0 ]
 then
-	print "Success"
+	print "user.email set to $mail"
 fi
 
-cmd="git config --global core.editor 'vim'"
-print $cmd
-$cmd
+$git config --global core.editor "vim"
 if [ $? -eq 0 ]
 then
-	print "Success"
+	print "core.editor set to vim"
 fi
-
+#-------------------------------------------------------------------------------
+#-- End of File ----------------------------------------------------------------

@@ -51,7 +51,7 @@ print
 print "cd $projects_dir"
 cd $projects_dir
 
-if [ -d "$HOME/${projects_dir}/${repository}" ]
+if [ -d "${projects_dir}/${repository}" ]
 then
 	print "mv $HOME/${projects_dir}/${repository} $HOME/${projects_dir}/${repository}.backup"
 	mv $HOME/${projects_dir}/${repository} $HOME/${projects_dir}/${repository}.backup
