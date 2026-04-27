@@ -62,8 +62,14 @@ fi
 # Change to repository directory
 cd "${projects_dir}/${repository}" || error_check $?
 
-# Check the repository status
-$git status || error_check $?
+# Show files to be staged and prompt for confirmation
+print
+print "Files to be staged:"
+$git status --short
+print
+print -n "Proceed with git add .? [y/N]: "
+read -r confirm
+[[ "$confirm" != [yY] ]] && { print "Aborted."; exit 0; }
 
 # Add all files to staging area
 $git add . || error_check $?
@@ -86,9 +92,9 @@ fi
 # Push changes to remote repository
 $git push || error_check $?
 print "Changes pushed to remote repository."
-
 print "Done."
 print
+
 print "git status"
 $git status
 print

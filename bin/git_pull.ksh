@@ -1,12 +1,10 @@
 #!/usr/bin/env ksh
-
 #-------------------------------------------------------------------------------
 # Copyright (C) 2023  Steve Price	SuperStevePrice@gmail.com
 #
 #                  GNU GENERAL PUBLIC LICENSE
 #                     Version 3, 29 June 2007
 #-------------------------------------------------------------------------------
-
 #-------------------------------------------------------------------------------
 # PROGRAM:
 #	git_pull.ksh
@@ -21,6 +19,7 @@
 #
 #-------------------------------------------------------------------------------
 git=$(which git)
+projects_dir="$HOME/Projects"
 
 # Function to check for errors
 error_check() {
@@ -42,11 +41,20 @@ while true; do
 	fi
 done
 
-# Change to repository directory
-if [ ! -d ~/Projects/$repository ]; then
-	mkdir ~/Projects/$repository || error_check $?
+repo_dir="${projects_dir}/${repository}"
+
+if [ -d "${repo_dir}/.git" ]; then
+	# Already a git repo — just pull
+	cd "${repo_dir}" || error_check $?
+elif [ -d "${repo_dir}" ]; then
+	# Directory exists but no .git — warn and bail
+	print "${repo_dir} exists but is not a git repository. Aborting."
+	exit 1
+else
+	# No directory at all — can't pull, need to clone first
+	print "${repo_dir} not found. Use git_clone to clone the repository first."
+	exit 1
 fi
-cd ~/Projects/$repository || error_check $?
 
 # Pull
 $git pull || error_check $?
@@ -57,3 +65,5 @@ print "git status"
 $git status || error_check $?
 print
 print "Done."
+#-------------------------------------------------------------------------------
+#-- End of File ----------------------------------------------------------------

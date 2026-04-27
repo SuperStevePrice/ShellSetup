@@ -21,6 +21,15 @@ git_user="SuperStevePrice"
 usage="Usage: $0 repository"
 git=$(which git)
 
+# Function to check for errors
+error_check() {
+	if [ $1 -ne 0 ]
+	then
+		print "Fatal Error!"
+		exit $1
+	fi
+}
+
 if [ ! -x "$git" ]
 then
 	print "The 'git' executable is not found or is not executable."
@@ -47,21 +56,37 @@ then
 fi
 
 print "cd $target"
-cd "$target"
+cd "$target" || error_check $?
+
+# Show files to be staged and prompt for confirmation
+print
+print "Files to be staged:"
+$git status --short
+print
+print -n "Proceed with git add .? [y/N]: "
+read -r confirm
+[[ "$confirm" != [yY] ]] && { print "Aborted."; exit 0; }
 
 print "$git init"
-$git init
+$git init || error_check $?
 
 print "$git add ."
-$git add .
+$git add . || error_check $?
 
 print "$git commit -m 'Initial commit of $repository'"
-$git commit -m "Initial commit of $repository"
+$git commit -m "Initial commit of $repository" || error_check $?
 
 print "$git remote add origin git@github.com:$git_user/$repository.git"
-$git remote add origin git@github.com:$git_user/$repository.git
+$git remote add origin git@github.com:$git_user/$repository.git || error_check $?
 
-print "$git push -u origin main"
-$git push -u origin main
+# Detect default branch name
+main=$($git symbolic-ref --short HEAD 2>/dev/null)
+if [ -z "$main" ]
+then
+	main="main"
+fi
+
+print "$git push -u origin $main"
+$git push -u origin "$main" || error_check $?
 #-------------------------------------------------------------------------------
 #-- End of File ----------------------------------------------------------------
