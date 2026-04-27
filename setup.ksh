@@ -1,4 +1,3 @@
-
 #!/usr/bin/env ksh
 #-------------------------------------------------------------------------------
 #         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
@@ -106,14 +105,19 @@ create_python_script() {
 
     print "\t$template -> $python_script"
 
+    # Use portable shebang for Linux.
+    # macOS MUST use hardcoded Miniconda path: #!/usr/bin/env python3 resolves
+    # to Homebrew or Apple Python, which carries Tk 8.5 -- incompatible with
+    # modern XQuartz and causes immediate abort. Miniconda carries Tk 8.6.15.
+    # If Miniconda is reinstalled or moved, update the Darwin shebang below.
+    shebang="#!/usr/bin/env python3"
     if [ X"$platform" == X"Darwin" ]
     then
         this_platform=MacOSX
-        shebang="#!/Users/steve/anaconda3/bin/python3.10"
+        shebang="#!/Users/steve/miniconda3/bin/python3"
         tksource="tkmacosx"
     else
         this_platform=Linux
-        shebang="#!/usr/bin/env python3"
         tksource="tkinter"
     fi
 
@@ -287,8 +291,8 @@ backup_install() {
         base=$(basename $file)
 		base=$(print $base | awk '{gsub(/^\./,"")}1')
 
-        print "diff $path/$base $public_path"
-        diff $path/$base $public_path > /dev/null 2>&1
+        print "diff $path/$base $public_path/$base"
+        diff $path/$base $public_path/$base > /dev/null 2>&1
         return_code=$?
         if [ $debug == true ]; then
             dbg "$LINENO   return_code: $return_code"
@@ -333,7 +337,7 @@ backup_install() {
             print "Installed file: $file"
         fi
 
-        # Remove public_path file to present false positive.
+        # Remove public_path file to prevent false positive.
         rm $public_path/$base > /dev/null 2>&1
     done
     print
@@ -386,14 +390,14 @@ do
 
     prepare_public_file ~/bin/$py_file
 
-    diff bin/$py_file ~/Public/bin/ > /dev/null 2>&1
+    diff bin/$py_file ~/Public/bin/$py_file > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         if [ $debug == true ]; then
             dbg "$LINENO create_python_script $template bin/$py_file"
         fi
         create_python_script $template bin/$py_file
     fi
-    # Remove public_path file to present false positive.
+    # Remove public_path file to prevent false positive.
     rm ~/Public/bin/$py_file > /dev/null 2>&1
 done
 
