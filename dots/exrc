@@ -4,7 +4,6 @@
 "                       GNU GENERAL PUBLIC LICENSE
 "                        Version 3, 29 June 2007
 "-------------------------------------------------------------------------------
-
 "-------------------------------------------------------------------------------
 " PROGRAM:
 "	~/.exrc
@@ -15,7 +14,15 @@
 " USAGE:
 "	Invoked when vi is launched.
 "-------------------------------------------------------------------------------
-ab #D # PROGRAM:#	#	# PURPOSE:#	#	# USAGE:##
+ab #D # PROGRAM:
+#	
+#	
+# PURPOSE:
+#	
+#	
+# USAGE:
+#
+#
 ab #E #-- End of File ---------------------------------------------------------------
 ab #a #include <assert.h>
 ab #b #!/usr/bin/env bash
@@ -49,7 +56,7 @@ set ai
 set autoindent
 set expandtab   " Use spaces instead of tabs
 set noignorecase
-set paste
+set pastetoggle=<F2>
 set redraw
 set shiftwidth=4   " Set indent width to 4 spaces
 set showmatch
@@ -57,3 +64,5 @@ set showmode
 set sw=4
 set tabstop=4   " Set tab width to 4 spaces
 set ts=4
+"-------------------------------------------------------------------------------
+"-- End of File ----------------------------------------------------------------
