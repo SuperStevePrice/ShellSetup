@@ -1,5 +1,5 @@
 "-------------------------------------------------------------------------------
-"         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+"         Copyright (C) 2026    Steve Price    SuperStevePrice@gmail.com
 "
 "                       GNU GENERAL PUBLIC LICENSE
 "                        Version 3, 29 June 2007
@@ -14,15 +14,7 @@
 " USAGE:
 "	Invoked when vi is launched.
 "-------------------------------------------------------------------------------
-ab #D # PROGRAM:
-#	
-#	
-# PURPOSE:
-#	
-#	
-# USAGE:
-#
-#
+ab #D # PROGRAM:# # # PURPOSE:# # # USAGE:##
 ab #E #-- End of File ---------------------------------------------------------------
 ab #a #include <assert.h>
 ab #b #!/usr/bin/env bash
