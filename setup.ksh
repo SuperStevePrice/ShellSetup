@@ -15,7 +15,8 @@
 #   links for *sh files in ~/bin.
 #
 # USAGE:
-#   Run "ksh setup" to invoke this script, which invokes prep.ksh and logs all.
+#   Run "ksh setup.ksh" to invoke this script, which invokes prep.ksh and logs all.
+#   Run "ksh setup.ksh -d" to enable debug mode.
 #
 #-------------------------------------------------------------------------------
 # Manifest:
@@ -171,6 +172,11 @@ prepare_public_file() {
     #   subsequently in a comparison with a candidate file to determine if it
     #   requires installation or not.
 	#	
+	#   For xtrc, x_path is platform-specific and must not be stored as TBD
+	#   in the public copy. Instead, the actual installed x_path from ~/.xtrc
+	#   is used so the diff reflects reality and xtrc is only reinstalled when
+	#   something other than x_path has genuinely changed.
+	#	
 	# USAGE:
 	#	prepare_public_file file full_path
 	#---------------------------------------------------------------------------
@@ -219,10 +225,13 @@ prepare_public_file() {
         else
             line_count=$((line_count - 1))
             $head -n $line_count $file  > "$target_dir/$base"
-            print "x_path=TBD" >> "$target_dir/$base"
+            # Use the actual installed x_path from ~/.xtrc (not TBD) so the
+            # diff correctly detects only real changes to xtrc content.
+            actual_xpath=$(grep "^x_path=" ~/.xtrc | head -1)
+            print "$actual_xpath" >> "$target_dir/$base"
             if [ $debug == true ]; then
                 msg="$LINENO base:$base target:$target_dir/$base file:$file "
-                msg="$msg x_path=TBD"
+                msg="$msg $actual_xpath"
                 dbg "$msg"
             fi
         fi
