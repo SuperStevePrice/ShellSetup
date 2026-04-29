@@ -384,6 +384,9 @@ set_symbolic_links() {
 	do
 		if [ "$file" == ~/bin/ssh-copy-id.ksh ]
 		then
+			# Excluded: ssh-copy-id.ksh calls the system's own ssh-copy-id
+			# internally. Creating a symlink ~/bin/ssh-copy-id -> ssh-copy-id.ksh
+			# would cause infinite recursion when the script invokes ssh-copy-id.
 			print "No symbolic link will be created for ${file}."
 			continue
 		fi
