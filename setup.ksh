@@ -300,9 +300,22 @@ backup_install() {
         base=$(basename $file)
 		base=$(print $base | awk '{gsub(/^\./,"")}1')
 
-        print "diff $path/$base $public_path/$base"
-        diff $path/$base $public_path/$base > /dev/null 2>&1
-        return_code=$?
+        # For xtrc, diff against a temp copy with x_path substituted so that
+        # the platform-specific x_path=TBD in the repo does not cause a false
+        # positive diff on every run.
+        if [ X"$base" == X"xtrc" ]; then
+            actual_xpath=$(grep "^x_path=" ~/.xtrc | head -1)
+            tmp=$(mktemp /tmp/xtrc.XXXXXX)
+            sed "s!^x_path=.*!$actual_xpath!" $path/$base > $tmp
+            print "diff $tmp $public_path/$base"
+            diff $tmp $public_path/$base > /dev/null 2>&1
+            return_code=$?
+            rm -f $tmp
+        else
+            print "diff $path/$base $public_path/$base"
+            diff $path/$base $public_path/$base > /dev/null 2>&1
+            return_code=$?
+        fi
         if [ $debug == true ]; then
             dbg "$LINENO   return_code: $return_code"
         fi
