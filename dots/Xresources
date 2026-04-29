@@ -1,0 +1,7 @@
+XTerm*geometry:     80x44
+XTerm*scrollLines:  2000
+XTerm*faceName:     Courier New Bold
+XTerm*faceSize:     14
+XTerm*background:   DarkGrey
+XTerm*foreground:   Navy
+XTerm*scrollBar:    true
