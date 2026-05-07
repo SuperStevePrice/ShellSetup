@@ -1,1 +1,2 @@
 /opt/X11/bin/xrdb -merge ~/.Xresources
+exec /opt/X11/bin/xterm
