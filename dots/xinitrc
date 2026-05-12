@@ -1,2 +1,3 @@
 /opt/X11/bin/xrdb -merge ~/.Xresources
-exec /opt/X11/bin/xterm
+sleep 2 && /opt/X11/bin/quartz-wm &
+wait

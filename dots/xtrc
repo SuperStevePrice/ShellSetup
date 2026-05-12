@@ -18,7 +18,7 @@
 #
 #    If .xtrc can not be found or read, xt.pl will use these defaults:
 #        x_cols=80               # columns
-#        x_rows=44               # rows 
+#        x_rows=35               # rows 
 #        x_sl=2000               # xterm -sl -- scrolled lines to save 
 #        x_fa=9x15bold           # xterm font or font family
 #        x_fs=14                 # xterm font size as an integer
@@ -58,7 +58,7 @@
 #    xterm executable on your specific Linux or Unix system.
 #-------------------------------------------------------------------------------
 x_cols=80
-x_rows=44
+x_rows=35
 x_sl=2000
 x_fa=Courier New Bold
 x_fs=14

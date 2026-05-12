@@ -1,4 +1,4 @@
-#!/Users/steve/anaconda3/bin/python3.11
+#!/Users/steve/miniconda3/bin/python3
 
 ## Linux use: "#!/usr/bin/env python3".
 ## MacOS use: "#!/Users/steve/anaconda3/bin/python3.11"
@@ -55,7 +55,7 @@ def set_cmd(xtrc):
         " -fs " + \
         xtrc['x_fs'] + \
         " -geometry " + \
-        f"{xtrc['x_cols']}x{xtrc['x_rows']}" + \
+        f"{xtrc['x_cols']}x{xtrc['x_rows']}{xtrc.get('x_pos', '+60+60')}" + \
         " -fg " + \
         xtrc['x_fg'] + \
         " -bg " + \
@@ -122,7 +122,7 @@ def set_xtrc():
         'x_fa': "9x15bold",
         'x_fs': "16",
         'x_log': 'None',
-        'x_sl': 200,
+        'x_sl': "200",
         'x_path': ""
     }
 
