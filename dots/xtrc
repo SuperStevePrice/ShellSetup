@@ -25,12 +25,13 @@
 #        x_bg=DarkGrey           # background color
 #        x_fg=Navy               # foreground color
 #        x_log=0                 # 0 = no logging; 1 = logging on
-#        x_path=/usr/bin         # path to xterm and xlsfonts executables
+#        x_path=/opt/X11/bin     # path to xterm and xlsfonts executables
 #
 #    All except x_sl and x_path may be configured by the user anytime after 
-#    xt.pl lauches the user control panel.
+#    xt.pl launches the user control panel.
 #
-#    The x_path value will be determined by "which xterm" in setup.ksh.
+#    The x_path value is set by setup.ksh: /opt/X11/bin on Darwin (macOS),
+#    or determined by "which xterm" on Linux.
 #    In addition to "/opt/X11/bin" and "/usr/bin", the xterm executable can 
 #    typically be found in the following locations in Linux and Unix systems:
 #

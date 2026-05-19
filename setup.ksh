@@ -25,8 +25,11 @@
 typeset -i line_count
 
 platform=$(uname)
-x_path=$(which xterm)
-x_path=$(dirname $x_path)
+case $platform in
+    Darwin) x_path=/opt/X11/bin ;;
+    *)      x_path=$(dirname $(which xterm)) ;;
+esac
+
 
 log="logs/installation_list.log"
 
@@ -227,7 +230,7 @@ prepare_public_file() {
             $head -n $line_count $file  > "$target_dir/$base"
             # Use the actual installed x_path from ~/.xtrc (not TBD) so the
             # diff correctly detects only real changes to xtrc content.
-            actual_xpath=$(grep "^x_path=" ~/.xtrc | head -1)
+            actual_xpath="x_path=$x_path"
             print "$actual_xpath" >> "$target_dir/$base"
             if [ $debug == true ]; then
                 msg="$LINENO base:$base target:$target_dir/$base file:$file "
@@ -304,7 +307,7 @@ backup_install() {
         # the platform-specific x_path=TBD in the repo does not cause a false
         # positive diff on every run.
         if [ X"$base" == X"xtrc" ]; then
-            actual_xpath=$(grep "^x_path=" ~/.xtrc | head -1)
+            actual_xpath="x_path=$x_path"
             tmp=$(mktemp /tmp/xtrc.XXXXXX)
             sed "s!^x_path=.*!$actual_xpath!" $path/$base > $tmp
             print "diff $tmp $public_path/$base"
