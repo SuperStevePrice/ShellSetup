@@ -1,3 +1,6 @@
 /opt/X11/bin/xrdb -merge ~/.Xresources
 sleep 15 && /opt/X11/bin/quartz-wm &
+/opt/X11/bin/xterm &
 wait
+# Suppress XQuartz default xterm (run once on new machine):
+#   defaults write org.xquartz.X11 app_to_run /usr/bin/true
