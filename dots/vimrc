@@ -16,6 +16,9 @@
 " USAGE:
 "	Invoked when GVIM/VIM editor is run.
 "-------------------------------------------------------------------------------
+set encoding=utf-8
+set fileencodings=utf-8
+
 if has('gui_running')
     " GUI-specific settings here
     syntax enable
