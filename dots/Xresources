@@ -1,5 +1,5 @@
 XTerm*utf8:         1
-XTerm*locale:       true
+XTerm*locale:       false
 XTerm*termName:     xterm-256color
 XTerm*geometry:     80x35
 XTerm*scrollLines:  2000
