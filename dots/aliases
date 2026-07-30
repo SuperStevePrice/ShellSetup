@@ -16,20 +16,21 @@
 #	Invoked by ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
-alias a="amber"					# Use Amber program to generate bash scripts.
-alias c="tput clear"			# clear the screen
-alias print="echo"				# bash has no print
-alias clr="tput clear"			# clear the screen
-alias h="fc -l"					# history command for ksh
-alias l="ls -l"					# short for long list ls
-alias ll="ls -l"				# short for long list ls
-alias lr="ls -ltr"				# short for long list time reversed ls
-alias g="$(which git)"			# short for git
-alias gl="$(which git) log"		# short for git log
-alias gs="$(which git) status"	# short for git status
-alias vl="view logs/setup.log"	# to view project setup log
-alias get=g  					# avoid common typo
-alias gits="g status"			# shorthand for 'git status'
+alias a="amber"					    # Use Amber to generate bash scripts.
+alias c="tput clear"			    # clear the screen
+alias clr="tput clear"			    # clear the screen
+alias dr="cd ~/Downloads/;ls -ltr"  # go to ~/Downloads, run ls -ltr
+alias g="$(which git)"			    # short for git
+alias get=g  					    # avoid common typo
+alias gits="g status"			    # shorthand for 'git status'
+alias gl="$(which git) log"		    # short for git log
+alias gs="$(which git) status"	    # short for git status
+alias h="fc -l"					    # history command for ksh
+alias l="ls -l"					    # short for long list ls
+alias ll="ls -l"				    # short for long list ls
+alias lr="ls -ltr"				    # short for long list time reversed ls
+alias print="echo"				    # bash has no print
+alias vl="view logs/setup.log"	    # to view project setup log
 # perltidy: use whichever perltidy is in PATH (works on ARM Mac, Intel Mac, Linux)
 alias perltidy="$(which perltidy) -pro=~/.perltidyrc"
 if [ "$(uname)" = "Darwin" ]; then
@@ -38,6 +39,3 @@ else
     alias python="$(which python3)"
 fi
 alias py=python
-#-------------------------------------------------------------------------------
-# Last installed: 2026-04-28
-#-- End of File ----------------------------------------------------------------
