@@ -15,6 +15,9 @@ nohup.out
 # Ignore bin/*.py. These will be created from templates used by setup.ksh:
 bin/*.py
 
+# This file is a deliberate exception:
+!bin/build_german_vocab.py
+
 # Ignore *.swp
 *.swp
 
