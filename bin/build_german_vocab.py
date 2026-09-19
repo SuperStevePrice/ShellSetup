@@ -39,297 +39,297 @@ DOMAINS = {
     "Home": {
         "title": "The Home \u2013 Das Zuhause",
         "rows": [
-            ("Kitchen", "die K\u00fcche", "die K\u00fcchen",
-             "Ich war in der K\u00fcche.", "Ich bin in der K\u00fcche.", "Ich werde in der K\u00fcche sein."),
-            ("Table", "der Tisch", "die Tische",
-             "Ich habe am Tisch gegessen.", "Ich sitze am Tisch.", "Ich werde am Tisch sitzen."),
-            ("Chair", "der Stuhl", "die St\u00fchle",
-             "Ich habe den Stuhl repariert.", "Ich sitze auf dem Stuhl.", "Ich werde den Stuhl kaufen."),
-            ("Door", "die T\u00fcr", "die T\u00fcren",
-             "Ich habe die T\u00fcr geschlossen.", "Ich \u00f6ffne die T\u00fcr.", "Ich werde die T\u00fcr \u00f6ffnen."),
-            ("Window", "das Fenster", "die Fenster",
-             "Ich habe das Fenster geputzt.", "Ich schaue aus dem Fenster.", "Ich werde das Fenster schlie\u00dfen."),
-            ("Bed", "das Bett", "die Betten",
-             "Ich bin fr\u00fch ins Bett gegangen.", "Ich mache das Bett.", "Ich werde ins Bett gehen."),
-            ("Bedroom", "das Schlafzimmer", "die Schlafzimmer",
-             "Ich habe das Schlafzimmer aufger\u00e4umt.", "Ich schlafe im Schlafzimmer.", "Ich werde das Schlafzimmer streichen."),
             ("Bathroom", "das Badezimmer", "die Badezimmer",
-             "Ich habe das Badezimmer geputzt.", "Ich dusche im Badezimmer.", "Ich werde das Badezimmer renovieren."),
-            ("Roof", "das Dach", "die D\u00e4cher",
-             "Der Sturm hat das Dach besch\u00e4digt.", "Das Dach ist alt.", "Wir werden das Dach reparieren."),
+             "Das Badezimmer war wichtig.", "Ich sehe das Badezimmer.", "Ich werde mit dem Badezimmer zufrieden sein.", "Die Bedeutung des Badezimmers ist gro\u00df."),
+            ("Bed", "das Bett", "die Betten",
+             "Das Bett war wichtig.", "Ich sehe das Bett.", "Ich werde mit dem Bett zufrieden sein.", "Die Bedeutung des Bettes ist gro\u00df."),
+            ("Bedroom", "das Schlafzimmer", "die Schlafzimmer",
+             "Das Schlafzimmer war wichtig.", "Ich sehe das Schlafzimmer.", "Ich werde mit dem Schlafzimmer zufrieden sein.", "Die Bedeutung des Schlafzimmers ist gro\u00df."),
+            ("Chair", "der Stuhl", "die St\u00fchle",
+             "Der Stuhl war wichtig.", "Ich sehe den Stuhl.", "Ich werde mit dem Stuhl zufrieden sein.", "Die Bedeutung des Stuhls ist gro\u00df."),
+            ("Door", "die T\u00fcr", "die T\u00fcren",
+             "Die T\u00fcr war wichtig.", "Ich sehe die T\u00fcr.", "Ich werde mit der T\u00fcr zufrieden sein.", "Die Bedeutung der T\u00fcr ist gro\u00df."),
             ("Garden", "der Garten", "die G\u00e4rten",
-             "Ich habe im Garten gearbeitet.", "Ich arbeite im Garten.", "Ich werde im Garten pflanzen."),
-            ("Living room", "das Wohnzimmer", "die Wohnzimmer",
-             "Wir haben im Wohnzimmer gesessen.", "Wir sitzen im Wohnzimmer.", "Wir werden im Wohnzimmer fernsehen."),
+             "Der Garten war wichtig.", "Ich sehe den Garten.", "Ich werde mit dem Garten zufrieden sein.", "Die Bedeutung des Gartens ist gro\u00df."),
             ("Key", "der Schl\u00fcssel", "die Schl\u00fcssel",
-             "Ich habe den Schl\u00fcssel verloren.", "Ich suche den Schl\u00fcssel.", "Ich werde einen neuen Schl\u00fcssel machen lassen."),
+             "Der Schl\u00fcssel war wichtig.", "Ich sehe den Schl\u00fcssel.", "Ich werde mit dem Schl\u00fcssel zufrieden sein.", "Die Bedeutung des Schl\u00fcssels ist gro\u00df."),
+            ("Kitchen", "die K\u00fcche", "die K\u00fcchen",
+             "Die K\u00fcche war wichtig.", "Ich sehe die K\u00fcche.", "Ich werde mit der K\u00fcche zufrieden sein.", "Die Bedeutung der K\u00fcche ist gro\u00df."),
+            ("Living room", "das Wohnzimmer", "die Wohnzimmer",
+             "Das Wohnzimmer war wichtig.", "Ich sehe das Wohnzimmer.", "Ich werde mit dem Wohnzimmer zufrieden sein.", "Die Bedeutung des Wohnzimmers ist gro\u00df."),
+            ("Roof", "das Dach", "die D\u00e4cher",
+             "Das Dach war wichtig.", "Ich sehe das Dach.", "Ich werde mit dem Dach zufrieden sein.", "Die Bedeutung des Daches ist gro\u00df."),
+            ("Table", "der Tisch", "die Tische",
+             "Der Tisch war wichtig.", "Ich sehe den Tisch.", "Ich werde mit dem Tisch zufrieden sein.", "Die Bedeutung des Tisches ist gro\u00df."),
+            ("Window", "das Fenster", "die Fenster",
+             "Das Fenster war wichtig.", "Ich sehe das Fenster.", "Ich werde mit dem Fenster zufrieden sein.", "Die Bedeutung des Fensters ist gro\u00df."),
         ],
     },
     "Nature": {
         "title": "Nature \u2013 Die Natur",
         "rows": [
-            ("Tree", "der Baum", "die B\u00e4ume",
-             "Der Baum ist im Sturm gefallen.", "Der Baum w\u00e4chst schnell.", "Der Baum wird hoch werden."),
-            ("Forest", "der Wald", "die W\u00e4lder",
-             "Wir sind durch den Wald gewandert.", "Wir wandern durch den Wald.", "Wir werden durch den Wald wandern."),
-            ("River", "der Fluss", "die Fl\u00fcsse",
-             "Der Fluss ist \u00fcber die Ufer getreten.", "Der Fluss flie\u00dft schnell.", "Der Fluss wird steigen."),
-            ("Mountain", "der Berg", "die Berge",
-             "Wir sind auf den Berg gestiegen.", "Wir steigen auf den Berg.", "Wir werden auf den Berg steigen."),
-            ("Sky", "der Himmel", "die Himmel",
-             "Der Himmel war klar.", "Der Himmel ist blau.", "Der Himmel wird bew\u00f6lkt sein."),
-            ("Sun", "die Sonne", "die Sonnen",
-             "Die Sonne hat geschienen.", "Die Sonne scheint.", "Die Sonne wird scheinen."),
-            ("Moon", "der Mond", "die Monde",
-             "Der Mond war voll.", "Der Mond ist hell.", "Der Mond wird aufgehen."),
-            ("Star", "der Stern", "die Sterne",
-             "Die Sterne haben geleuchtet.", "Die Sterne leuchten.", "Die Sterne werden leuchten."),
-            ("Flower", "die Blume", "die Blumen",
-             "Ich habe Blumen gepfl\u00fcckt.", "Ich pfl\u00fccke Blumen.", "Ich werde Blumen pflanzen."),
-            ("Rain", "der Regen", "\u2014",
-             "Es hat geregnet.", "Es regnet.", "Es wird regnen."),
-            ("Sea", "das Meer", "die Meere",
-             "Wir sind ans Meer gefahren.", "Wir schwimmen im Meer.", "Wir werden ans Meer fahren."),
             ("Animal", "das Tier", "die Tiere",
-             "Wir haben die Tiere gef\u00fcttert.", "Wir f\u00fcttern die Tiere.", "Wir werden die Tiere f\u00fcttern."),
+             "Das Tier war wichtig.", "Ich sehe das Tier.", "Ich werde mit dem Tier zufrieden sein.", "Die Bedeutung des Tieres ist gro\u00df."),
+            ("Flower", "die Blume", "die Blumen",
+             "Die Blume war wichtig.", "Ich sehe die Blume.", "Ich werde mit der Blume zufrieden sein.", "Die Bedeutung der Blume ist gro\u00df."),
+            ("Forest", "der Wald", "die W\u00e4lder",
+             "Der Wald war wichtig.", "Ich sehe den Wald.", "Ich werde mit dem Wald zufrieden sein.", "Die Bedeutung des Waldes ist gro\u00df."),
+            ("Moon", "der Mond", "die Monde",
+             "Der Mond war wichtig.", "Ich sehe den Mond.", "Ich werde mit dem Mond zufrieden sein.", "Die Bedeutung des Mondes ist gro\u00df."),
+            ("Mountain", "der Berg", "die Berge",
+             "Der Berg war wichtig.", "Ich sehe den Berg.", "Ich werde mit dem Berg zufrieden sein.", "Die Bedeutung des Berges ist gro\u00df."),
+            ("Rain", "der Regen", "\u2014",
+             "Der Regen war wichtig.", "Ich sehe den Regen.", "Ich werde mit dem Regen zufrieden sein.", "Die Bedeutung des Regens ist gro\u00df."),
+            ("River", "der Fluss", "die Fl\u00fcsse",
+             "Der Fluss war wichtig.", "Ich sehe den Fluss.", "Ich werde mit dem Fluss zufrieden sein.", "Die Bedeutung des Flusses ist gro\u00df."),
+            ("Sea", "das Meer", "die Meere",
+             "Das Meer war wichtig.", "Ich sehe das Meer.", "Ich werde mit dem Meer zufrieden sein.", "Die Bedeutung des Meeres ist gro\u00df."),
+            ("Sky", "der Himmel", "die Himmel",
+             "Der Himmel war wichtig.", "Ich sehe den Himmel.", "Ich werde mit dem Himmel zufrieden sein.", "Die Bedeutung des Himmels ist gro\u00df."),
+            ("Star", "der Stern", "die Sterne",
+             "Der Stern war wichtig.", "Ich sehe den Stern.", "Ich werde mit dem Stern zufrieden sein.", "Die Bedeutung des Sterns ist gro\u00df."),
+            ("Sun", "die Sonne", "die Sonnen",
+             "Die Sonne war wichtig.", "Ich sehe die Sonne.", "Ich werde mit der Sonne zufrieden sein.", "Die Bedeutung der Sonne ist gro\u00df."),
+            ("Tree", "der Baum", "die B\u00e4ume",
+             "Der Baum war wichtig.", "Ich sehe den Baum.", "Ich werde mit dem Baum zufrieden sein.", "Die Bedeutung des Baumes ist gro\u00df."),
         ],
     },
     "City": {
         "title": "The City \u2013 Die Stadt",
         "rows": [
-            ("Street", "die Stra\u00dfe", "die Stra\u00dfen",
-             "Ich bin die Stra\u00dfe entlanggegangen.", "Ich gehe die Stra\u00dfe entlang.", "Ich werde die Stra\u00dfe entlanggehen."),
-            ("Market", "der Markt", "die M\u00e4rkte",
-             "Ich habe auf dem Markt eingekauft.", "Ich kaufe auf dem Markt ein.", "Ich werde auf dem Markt einkaufen."),
-            ("Building", "das Geb\u00e4ude", "die Geb\u00e4ude",
-             "Das Geb\u00e4ude wurde 1920 gebaut.", "Das Geb\u00e4ude steht im Zentrum.", "Das Geb\u00e4ude wird renoviert werden."),
-            ("Church", "die Kirche", "die Kirchen",
-             "Wir sind in die Kirche gegangen.", "Wir gehen in die Kirche.", "Wir werden in die Kirche gehen."),
             ("Bridge", "die Br\u00fccke", "die Br\u00fccken",
-             "Wir sind \u00fcber die Br\u00fccke gefahren.", "Wir fahren \u00fcber die Br\u00fccke.", "Wir werden \u00fcber die Br\u00fccke fahren."),
-            ("Train station", "der Bahnhof", "die Bahnh\u00f6fe",
-             "Ich bin zum Bahnhof gelaufen.", "Ich laufe zum Bahnhof.", "Ich werde zum Bahnhof laufen."),
-            ("Shop", "der Laden", "die L\u00e4den",
-             "Ich habe den Laden besucht.", "Ich besuche den Laden.", "Ich werde den Laden besuchen."),
-            ("Square", "der Platz", "die Pl\u00e4tze",
-             "Wir haben uns auf dem Platz getroffen.", "Wir treffen uns auf dem Platz.", "Wir werden uns auf dem Platz treffen."),
+             "Die Br\u00fccke war wichtig.", "Ich sehe die Br\u00fccke.", "Ich werde mit der Br\u00fccke zufrieden sein.", "Die Bedeutung der Br\u00fccke ist gro\u00df."),
+            ("Building", "das Geb\u00e4ude", "die Geb\u00e4ude",
+             "Das Geb\u00e4ude war wichtig.", "Ich sehe das Geb\u00e4ude.", "Ich werde mit dem Geb\u00e4ude zufrieden sein.", "Die Bedeutung des Geb\u00e4udes ist gro\u00df."),
+            ("Church", "die Kirche", "die Kirchen",
+             "Die Kirche war wichtig.", "Ich sehe die Kirche.", "Ich werde mit der Kirche zufrieden sein.", "Die Bedeutung der Kirche ist gro\u00df."),
             ("Library", "die Bibliothek", "die Bibliotheken",
-             "Ich habe in der Bibliothek studiert.", "Ich studiere in der Bibliothek.", "Ich werde in der Bibliothek studieren."),
+             "Die Bibliothek war wichtig.", "Ich sehe die Bibliothek.", "Ich werde mit der Bibliothek zufrieden sein.", "Die Bedeutung der Bibliothek ist gro\u00df."),
+            ("Market", "der Markt", "die M\u00e4rkte",
+             "Der Markt war wichtig.", "Ich sehe den Markt.", "Ich werde mit dem Markt zufrieden sein.", "Die Bedeutung des Marktes ist gro\u00df."),
             ("Museum", "das Museum", "die Museen",
-             "Wir haben das Museum besucht.", "Wir besuchen das Museum.", "Wir werden das Museum besuchen."),
-            ("Traffic", "der Verkehr", "\u2014",
-             "Der Verkehr war stark.", "Der Verkehr ist stark.", "Der Verkehr wird stark sein."),
+             "Das Museum war wichtig.", "Ich sehe das Museum.", "Ich werde mit dem Museum zufrieden sein.", "Die Bedeutung des Museums ist gro\u00df."),
             ("Neighborhood", "die Nachbarschaft", "die Nachbarschaften",
-             "Ich habe in dieser Nachbarschaft gewohnt.", "Ich wohne in dieser Nachbarschaft.", "Ich werde in dieser Nachbarschaft wohnen."),
+             "Die Nachbarschaft war wichtig.", "Ich sehe die Nachbarschaft.", "Ich werde mit der Nachbarschaft zufrieden sein.", "Die Bedeutung der Nachbarschaft ist gro\u00df."),
+            ("Shop", "der Laden", "die L\u00e4den",
+             "Der Laden war wichtig.", "Ich sehe den Laden.", "Ich werde mit dem Laden zufrieden sein.", "Die Bedeutung des Ladens ist gro\u00df."),
+            ("Square", "der Platz", "die Pl\u00e4tze",
+             "Der Platz war wichtig.", "Ich sehe den Platz.", "Ich werde mit dem Platz zufrieden sein.", "Die Bedeutung des Platzes ist gro\u00df."),
+            ("Street", "die Stra\u00dfe", "die Stra\u00dfen",
+             "Die Stra\u00dfe war wichtig.", "Ich sehe die Stra\u00dfe.", "Ich werde mit der Stra\u00dfe zufrieden sein.", "Die Bedeutung der Stra\u00dfe ist gro\u00df."),
+            ("Traffic", "der Verkehr", "\u2014",
+             "Der Verkehr war wichtig.", "Ich sehe den Verkehr.", "Ich werde mit dem Verkehr zufrieden sein.", "Die Bedeutung des Verkehrs ist gro\u00df."),
+            ("Train station", "der Bahnhof", "die Bahnh\u00f6fe",
+             "Der Bahnhof war wichtig.", "Ich sehe den Bahnhof.", "Ich werde mit dem Bahnhof zufrieden sein.", "Die Bedeutung des Bahnhofs ist gro\u00df."),
         ],
     },
     "Country Life": {
         "title": "Country Life \u2013 Das Landleben",
         "rows": [
-            ("Farm", "der Bauernhof", "die Bauernh\u00f6fe",
-             "Ich bin auf dem Bauernhof aufgewachsen.", "Ich lebe auf dem Bauernhof.", "Ich werde auf dem Bauernhof arbeiten."),
-            ("Field", "das Feld", "die Felder",
-             "Der Bauer hat das Feld gepfl\u00fcgt.", "Der Bauer pfl\u00fcgt das Feld.", "Der Bauer wird das Feld pfl\u00fcgen."),
             ("Barn", "die Scheune", "die Scheunen",
-             "Wir haben das Heu in die Scheune gebracht.", "Wir bringen das Heu in die Scheune.", "Wir werden das Heu in die Scheune bringen."),
-            ("Village", "das Dorf", "die D\u00f6rfer",
-             "Ich bin im Dorf geboren.", "Ich wohne im Dorf.", "Ich werde im Dorf bleiben."),
-            ("Farmer", "der Bauer", "die Bauern",
-             "Der Bauer hat die K\u00fche gemolken.", "Der Bauer melkt die K\u00fche.", "Der Bauer wird die K\u00fche melken."),
-            ("Harvest", "die Ernte", "die Ernten",
-             "Wir haben die Ernte eingebracht.", "Wir bringen die Ernte ein.", "Wir werden die Ernte einbringen."),
-            ("Cow", "die Kuh", "die K\u00fche",
-             "Die Kuh hat auf der Wiese gegrast.", "Die Kuh grast auf der Wiese.", "Die Kuh wird auf der Wiese grasen."),
-            ("Horse", "das Pferd", "die Pferde",
-             "Ich bin auf dem Pferd geritten.", "Ich reite auf dem Pferd.", "Ich werde auf dem Pferd reiten."),
-            ("Well", "der Brunnen", "die Brunnen",
-             "Wir haben Wasser aus dem Brunnen geholt.", "Wir holen Wasser aus dem Brunnen.", "Wir werden Wasser aus dem Brunnen holen."),
-            ("Fence", "der Zaun", "die Z\u00e4une",
-             "Wir haben den Zaun repariert.", "Wir reparieren den Zaun.", "Wir werden den Zaun reparieren."),
+             "Die Scheune war wichtig.", "Ich sehe die Scheune.", "Ich werde mit der Scheune zufrieden sein.", "Die Bedeutung der Scheune ist gro\u00df."),
             ("Chicken", "das Huhn", "die H\u00fchner",
-             "Ich habe die H\u00fchner gef\u00fcttert.", "Ich f\u00fcttere die H\u00fchner.", "Ich werde die H\u00fchner f\u00fcttern."),
+             "Das Huhn war wichtig.", "Ich sehe das Huhn.", "Ich werde mit dem Huhn zufrieden sein.", "Die Bedeutung des Huhns ist gro\u00df."),
+            ("Cow", "die Kuh", "die K\u00fche",
+             "Die Kuh war wichtig.", "Ich sehe die Kuh.", "Ich werde mit der Kuh zufrieden sein.", "Die Bedeutung der Kuh ist gro\u00df."),
+            ("Farm", "der Bauernhof", "die Bauernh\u00f6fe",
+             "Der Bauernhof war wichtig.", "Ich sehe den Bauernhof.", "Ich werde mit dem Bauernhof zufrieden sein.", "Die Bedeutung des Bauernhofs ist gro\u00df."),
+            ("Farmer", "der Bauer", "die Bauern",
+             "Der Bauer war wichtig.", "Ich sehe den Bauern.", "Ich werde mit dem Bauern zufrieden sein.", "Die Bedeutung des Bauern ist gro\u00df."),
+            ("Fence", "der Zaun", "die Z\u00e4une",
+             "Der Zaun war wichtig.", "Ich sehe den Zaun.", "Ich werde mit dem Zaun zufrieden sein.", "Die Bedeutung des Zauns ist gro\u00df."),
+            ("Field", "das Feld", "die Felder",
+             "Das Feld war wichtig.", "Ich sehe das Feld.", "Ich werde mit dem Feld zufrieden sein.", "Die Bedeutung des Feldes ist gro\u00df."),
+            ("Harvest", "die Ernte", "die Ernten",
+             "Die Ernte war wichtig.", "Ich sehe die Ernte.", "Ich werde mit der Ernte zufrieden sein.", "Die Bedeutung der Ernte ist gro\u00df."),
+            ("Horse", "das Pferd", "die Pferde",
+             "Das Pferd war wichtig.", "Ich sehe das Pferd.", "Ich werde mit dem Pferd zufrieden sein.", "Die Bedeutung des Pferdes ist gro\u00df."),
             ("Meadow", "die Wiese", "die Wiesen",
-             "Die Schafe haben auf der Wiese geweidet.", "Die Schafe weiden auf der Wiese.", "Die Schafe werden auf der Wiese weiden."),
+             "Die Wiese war wichtig.", "Ich sehe die Wiese.", "Ich werde mit der Wiese zufrieden sein.", "Die Bedeutung der Wiese ist gro\u00df."),
+            ("Village", "das Dorf", "die D\u00f6rfer",
+             "Das Dorf war wichtig.", "Ich sehe das Dorf.", "Ich werde mit dem Dorf zufrieden sein.", "Die Bedeutung des Dorfes ist gro\u00df."),
+            ("Well", "der Brunnen", "die Brunnen",
+             "Der Brunnen war wichtig.", "Ich sehe den Brunnen.", "Ich werde mit dem Brunnen zufrieden sein.", "Die Bedeutung des Brunnens ist gro\u00df."),
         ],
     },
     "Government": {
         "title": "Government \u2013 Die Regierung",
         "rows": [
-            ("Law", "das Gesetz", "die Gesetze",
-             "Das Parlament hat das Gesetz verabschiedet.", "Das Parlament verabschiedet das Gesetz.", "Das Parlament wird das Gesetz verabschieden."),
-            ("State", "der Staat", "die Staaten",
-             "Der Staat hat die Steuern erh\u00f6ht.", "Der Staat erh\u00f6ht die Steuern.", "Der Staat wird die Steuern erh\u00f6hen."),
-            ("President", "der Pr\u00e4sident", "die Pr\u00e4sidenten",
-             "Der Pr\u00e4sident hat eine Rede gehalten.", "Der Pr\u00e4sident h\u00e4lt eine Rede.", "Der Pr\u00e4sident wird eine Rede halten."),
-            ("Parliament", "das Parlament", "die Parlamente",
-             "Das Parlament hat getagt.", "Das Parlament tagt.", "Das Parlament wird tagen."),
-            ("Election", "die Wahl", "die Wahlen",
-             "Die Wahl hat im November stattgefunden.", "Die Wahl findet im November statt.", "Die Wahl wird im November stattfinden."),
             ("Citizen", "der B\u00fcrger", "die B\u00fcrger",
-             "Der B\u00fcrger hat gew\u00e4hlt.", "Der B\u00fcrger w\u00e4hlt.", "Der B\u00fcrger wird w\u00e4hlen."),
+             "Der B\u00fcrger war wichtig.", "Ich sehe den B\u00fcrger.", "Ich werde mit dem B\u00fcrger zufrieden sein.", "Die Bedeutung des B\u00fcrgers ist gro\u00df."),
             ("Constitution", "die Verfassung", "die Verfassungen",
-             "Die Verfassung wurde 1949 geschrieben.", "Die Verfassung sch\u00fctzt die B\u00fcrger.", "Die Verfassung wird ge\u00e4ndert werden."),
-            ("Vote", "die Stimme", "die Stimmen",
-             "Ich habe meine Stimme abgegeben.", "Ich gebe meine Stimme ab.", "Ich werde meine Stimme abgeben."),
-            ("Minister", "der Minister", "die Minister",
-             "Der Minister ist zur\u00fcckgetreten.", "Der Minister tritt zur\u00fcck.", "Der Minister wird zur\u00fccktreten."),
+             "Die Verfassung war wichtig.", "Ich sehe die Verfassung.", "Ich werde mit der Verfassung zufrieden sein.", "Die Bedeutung der Verfassung ist gro\u00df."),
             ("Court", "das Gericht", "die Gerichte",
-             "Das Gericht hat entschieden.", "Das Gericht entscheidet.", "Das Gericht wird entscheiden."),
-            ("Rights", "das Recht", "die Rechte",
-             "Die B\u00fcrger haben f\u00fcr ihre Rechte gek\u00e4mpft.", "Die B\u00fcrger k\u00e4mpfen f\u00fcr ihre Rechte.", "Die B\u00fcrger werden f\u00fcr ihre Rechte k\u00e4mpfen."),
+             "Das Gericht war wichtig.", "Ich sehe das Gericht.", "Ich werde mit dem Gericht zufrieden sein.", "Die Bedeutung des Gerichts ist gro\u00df."),
+            ("Election", "die Wahl", "die Wahlen",
+             "Die Wahl war wichtig.", "Ich sehe die Wahl.", "Ich werde mit der Wahl zufrieden sein.", "Die Bedeutung der Wahl ist gro\u00df."),
+            ("Law", "das Gesetz", "die Gesetze",
+             "Das Gesetz war wichtig.", "Ich sehe das Gesetz.", "Ich werde mit dem Gesetz zufrieden sein.", "Die Bedeutung des Gesetzes ist gro\u00df."),
+            ("Minister", "der Minister", "die Minister",
+             "Der Minister war wichtig.", "Ich sehe den Minister.", "Ich werde mit dem Minister zufrieden sein.", "Die Bedeutung des Ministers ist gro\u00df."),
             ("Nation", "die Nation", "die Nationen",
-             "Die Nation hat getrauert.", "Die Nation trauert.", "Die Nation wird sich erholen."),
+             "Die Nation war wichtig.", "Ich sehe die Nation.", "Ich werde mit der Nation zufrieden sein.", "Die Bedeutung der Nation ist gro\u00df."),
+            ("Parliament", "das Parlament", "die Parlamente",
+             "Das Parlament war wichtig.", "Ich sehe das Parlament.", "Ich werde mit dem Parlament zufrieden sein.", "Die Bedeutung des Parlaments ist gro\u00df."),
+            ("President", "der Pr\u00e4sident", "die Pr\u00e4sidenten",
+             "Der Pr\u00e4sident war wichtig.", "Ich sehe den Pr\u00e4sidenten.", "Ich werde mit dem Pr\u00e4sidenten zufrieden sein.", "Die Bedeutung des Pr\u00e4sidenten ist gro\u00df."),
+            ("Rights", "das Recht", "die Rechte",
+             "Das Recht war wichtig.", "Ich sehe das Recht.", "Ich werde mit dem Recht zufrieden sein.", "Die Bedeutung des Rechts ist gro\u00df."),
+            ("State", "der Staat", "die Staaten",
+             "Der Staat war wichtig.", "Ich sehe den Staat.", "Ich werde mit dem Staat zufrieden sein.", "Die Bedeutung des Staates ist gro\u00df."),
+            ("Vote", "die Stimme", "die Stimmen",
+             "Die Stimme war wichtig.", "Ich sehe die Stimme.", "Ich werde mit der Stimme zufrieden sein.", "Die Bedeutung der Stimme ist gro\u00df."),
         ],
     },
     "Theology": {
         "title": "Theology \u2013 Die Theologie",
         "rows": [
-            ("God", "Gott", "\u2014",
-             "Gott hat die Welt erschaffen.", "Gott ist g\u00fctig.", "Gott wird uns f\u00fchren."),
             ("Church (body)", "die Kirche", "die Kirchen",
-             "Wir haben die Kirche besucht.", "Wir besuchen die Kirche.", "Wir werden die Kirche besuchen."),
-            ("Prayer", "das Gebet", "die Gebete",
-             "Ich habe ein Gebet gesprochen.", "Ich spreche ein Gebet.", "Ich werde ein Gebet sprechen."),
+             "Die Kirche war wichtig.", "Ich sehe die Kirche.", "Ich werde mit der Kirche zufrieden sein.", "Die Bedeutung der Kirche ist gro\u00df."),
             ("Faith", "der Glaube", "\u2014",
-             "Er hat seinen Glauben bewahrt.", "Er bewahrt seinen Glauben.", "Er wird seinen Glauben bewahren."),
+             "Der Glaube war wichtig.", "Ich sehe den Glauben.", "Ich werde mit dem Glauben zufrieden sein.", "Die Bedeutung des Glaubens ist gro\u00df."),
+            ("God", "Gott", "\u2014",
+             "Gott war treu.", "Ich liebe Gott von ganzem Herzen.", "Ich werde Gott vertrauen.", "Gottes Wille geschehe."),
             ("Grace", "die Gnade", "die Gnaden",
-             "Gott hat uns seine Gnade gezeigt.", "Gott zeigt uns seine Gnade.", "Gott wird uns seine Gnade zeigen."),
-            ("Sin", "die S\u00fcnde", "die S\u00fcnden",
-             "Er hat seine S\u00fcnde bereut.", "Er bereut seine S\u00fcnde.", "Er wird seine S\u00fcnde bereuen."),
-            ("Salvation", "die Erl\u00f6sung", "\u2014",
-             "Sie haben die Erl\u00f6sung gesucht.", "Sie suchen die Erl\u00f6sung.", "Sie werden die Erl\u00f6sung finden."),
-            ("Scripture", "die Schrift", "die Schriften",
-             "Ich habe die Schrift gelesen.", "Ich lese die Schrift.", "Ich werde die Schrift lesen."),
-            ("Soul", "die Seele", "die Seelen",
-             "Seine Seele war unruhig.", "Seine Seele ist unruhig.", "Seine Seele wird Frieden finden."),
-            ("Spirit", "der Geist", "die Geister",
-             "Der Heilige Geist hat sie erf\u00fcllt.", "Der Heilige Geist erf\u00fcllt sie.", "Der Heilige Geist wird sie erf\u00fcllen."),
-            ("Sermon", "die Predigt", "die Predigten",
-             "Ich habe die Predigt gehalten.", "Ich halte die Predigt.", "Ich werde die Predigt halten."),
+             "Die Gnade war wichtig.", "Ich sehe die Gnade.", "Ich werde mit der Gnade zufrieden sein.", "Die Bedeutung der Gnade ist gro\u00df."),
+            ("Prayer", "das Gebet", "die Gebete",
+             "Das Gebet war wichtig.", "Ich sehe das Gebet.", "Ich werde mit dem Gebet zufrieden sein.", "Die Bedeutung des Gebets ist gro\u00df."),
             ("Sacrament", "das Sakrament", "die Sakramente",
-             "Wir haben das Sakrament empfangen.", "Wir empfangen das Sakrament.", "Wir werden das Sakrament empfangen."),
+             "Das Sakrament war wichtig.", "Ich sehe das Sakrament.", "Ich werde mit dem Sakrament zufrieden sein.", "Die Bedeutung des Sakraments ist gro\u00df."),
+            ("Salvation", "die Erl\u00f6sung", "\u2014",
+             "Die Erl\u00f6sung war wichtig.", "Ich sehe die Erl\u00f6sung.", "Ich werde mit der Erl\u00f6sung zufrieden sein.", "Die Bedeutung der Erl\u00f6sung ist gro\u00df."),
+            ("Scripture", "die Schrift", "die Schriften",
+             "Die Schrift war wichtig.", "Ich sehe die Schrift.", "Ich werde mit der Schrift zufrieden sein.", "Die Bedeutung der Schrift ist gro\u00df."),
+            ("Sermon", "die Predigt", "die Predigten",
+             "Die Predigt war wichtig.", "Ich sehe die Predigt.", "Ich werde mit der Predigt zufrieden sein.", "Die Bedeutung der Predigt ist gro\u00df."),
+            ("Sin", "die S\u00fcnde", "die S\u00fcnden",
+             "Die S\u00fcnde war \u00fcberall.", "Ich sehe die S\u00fcnde.", "Ich werde von der S\u00fcnde frei sein.", "Die Bedeutung der S\u00fcnde ist gro\u00df."),
+            ("Soul", "die Seele", "die Seelen",
+             "Die Seele war wichtig.", "Ich sehe die Seele.", "Ich werde mit der Seele zufrieden sein.", "Die Bedeutung der Seele ist gro\u00df."),
+            ("Spirit", "der Geist", "die Geister",
+             "Der Geist war wichtig.", "Ich sehe den Geist.", "Ich werde mit dem Geist zufrieden sein.", "Die Bedeutung des Geistes ist gro\u00df."),
         ],
     },
     "Philosophy": {
         "title": "Philosophy \u2013 Die Philosophie",
         "rows": [
-            ("Truth", "die Wahrheit", "die Wahrheiten",
-             "Er hat die Wahrheit gesucht.", "Er sucht die Wahrheit.", "Er wird die Wahrheit finden."),
-            ("Reason", "die Vernunft", "\u2014",
-             "Sie hat mit Vernunft gehandelt.", "Sie handelt mit Vernunft.", "Sie wird mit Vernunft handeln."),
-            ("Knowledge", "das Wissen", "\u2014",
-             "Er hat sein Wissen erweitert.", "Er erweitert sein Wissen.", "Er wird sein Wissen erweitern."),
             ("Being", "das Sein", "\u2014",
-             "Die Philosophen haben \u00fcber das Sein diskutiert.", "Die Philosophen diskutieren \u00fcber das Sein.", "Die Philosophen werden \u00fcber das Sein diskutieren."),
-            ("Freedom", "die Freiheit", "die Freiheiten",
-             "Sie haben f\u00fcr die Freiheit gek\u00e4mpft.", "Sie k\u00e4mpfen f\u00fcr die Freiheit.", "Sie werden f\u00fcr die Freiheit k\u00e4mpfen."),
-            ("Justice", "die Gerechtigkeit", "\u2014",
-             "Er hat nach Gerechtigkeit gestrebt.", "Er strebt nach Gerechtigkeit.", "Er wird nach Gerechtigkeit streben."),
-            ("Virtue", "die Tugend", "die Tugenden",
-             "Die Tugend war ihm wichtig.", "Die Tugend ist ihm wichtig.", "Die Tugend wird ihm wichtig sein."),
-            ("Wisdom", "die Weisheit", "die Weisheiten",
-             "Er hat Weisheit gewonnen.", "Er gewinnt Weisheit.", "Er wird Weisheit gewinnen."),
-            ("Idea", "die Idee", "die Ideen",
-             "Sie hatte eine neue Idee.", "Sie hat eine neue Idee.", "Sie wird eine neue Idee haben."),
+             "Das Sein war wichtig.", "Ich sehe das Sein.", "Ich werde mit dem Sein zufrieden sein.", "Die Bedeutung des Seins ist gro\u00df."),
             ("Doubt", "der Zweifel", "die Zweifel",
-             "Er hatte Zweifel.", "Er hat Zweifel.", "Er wird Zweifel haben."),
-            ("Mind", "der Verstand", "\u2014",
-             "Er hat seinen Verstand gesch\u00e4rft.", "Er sch\u00e4rft seinen Verstand.", "Er wird seinen Verstand sch\u00e4rfen."),
+             "Der Zweifel war wichtig.", "Ich sehe den Zweifel.", "Ich werde mit dem Zweifel zufrieden sein.", "Die Bedeutung des Zweifels ist gro\u00df."),
+            ("Freedom", "die Freiheit", "die Freiheiten",
+             "Die Freiheit war wichtig.", "Ich sehe die Freiheit.", "Ich werde mit der Freiheit zufrieden sein.", "Die Bedeutung der Freiheit ist gro\u00df."),
+            ("Idea", "die Idee", "die Ideen",
+             "Die Idee war wichtig.", "Ich sehe die Idee.", "Ich werde mit der Idee zufrieden sein.", "Die Bedeutung der Idee ist gro\u00df."),
+            ("Justice", "die Gerechtigkeit", "\u2014",
+             "Die Gerechtigkeit war wichtig.", "Ich sehe die Gerechtigkeit.", "Ich werde mit der Gerechtigkeit zufrieden sein.", "Die Bedeutung der Gerechtigkeit ist gro\u00df."),
+            ("Knowledge", "das Wissen", "\u2014",
+             "Das Wissen war wichtig.", "Ich sehe das Wissen.", "Ich werde mit dem Wissen zufrieden sein.", "Die Bedeutung des Wissens ist gro\u00df."),
             ("Logic", "die Logik", "\u2014",
-             "Sie hat mit Logik argumentiert.", "Sie argumentiert mit Logik.", "Sie wird mit Logik argumentieren."),
+             "Die Logik war wichtig.", "Ich sehe die Logik.", "Ich werde mit der Logik zufrieden sein.", "Die Bedeutung der Logik ist gro\u00df."),
+            ("Mind", "der Verstand", "\u2014",
+             "Der Verstand war wichtig.", "Ich sehe den Verstand.", "Ich werde mit dem Verstand zufrieden sein.", "Die Bedeutung des Verstandes ist gro\u00df."),
+            ("Reason", "die Vernunft", "\u2014",
+             "Die Vernunft war wichtig.", "Ich sehe die Vernunft.", "Ich werde mit der Vernunft zufrieden sein.", "Die Bedeutung der Vernunft ist gro\u00df."),
+            ("Truth", "die Wahrheit", "die Wahrheiten",
+             "Die Wahrheit war wichtig.", "Ich sehe die Wahrheit.", "Ich werde mit der Wahrheit zufrieden sein.", "Die Bedeutung der Wahrheit ist gro\u00df."),
+            ("Virtue", "die Tugend", "die Tugenden",
+             "Die Tugend war wichtig.", "Ich sehe die Tugend.", "Ich werde mit der Tugend zufrieden sein.", "Die Bedeutung der Tugend ist gro\u00df."),
+            ("Wisdom", "die Weisheit", "die Weisheiten",
+             "Die Weisheit war wichtig.", "Ich sehe die Weisheit.", "Ich werde mit der Weisheit zufrieden sein.", "Die Bedeutung der Weisheit ist gro\u00df."),
         ],
     },
     "Military": {
         "title": "The Military \u2013 Das Milit\u00e4r",
         "rows": [
-            ("Soldier", "der Soldat", "die Soldaten",
-             "Der Soldat hat gek\u00e4mpft.", "Der Soldat k\u00e4mpft.", "Der Soldat wird k\u00e4mpfen."),
             ("Army", "die Armee", "die Armeen",
-             "Die Armee ist marschiert.", "Die Armee marschiert.", "Die Armee wird marschieren."),
-            ("War", "der Krieg", "die Kriege",
-             "Der Krieg hat lange gedauert.", "Der Krieg dauert lange.", "Der Krieg wird enden."),
-            ("Peace", "der Frieden", "\u2014",
-             "Der Frieden wurde unterzeichnet.", "Der Frieden h\u00e4lt an.", "Der Frieden wird kommen."),
-            ("Weapon", "die Waffe", "die Waffen",
-             "Sie haben die Waffe niedergelegt.", "Sie legen die Waffe nieder.", "Sie werden die Waffe niederlegen."),
+             "Die Armee war wichtig.", "Ich sehe die Armee.", "Ich werde mit der Armee zufrieden sein.", "Die Bedeutung der Armee ist gro\u00df."),
             ("Battle", "die Schlacht", "die Schlachten",
-             "Die Schlacht hat drei Tage gedauert.", "Die Schlacht tobt.", "Die Schlacht wird beginnen."),
-            ("General", "der General", "die Generäle",
-             "Der General hat den Befehl gegeben.", "Der General gibt den Befehl.", "Der General wird den Befehl geben."),
-            ("Fortress", "die Festung", "die Festungen",
-             "Die Festung wurde belagert.", "Die Festung steht fest.", "Die Festung wird verteidigt werden."),
-            ("Victory", "der Sieg", "die Siege",
-             "Sie haben den Sieg errungen.", "Sie erringen den Sieg.", "Sie werden den Sieg erringen."),
+             "Die Schlacht war wichtig.", "Ich sehe die Schlacht.", "Ich werde mit der Schlacht zufrieden sein.", "Die Bedeutung der Schlacht ist gro\u00df."),
             ("Defeat", "die Niederlage", "die Niederlagen",
-             "Sie haben die Niederlage akzeptiert.", "Sie akzeptieren die Niederlage.", "Sie werden die Niederlage akzeptieren."),
-            ("Uniform", "die Uniform", "die Uniformen",
-             "Er hat die Uniform getragen.", "Er tr\u00e4gt die Uniform.", "Er wird die Uniform tragen."),
+             "Die Niederlage war wichtig.", "Ich sehe die Niederlage.", "Ich werde mit der Niederlage zufrieden sein.", "Die Bedeutung der Niederlage ist gro\u00df."),
+            ("Fortress", "die Festung", "die Festungen",
+             "Die Festung war wichtig.", "Ich sehe die Festung.", "Ich werde mit der Festung zufrieden sein.", "Die Bedeutung der Festung ist gro\u00df."),
+            ("General", "der General", "die Gener\u00e4le",
+             "Der General war wichtig.", "Ich sehe den General.", "Ich werde mit dem General zufrieden sein.", "Die Bedeutung des Generals ist gro\u00df."),
             ("Officer", "der Offizier", "die Offiziere",
-             "Der Offizier hat die Truppen gef\u00fchrt.", "Der Offizier f\u00fchrt die Truppen.", "Der Offizier wird die Truppen f\u00fchren."),
+             "Der Offizier war wichtig.", "Ich sehe den Offizier.", "Ich werde mit dem Offizier zufrieden sein.", "Die Bedeutung des Offiziers ist gro\u00df."),
+            ("Peace", "der Frieden", "\u2014",
+             "Der Frieden war wichtig.", "Ich sehe den Frieden.", "Ich werde mit dem Frieden zufrieden sein.", "Die Bedeutung des Friedens ist gro\u00df."),
+            ("Soldier", "der Soldat", "die Soldaten",
+             "Der Soldat war wichtig.", "Ich sehe den Soldaten.", "Ich werde mit dem Soldaten zufrieden sein.", "Die Bedeutung des Soldaten ist gro\u00df."),
+            ("Uniform", "die Uniform", "die Uniformen",
+             "Die Uniform war wichtig.", "Ich sehe die Uniform.", "Ich werde mit der Uniform zufrieden sein.", "Die Bedeutung der Uniform ist gro\u00df."),
+            ("Victory", "der Sieg", "die Siege",
+             "Der Sieg war wichtig.", "Ich sehe den Sieg.", "Ich werde mit dem Sieg zufrieden sein.", "Die Bedeutung des Sieges ist gro\u00df."),
+            ("War", "der Krieg", "die Kriege",
+             "Der Krieg war wichtig.", "Ich sehe den Krieg.", "Ich werde mit dem Krieg zufrieden sein.", "Die Bedeutung des Krieges ist gro\u00df."),
+            ("Weapon", "die Waffe", "die Waffen",
+             "Die Waffe war wichtig.", "Ich sehe die Waffe.", "Ich werde mit der Waffe zufrieden sein.", "Die Bedeutung der Waffe ist gro\u00df."),
         ],
     },
     "Literature and Arts": {
         "title": "Literature and Arts \u2013 Literatur und Kunst",
         "rows": [
-            ("Book", "das Buch", "die B\u00fccher",
-             "Ich habe das Buch gelesen.", "Ich lese das Buch.", "Ich werde das Buch lesen."),
-            ("Poem", "das Gedicht", "die Gedichte",
-             "Er hat ein Gedicht geschrieben.", "Er schreibt ein Gedicht.", "Er wird ein Gedicht schreiben."),
-            ("Author", "der Autor", "die Autoren",
-             "Der Autor hat den Roman ver\u00f6ffentlicht.", "Der Autor ver\u00f6ffentlicht den Roman.", "Der Autor wird den Roman ver\u00f6ffentlichen."),
-            ("Painting", "das Gem\u00e4lde", "die Gem\u00e4lde",
-             "Sie hat das Gem\u00e4lde bewundert.", "Sie bewundert das Gem\u00e4lde.", "Sie wird das Gem\u00e4lde bewundern."),
-            ("Music", "die Musik", "\u2014",
-             "Wir haben Musik geh\u00f6rt.", "Wir h\u00f6ren Musik.", "Wir werden Musik h\u00f6ren."),
-            ("Theatre", "das Theater", "die Theater",
-             "Wir sind ins Theater gegangen.", "Wir gehen ins Theater.", "Wir werden ins Theater gehen."),
-            ("Language", "die Sprache", "die Sprachen",
-             "Ich habe die Sprache gelernt.", "Ich lerne die Sprache.", "Ich werde die Sprache lernen."),
-            ("Word", "das Wort", "die W\u00f6rter",
-             "Er hat das Wort gesucht.", "Er sucht das Wort.", "Er wird das Wort suchen."),
-            ("Story", "die Geschichte", "die Geschichten",
-             "Sie hat die Geschichte erz\u00e4hlt.", "Sie erz\u00e4hlt die Geschichte.", "Sie wird die Geschichte erz\u00e4hlen."),
             ("Art", "die Kunst", "die K\u00fcnste",
-             "Er hat die Kunst studiert.", "Er studiert die Kunst.", "Er wird die Kunst studieren."),
+             "Die Kunst war wichtig.", "Ich sehe die Kunst.", "Ich werde mit der Kunst zufrieden sein.", "Die Bedeutung der Kunst ist gro\u00df."),
+            ("Author", "der Autor", "die Autoren",
+             "Der Autor war wichtig.", "Ich sehe den Autor.", "Ich werde mit dem Autor zufrieden sein.", "Die Bedeutung des Autors ist gro\u00df."),
+            ("Book", "das Buch", "die B\u00fccher",
+             "Das Buch war wichtig.", "Ich sehe das Buch.", "Ich werde mit dem Buch zufrieden sein.", "Die Bedeutung des Buches ist gro\u00df."),
+            ("Language", "die Sprache", "die Sprachen",
+             "Die Sprache war wichtig.", "Ich sehe die Sprache.", "Ich werde mit der Sprache zufrieden sein.", "Die Bedeutung der Sprache ist gro\u00df."),
+            ("Music", "die Musik", "\u2014",
+             "Die Musik war wichtig.", "Ich sehe die Musik.", "Ich werde mit der Musik zufrieden sein.", "Die Bedeutung der Musik ist gro\u00df."),
+            ("Painting", "das Gem\u00e4lde", "die Gem\u00e4lde",
+             "Das Gem\u00e4lde war wichtig.", "Ich sehe das Gem\u00e4lde.", "Ich werde mit dem Gem\u00e4lde zufrieden sein.", "Die Bedeutung des Gem\u00e4ldes ist gro\u00df."),
+            ("Poem", "das Gedicht", "die Gedichte",
+             "Das Gedicht war wichtig.", "Ich sehe das Gedicht.", "Ich werde mit dem Gedicht zufrieden sein.", "Die Bedeutung des Gedichts ist gro\u00df."),
             ("Poet", "der Dichter", "die Dichter",
-             "Der Dichter hat die Zeilen geschrieben.", "Der Dichter schreibt die Zeilen.", "Der Dichter wird die Zeilen schreiben."),
+             "Der Dichter war wichtig.", "Ich sehe den Dichter.", "Ich werde mit dem Dichter zufrieden sein.", "Die Bedeutung des Dichters ist gro\u00df."),
+            ("Story", "die Geschichte", "die Geschichten",
+             "Die Geschichte war wichtig.", "Ich sehe die Geschichte.", "Ich werde mit der Geschichte zufrieden sein.", "Die Bedeutung der Geschichte ist gro\u00df."),
+            ("Theatre", "das Theater", "die Theater",
+             "Das Theater war wichtig.", "Ich sehe das Theater.", "Ich werde mit dem Theater zufrieden sein.", "Die Bedeutung des Theaters ist gro\u00df."),
             ("Verse", "der Vers", "die Verse",
-             "Sie hat den Vers zitiert.", "Sie zitiert den Vers.", "Sie wird den Vers zitieren."),
+             "Der Vers war wichtig.", "Ich sehe den Vers.", "Ich werde mit dem Vers zufrieden sein.", "Die Bedeutung des Verses ist gro\u00df."),
+            ("Word", "das Wort", "die W\u00f6rter",
+             "Das Wort war wichtig.", "Ich sehe das Wort.", "Ich werde mit dem Wort zufrieden sein.", "Die Bedeutung des Wortes ist gro\u00df."),
         ],
     },
     "Family": {
         "title": "Family \u2013 Die Familie",
         "rows": [
-            ("Family", "die Familie", "die Familien",
-             "Die Familie hat zusammen gegessen.", "Die Familie isst zusammen.", "Die Familie wird zusammen essen."),
-            ("Father", "der Vater", "die V\u00e4ter",
-             "Mein Vater hat mir geholfen.", "Mein Vater hilft mir.", "Mein Vater wird mir helfen."),
-            ("Mother", "die Mutter", "die M\u00fctter",
-             "Meine Mutter hat gekocht.", "Meine Mutter kocht.", "Meine Mutter wird kochen."),
-            ("Son", "der Sohn", "die S\u00f6hne",
-             "Mein Sohn hat studiert.", "Mein Sohn studiert.", "Mein Sohn wird studieren."),
-            ("Daughter", "die Tochter", "die T\u00f6chter",
-             "Meine Tochter hat gesungen.", "Meine Tochter singt.", "Meine Tochter wird singen."),
             ("Brother", "der Bruder", "die Br\u00fcder",
-             "Mein Bruder hat mich besucht.", "Mein Bruder besucht mich.", "Mein Bruder wird mich besuchen."),
-            ("Sister", "die Schwester", "die Schwestern",
-             "Meine Schwester hat mir geschrieben.", "Meine Schwester schreibt mir.", "Meine Schwester wird mir schreiben."),
-            ("Grandfather", "der Gro\u00dfvater", "die Gro\u00dfv\u00e4ter",
-             "Mein Gro\u00dfvater hat Geschichten erz\u00e4hlt.", "Mein Gro\u00dfvater erz\u00e4hlt Geschichten.", "Mein Gro\u00dfvater wird Geschichten erz\u00e4hlen."),
-            ("Grandmother", "die Gro\u00dfmutter", "die Gro\u00dfm\u00fctter",
-             "Meine Gro\u00dfmutter hat gebacken.", "Meine Gro\u00dfmutter backt.", "Meine Gro\u00dfmutter wird backen."),
-            ("Wife", "die Ehefrau", "die Ehefrauen",
-             "Meine Frau hat gelacht.", "Meine Frau lacht.", "Meine Frau wird lachen."),
-            ("Husband", "der Ehemann", "die Ehem\u00e4nner",
-             "Mein Mann hat gearbeitet.", "Mein Mann arbeitet.", "Mein Mann wird arbeiten."),
+             "Der Bruder war wichtig.", "Ich sehe den Bruder.", "Ich werde mit dem Bruder zufrieden sein.", "Die Bedeutung des Bruders ist gro\u00df."),
             ("Child", "das Kind", "die Kinder",
-             "Das Kind hat gespielt.", "Das Kind spielt.", "Das Kind wird spielen."),
+             "Das Kind war wichtig.", "Ich sehe das Kind.", "Ich werde mit dem Kind zufrieden sein.", "Die Bedeutung des Kindes ist gro\u00df."),
+            ("Daughter", "die Tochter", "die T\u00f6chter",
+             "Die Tochter war wichtig.", "Ich sehe die Tochter.", "Ich werde mit der Tochter zufrieden sein.", "Die Bedeutung der Tochter ist gro\u00df."),
+            ("Family", "die Familie", "die Familien",
+             "Die Familie war wichtig.", "Ich sehe die Familie.", "Ich werde mit der Familie zufrieden sein.", "Die Bedeutung der Familie ist gro\u00df."),
+            ("Father", "der Vater", "die V\u00e4ter",
+             "Der Vater war wichtig.", "Ich sehe den Vater.", "Ich werde mit dem Vater zufrieden sein.", "Die Bedeutung des Vaters ist gro\u00df."),
+            ("Grandfather", "der Gro\u00dfvater", "die Gro\u00dfv\u00e4ter",
+             "Der Gro\u00dfvater war wichtig.", "Ich sehe den Gro\u00dfvater.", "Ich werde mit dem Gro\u00dfvater zufrieden sein.", "Die Bedeutung des Gro\u00dfvaters ist gro\u00df."),
+            ("Grandmother", "die Gro\u00dfmutter", "die Gro\u00dfm\u00fctter",
+             "Die Gro\u00dfmutter war wichtig.", "Ich sehe die Gro\u00dfmutter.", "Ich werde mit der Gro\u00dfmutter zufrieden sein.", "Die Bedeutung der Gro\u00dfmutter ist gro\u00df."),
+            ("Husband", "der Ehemann", "die Ehem\u00e4nner",
+             "Der Ehemann war wichtig.", "Ich sehe den Ehemann.", "Ich werde mit dem Ehemann zufrieden sein.", "Die Bedeutung des Ehemannes ist gro\u00df."),
+            ("Mother", "die Mutter", "die M\u00fctter",
+             "Die Mutter war wichtig.", "Ich sehe die Mutter.", "Ich werde mit der Mutter zufrieden sein.", "Die Bedeutung der Mutter ist gro\u00df."),
+            ("Sister", "die Schwester", "die Schwestern",
+             "Die Schwester war wichtig.", "Ich sehe die Schwester.", "Ich werde mit der Schwester zufrieden sein.", "Die Bedeutung der Schwester ist gro\u00df."),
+            ("Son", "der Sohn", "die S\u00f6hne",
+             "Der Sohn war wichtig.", "Ich sehe den Sohn.", "Ich werde mit dem Sohn zufrieden sein.", "Die Bedeutung des Sohnes ist gro\u00df."),
+            ("Wife", "die Ehefrau", "die Ehefrauen",
+             "Die Ehefrau war wichtig.", "Ich sehe die Ehefrau.", "Ich werde mit der Ehefrau zufrieden sein.", "Die Bedeutung der Ehefrau ist gro\u00df."),
         ],
     },
 }
 
-HEADERS = ["English", "German", "Plural", "Past", "Present", "Future"]
-COL_WIDTHS = [16, 18, 18, 34, 28, 32]
+HEADERS = ["English", "German", "Plural", "Past \u00b7 Nominativ", "Present \u00b7 Akkusativ", "Future \u00b7 Dativ", "Genitiv"]
+COL_WIDTHS = [16, 18, 20, 26, 28, 36, 32]
 
 FONT_NAME = "Arial"
 TITLE_FONT = Font(name=FONT_NAME, size=14, bold=True)
@@ -359,6 +359,13 @@ for sheet_name, content in DOMAINS.items():
     home_cell.style = "Hyperlink"
     home_cell.font = Font(name=FONT_NAME, size=12, bold=True, underline="single", color="0563C1")
     home_cell.alignment = Alignment(horizontal="right", vertical="center")
+
+    grammar_cell = ws.cell(row=1, column=len(HEADERS) + 1, value="\U0001F4D6 Grammar")
+    grammar_cell.hyperlink = internal_link("Grammar", display="\U0001F4D6 Grammar")
+    grammar_cell.style = "Hyperlink"
+    grammar_cell.font = Font(name=FONT_NAME, size=12, bold=True, underline="single", color="0563C1")
+    grammar_cell.alignment = Alignment(horizontal="right", vertical="center")
+    ws.column_dimensions[get_column_letter(len(HEADERS) + 1)].width = 14
 
     ws.row_dimensions[1].height = 24
     ws.append([])  # blank spacer row
@@ -421,6 +428,88 @@ for sheet_name, content in DOMAINS.items():
 toc.column_dimensions["A"].width = 24
 toc.column_dimensions["B"].width = 44
 toc.sheet_view.showGridLines = False
+
+# Blank spacer row, then a distinctly-styled link down to the Grammar page
+toc_grammar_row = r + 1
+toc.merge_cells(start_row=toc_grammar_row, start_column=1, end_row=toc_grammar_row, end_column=2)
+toc_grammar_cell = toc.cell(row=toc_grammar_row, column=1, value="\U0001F4D6 Grammar \u2013 Die vier F\u00e4lle (cases at a glance)")
+toc_grammar_cell.hyperlink = internal_link("Grammar", display="\U0001F4D6 Grammar \u2013 Die vier F\u00e4lle (cases at a glance)")
+toc_grammar_cell.style = "Hyperlink"
+toc_grammar_cell.font = Font(name=FONT_NAME, size=12, bold=True, underline="single", color="0563C1")
+toc_grammar_cell.fill = PatternFill(start_color="FCE9C6", end_color="FCE9C6", fill_type="solid")
+toc_grammar_cell.border = BORDER
+toc_grammar_cell.alignment = Alignment(horizontal="left", vertical="center")
+toc.row_dimensions[toc_grammar_row].height = 22
+
+# Grammar reference sheet: the four cases across question words, definite
+# articles, and indefinite articles. Placed last (no explicit index), so it
+# lands as the final tab. Every domain sheet's corner nav links here.
+gram = wb.create_sheet(title="Grammar")
+gram.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
+gram_title = gram.cell(row=1, column=1, value="Die vier F\u00e4lle \u2013 German Cases at a Glance")
+gram_title.font = TITLE_FONT
+gram_title.alignment = Alignment(horizontal="left", vertical="center")
+
+gram_home = gram.cell(row=1, column=5, value="\u2302 Contents")
+gram_home.hyperlink = internal_link("Contents", display="\u2302 Contents")
+gram_home.style = "Hyperlink"
+gram_home.font = Font(name=FONT_NAME, size=12, bold=True, underline="single", color="0563C1")
+gram_home.alignment = Alignment(horizontal="right", vertical="center")
+gram.row_dimensions[1].height = 24
+
+def gram_section(row, text, span):
+    gram.merge_cells(start_row=row, start_column=1, end_row=row, end_column=span)
+    cell = gram.cell(row=row, column=1, value=text)
+    cell.font = Font(name=FONT_NAME, size=12, bold=True)
+    cell.alignment = Alignment(horizontal="left", vertical="center")
+    gram.row_dimensions[row].height = 20
+
+def gram_header_row(row, labels):
+    for c, h in enumerate(labels, start=1):
+        cell = gram.cell(row=row, column=c, value=h)
+        cell.font = HEADER_FONT
+        cell.fill = HEADER_FILL
+        cell.border = BORDER
+        cell.alignment = CENTER
+
+def gram_data_row(row, values, bold_first=True):
+    for c, v in enumerate(values, start=1):
+        cell = gram.cell(row=row, column=c, value=v)
+        cell.border = BORDER
+        cell.alignment = WRAP if c > 1 else Alignment(vertical="top")
+        cell.font = GERMAN_FONT if (c == 1 and bold_first) else CELL_FONT
+
+# Section 1: question words + one example per case
+gram_section(3, "Wer? Was? Wem? Wessen? \u2013 one question word and example per case", 3)
+gram_header_row(4, ["Case", "Question word(s)", "Example"])
+gram_data_row(5, ["Nominativ", "wer? / was?", "Der Mann schl\u00e4ft."])
+gram_data_row(6, ["Akkusativ", "wen? / was?", "Ich sehe den Mann."])
+gram_data_row(7, ["Dativ", "wem?", "Ich gebe dem Mann ein Buch."])
+gram_data_row(8, ["Genitiv", "wessen?", "Das Buch des Mannes."])
+
+# Section 2: definite articles (der / die / das)
+gram_section(10, "Definite Articles \u2013 der \u00b7 die \u00b7 das", 5)
+gram_header_row(11, ["", "Nominativ", "Akkusativ", "Dativ", "Genitiv"])
+gram_data_row(12, ["Masculine (der)", "der", "den", "dem", "des"])
+gram_data_row(13, ["Feminine (die)", "die", "die", "der", "der"])
+gram_data_row(14, ["Neuter (das)", "das", "das", "dem", "des"])
+gram_data_row(15, ["Plural (die)", "die", "die", "den", "der"])
+
+# Section 3: indefinite articles (ein / eine / ein) -- no plural form in German
+gram_section(17, "Indefinite Articles \u2013 ein \u00b7 eine \u00b7 ein", 5)
+gram_header_row(18, ["", "Nominativ", "Akkusativ", "Dativ", "Genitiv"])
+gram_data_row(19, ["Masculine (ein)", "ein", "einen", "einem", "eines"])
+gram_data_row(20, ["Feminine (eine)", "eine", "eine", "einer", "einer"])
+gram_data_row(21, ["Neuter (ein)", "ein", "ein", "einem", "eines"])
+
+note = gram.cell(row=23, column=1,
+                  value="Tip: the article usually carries the case \u2013 watch how der becomes den, dem, des.")
+note.font = Font(name=FONT_NAME, size=10, italic=True, color="595959")
+gram.merge_cells(start_row=23, start_column=1, end_row=23, end_column=5)
+
+for c, w in enumerate([18, 14, 14, 14, 32], start=1):
+    gram.column_dimensions[get_column_letter(c)].width = w
+gram.sheet_view.showGridLines = False
 
 out_path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
     os.environ.get("VOCAB_OUT_DIR", os.getcwd()),
