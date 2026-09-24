@@ -12,8 +12,9 @@
 #
 # USAGE:
 #   ~/bin/tmreport.ksh [HD Name]
-#   At the creation of this script, the HD Name was "UnionSine".
-#   If no HD Name is given, "UnionSine" is used.
+#   If no HD Name is given, the first Time Machine destination reported by
+#   "tmutil destinationinfo" is used (e.g. UnionSine on the MacBook Pro,
+#   easystore on the iMac).
 #
 # NOTES:
 #   Terminal must have Full Disk Access (System Settings > Privacy & Security
@@ -31,7 +32,12 @@ fi
 if [[ -n "$1" ]]; then
     HD_name="$1"
 else
-    HD_name="UnionSine"
+    HD_name=$(tmutil destinationinfo 2>/dev/null \
+        | awk -F' : ' '/^Name/ { sub(/[ \t]+$/, "", $2); print $2; exit }')
+    if [[ -z "$HD_name" ]]; then
+        print -u2 "Error: no Time Machine destination is configured on this Mac."
+        exit 1
+    fi
 fi
 
 if [[ ! -d "/Volumes/$HD_name" ]]; then
@@ -40,10 +46,10 @@ if [[ ! -d "/Volumes/$HD_name" ]]; then
 fi
 
 mkdir -p ~/logs
-LOG=~/logs/$HD_name
+LOG="$HOME/logs/$HD_name"
 
-{ tmutil status; tmutil latestbackup; tmutil listbackups; tmutil destinationinfo; } > $LOG 2>&1
-pbcopy < $LOG
-cat $LOG
+{ tmutil status; tmutil latestbackup; tmutil listbackups; tmutil destinationinfo; } > "$LOG" 2>&1
+pbcopy < "$LOG"
+cat "$LOG"
 
 #-------------------------------------------------------------------------------
