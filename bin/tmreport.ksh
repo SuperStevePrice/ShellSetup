@@ -2,15 +2,16 @@
 
 #-------------------------------------------------------------------------------
 # PROGRAM:
-#   ~/bin/tmutil.ksh
+#   ~/bin/tmreport.ksh
 #
 #
 # PURPOSE:
-#   Run a set of tmutil (Time Machine utilities) and display results to STDOUT.
+#   Run a set of tmutil (Time Machine utilities) commands and display results
+#   to STDOUT. Named tmreport so it never shadows Apple's /usr/bin/tmutil.
 #   Results are also written to ~/logs/<HD Name> and copied to the clipboard.
 #
 # USAGE:
-#   ~/bin/tmutil.ksh [HD Name]
+#   ~/bin/tmreport.ksh [HD Name]
 #   At the creation of this script, the HD Name was "UnionSine".
 #   If no HD Name is given, "UnionSine" is used.
 #
