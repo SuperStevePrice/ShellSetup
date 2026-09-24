@@ -18,6 +18,11 @@
 #
 #-------------------------------------------------------------------------------
 
+if [[ $(uname -s) != Darwin ]]; then
+    print -u2 "Error: $(basename $0) runs on macOS only."
+    exit 1
+fi
+
 LOG=~/logs/tcc_who.log
 mkdir -p ~/logs
 
