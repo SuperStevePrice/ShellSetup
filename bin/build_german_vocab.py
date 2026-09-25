@@ -1308,6 +1308,26 @@ function renderBoard() {
   domain.words.forEach(w => board.appendChild(renderCard(domain, w)));
 }
 
+function articleVerdictParts(st, w) {
+  if (!w.article) {
+    return { cls: "blank", html: escapeHtml(w.noun) + " &mdash; proper noun, no article" };
+  }
+  const g = (st.articleGuess || "").trim().toLowerCase();
+  if (!g) {
+    return { cls: "blank", html: "&mdash;" };
+  }
+  const isCorrect = g === w.article;
+  return {
+    cls: isCorrect ? "correct" : "wrong",
+    html: (isCorrect ? "\u2713" : "\u2717") + " " + escapeHtml(w.article) + " " + escapeHtml(w.noun)
+  };
+}
+function applyArticleVerdict(el, st, w) {
+  const parts = articleVerdictParts(st, w);
+  el.className = "article-verdict " + parts.cls;
+  el.innerHTML = parts.html;
+}
+
 function renderCard(domain, w) {
   const st = loadState(domain.key, w.en) || {
     articleGuess: "", past: "", present: "", future: "", genitiv: "",
@@ -1325,18 +1345,16 @@ function renderCard(domain, w) {
       '" aria-label="Article for ' + escapeHtml(w.noun) + '">'
     : '<span class="no-article">&mdash;</span>';
 
-  const verdictHtml = hasArticle
-    ? (() => {
-        const g = (st.articleGuess || "").trim().toLowerCase();
-        const cls = !g ? "blank" : (g === w.article ? "correct" : "wrong");
-        const mark = !g ? "—" : (g === w.article ? "✓" : "✗");
-        return '<p class="article-verdict ' + cls + '">' + mark + " " + escapeHtml(w.article) + " " + escapeHtml(w.noun) + "</p>";
-      })()
-    : '<p class="article-verdict blank">' + escapeHtml(w.noun) + " &mdash; proper noun, no article</p>";
+  // Shown immediately, independent of the main Check button -- getting the
+  // gender wrong makes every sentence that follows wrong too, so this has
+  // to be checked (and the right answer revealed if needed) before the
+  // learner invests effort writing four sentences on a bad assumption.
+  const initialVerdict = articleVerdictParts(st, w);
 
   card.innerHTML =
     "<h3>" + escapeHtml(w.en) + "</h3>" +
     '<div class="noun-row">' + articleFieldHtml + '<span class="noun">' + escapeHtml(w.noun) + "</span></div>" +
+    '<p class="article-verdict ' + initialVerdict.cls + '">' + initialVerdict.html + "</p>" +
     '<label class="sent-label">Past &middot; Nominativ<input type="text" class="sent-input" data-tense="past" value="' +
       escapeHtml(st.past || "") + '" ' + (st.revealed ? "disabled" : "") + "></label>" +
     '<label class="sent-label">Present &middot; Akkusativ<input type="text" class="sent-input" data-tense="present" value="' +
@@ -1351,7 +1369,6 @@ function renderCard(domain, w) {
         : '<button type="button" class="check">Check</button>') +
     "</div>" +
     '<div class="answer"' + (st.revealed ? "" : " hidden") + ">" +
-      verdictHtml +
       '<ul class="models">' +
         "<li><span>Nominativ</span>" + escapeHtml(w.past) + "</li>" +
         "<li><span>Akkusativ</span>" + escapeHtml(w.present) + "</li>" +
@@ -1369,7 +1386,18 @@ function renderCard(domain, w) {
 
   if (hasArticle) {
     const ai = card.querySelector(".article-input");
-    ai.addEventListener("input", e => { st.articleGuess = e.target.value; persist(); });
+    const verdictEl = card.querySelector(".article-verdict");
+    ai.addEventListener("input", e => {
+      st.articleGuess = e.target.value;
+      persist();
+      // Don't judge mid-keystroke (typing "d" toward "der" would flash
+      // "wrong" before they're done) -- go neutral while actively editing,
+      // and only check for real once they leave the field.
+      verdictEl.className = "article-verdict blank";
+      verdictEl.innerHTML = "&mdash;";
+    });
+    ai.addEventListener("blur", () => applyArticleVerdict(verdictEl, st, w));
+    ai.addEventListener("keydown", e => { if (e.key === "Enter") ai.blur(); });
   }
   card.querySelectorAll(".sent-input").forEach(inp => {
     inp.addEventListener("input", e => { st[e.target.dataset.tense] = e.target.value; persist(); });
