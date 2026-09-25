@@ -1,6 +1,6 @@
 #!/bin/ksh
 #
-# german_vocabulary — launch script for the vocabulary workbook.
+# german_vocabulary.ksh — launch script for the vocabulary workbook.
 #
 # On macOS, prefers the native .numbers file if one exists: it opens
 # instantly, with no "may look different" warning and no compatibility
@@ -16,8 +16,8 @@
 # On Linux (no Numbers app), always uses the .xlsx via xdg-open.
 #
 # Usage:
-#   german_vocabulary                 # picks the right default per platform
-#   german_vocabulary /path/to/file   # explicit override
+#   german_vocabulary.ksh                 # picks the right default per platform
+#   german_vocabulary.ksh /path/to/file   # explicit override
 
 typeset BUILD_SCRIPT="$HOME/bin/german-vocab.ksh"
 typeset XLSX_FILE="$HOME/Documents/german_vocabulary_by_domain.xlsx"
@@ -35,21 +35,21 @@ fi
 
 if [[ ! -e "${FILE}" ]]; then
     if [[ "${FILE}" == *.numbers ]]; then
-        print -u2 "german_vocabulary: ${FILE} not found."
+        print -u2 "german_vocabulary.ksh: ${FILE} not found."
         print -u2 "The .numbers file is a manual copy -- open ${XLSX_FILE}"
         print -u2 "in Numbers and use File > Save As... (format: Numbers)."
         exit 1
     fi
 
-    print "german_vocabulary: ${FILE} not found; building it..."
+    print "german_vocabulary.ksh: ${FILE} not found; building it..."
 
     if [[ ! -x "${BUILD_SCRIPT}" ]]; then
-        print -u2 "german_vocabulary: cannot find or execute ${BUILD_SCRIPT}"
+        print -u2 "german_vocabulary.ksh: cannot find or execute ${BUILD_SCRIPT}"
         exit 1
     fi
 
     "${BUILD_SCRIPT}" "${FILE}" || {
-        print -u2 "german_vocabulary: build failed"
+        print -u2 "german_vocabulary.ksh: build failed"
         exit 1
     }
 fi
@@ -57,6 +57,6 @@ fi
 case $platform in
     Darwin) open "${FILE}" ;;
     Linux)  xdg-open "${FILE}" >/dev/null 2>&1 & ;;
-    *)      print -u2 "german_vocabulary: unsupported platform: ${platform}"
+    *)      print -u2 "german_vocabulary.ksh: unsupported platform: ${platform}"
             exit 1 ;;
 esac
