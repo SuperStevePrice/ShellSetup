@@ -10,6 +10,7 @@ Usage:
     build_german_vocab.py /some/dir/out.xlsx
     VOCAB_OUT_DIR=~/Documents build_german_vocab.py
 """
+import json
 import os
 import sys
 import openpyxl
@@ -915,15 +916,530 @@ for c, w in enumerate([14, 16, 12, 20, 24], start=1):
     irreg.column_dimensions[get_column_letter(c)].width = w
 irreg.sheet_view.showGridLines = False
 
-out_path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
-    os.environ.get("VOCAB_OUT_DIR", os.path.expanduser("~/Documents")),
-    "german_vocabulary_by_domain.xlsx",
-)
-out_path = os.path.abspath(os.path.expanduser(out_path))
-os.makedirs(os.path.dirname(out_path), exist_ok=True)
-wb.save(out_path)
+
+# ---------------------------------------------------------------------------
+# Companion drill app (self-graded case/tense quiz) -- generated from the
+# same DOMAINS dict as the workbook above, so the two can never drift apart.
+# The template below is the full standalone HTML/CSS/JS app; only the
+# __VOCAB_JSON__ placeholder gets replaced at build time.
+# ---------------------------------------------------------------------------
+DRILL_HTML_TEMPLATE = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>German Vocabulary Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFE9DA;
+    --paper-line: #D8CFB8;
+    --paper-alt: #E3DCC8;
+    --ink: #2B2620;
+    --ink-soft: #6B6252;
+    --burgundy: #6B2737;
+    --burgundy-soft: #8C4054;
+    --forest: #3F5D4B;
+    --rust: #A65A3D;
+    --focus: #6B2737;
+    --card-bg: #F6F2E7;
+    --border: #C9BFA4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1C1815;
+      --paper-line: #332C24;
+      --paper-alt: #241F1A;
+      --ink: #EDE6D6;
+      --ink-soft: #B3A98F;
+      --burgundy: #D98CA0;
+      --burgundy-soft: #B4495B;
+      --forest: #7FB79A;
+      --rust: #D08A65;
+      --focus: #D98CA0;
+      --card-bg: #221D19;
+      --border: #3A322A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1C1815;
+    --paper-line: #332C24;
+    --paper-alt: #241F1A;
+    --ink: #EDE6D6;
+    --ink-soft: #B3A98F;
+    --burgundy: #D98CA0;
+    --burgundy-soft: #B4495B;
+    --forest: #7FB79A;
+    --rust: #D08A65;
+    --focus: #D98CA0;
+    --card-bg: #221D19;
+    --border: #3A322A;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .app { max-width: 980px; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
+
+  .app-header h1 {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-weight: 700;
+    font-size: 1.9rem;
+    margin: 0 0 0.2rem;
+    letter-spacing: 0.01em;
+  }
+  .app-header .tagline {
+    margin: 0 0 1.5rem;
+    color: var(--ink-soft);
+    max-width: 46em;
+  }
+
+  .layout { display: flex; gap: 1.75rem; align-items: flex-start; }
+
+  .rail {
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    flex: 0 0 auto;
+    gap: 2px;
+  }
+  .tab {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 0.98rem;
+    text-align: left;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    border: 1px solid var(--border);
+    border-right: none;
+    padding: 0.55rem 0.8rem;
+    cursor: pointer;
+    position: relative;
+  }
+  .tab + .tab { border-top: none; }
+  .tab.active {
+    background: var(--card-bg);
+    color: var(--ink);
+    font-weight: 600;
+    border-right: 1px solid var(--card-bg);
+    margin-right: -1px;
+  }
+  .tab.active::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--burgundy-soft);
+  }
+
+  .board {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 720px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 1.4rem 1.6rem 1.6rem;
+  }
+
+  .board-head { margin-bottom: 1.1rem; border-bottom: 1px solid var(--paper-line); padding-bottom: 0.9rem; }
+  .board-head h2 {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem;
+  }
+  .tally { display: flex; flex-wrap: wrap; gap: 0.3rem 1.4rem; color: var(--ink-soft); font-size: 0.92rem; margin-bottom: 0.7rem; }
+  .tally strong { color: var(--ink); }
+
+  .reset-domain {
+    font-family: inherit;
+    font-size: 0.85rem;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+  }
+  .reset-domain:hover { color: var(--burgundy); border-color: var(--burgundy-soft); }
+
+  .card {
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--burgundy-soft);
+    padding: 1.1rem 1.3rem 1.3rem;
+    margin: 0 0 1.1rem 0.6rem;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 1.05rem; left: -0.75rem;
+    width: 0.65rem; height: 0.65rem;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+  }
+  .card h3 {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 1.15rem;
+    margin: 0 0 0.55rem;
+  }
+
+  .noun-row { display: flex; align-items: baseline; gap: 0.55rem; margin-bottom: 0.85rem; }
+  .article-input {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1rem;
+    width: 3.4rem;
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+    padding: 0.15rem 0.1rem;
+  }
+  .article-input::placeholder { color: var(--ink-soft); opacity: 0.7; }
+  .article-input:disabled { color: var(--ink-soft); }
+  .no-article { color: var(--ink-soft); width: 3.4rem; text-align: center; }
+  .noun { font-style: italic; }
+
+  .sent-label {
+    display: block;
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.55rem;
+  }
+  .sent-input {
+    display: block;
+    width: 100%;
+    margin-top: 0.2rem;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+    padding: 0.3rem 0.1rem;
+  }
+  .sent-input:disabled { color: var(--ink-soft); }
+
+  .card-actions { margin-top: 0.9rem; }
+  .check, .try-again {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 0.92rem;
+    background: var(--burgundy);
+    color: var(--paper);
+    border: none;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+  }
+  .try-again { background: none; color: var(--ink-soft); border: 1px solid var(--border); }
+  .check:hover { background: var(--burgundy-soft); }
+  .try-again:hover { color: var(--burgundy); border-color: var(--burgundy-soft); }
+
+  .answer {
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--border);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .answer:not([hidden]) { animation: reveal 0.22s ease-out; }
+  }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .article-verdict { margin: 0 0 0.7rem; font-weight: 600; }
+  .article-verdict.correct { color: var(--forest); }
+  .article-verdict.wrong { color: var(--rust); }
+  .article-verdict.blank { color: var(--ink-soft); font-weight: 400; }
+
+  .models { list-style: none; margin: 0 0 0.9rem; padding: 0; }
+  .models li { margin-bottom: 0.35rem; }
+  .models li span {
+    font-family: "Zilla Slab", Georgia, serif;
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    display: inline-block;
+    width: 5.6rem;
+  }
+
+  .self-mark { font-size: 0.88rem; color: var(--ink-soft); }
+  .self-mark > span { display: block; margin-bottom: 0.35rem; }
+  .self-mark label { margin-right: 1.1rem; }
+  .self-mark input[type="checkbox"] { margin-right: 0.3rem; }
+
+  button:focus-visible, input:focus-visible, .tab:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 720px) {
+    .layout { flex-direction: column; }
+    .rail {
+      flex-direction: row;
+      overflow-x: auto;
+      width: 100%;
+      gap: 0;
+    }
+    .tab { border: 1px solid var(--border); flex: 0 0 auto; white-space: nowrap; }
+    .tab + .tab { border-top: 1px solid var(--border); border-left: none; }
+    .tab.active::before { top: auto; bottom: 0; left: 0; right: 0; width: auto; height: 3px; }
+    .board { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>Deutsch üben</h1>
+    <p class="tagline">A companion drill for the vocabulary workbook. For each noun, supply the article, then one sentence for each of the four cases &mdash; Nominativ (past), Akkusativ (present), Dativ (future), Genitiv (any tense) &mdash; and check yourself against a model answer.</p>
+  </header>
+  <div class="layout">
+    <nav class="rail" id="rail" aria-label="Domain"></nav>
+    <main class="board" id="board"></main>
+  </div>
+</div>
+<script>
+const VOCAB = __VOCAB_JSON__;
+const STORE_PREFIX = "dvoc:v1:";
+
+let currentDomainIndex = 0;
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function loadState(domainKey, en) {
+  try {
+    const raw = localStorage.getItem(STORE_PREFIX + domainKey + ":" + en);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveState(domainKey, en, state) {
+  try {
+    localStorage.setItem(STORE_PREFIX + domainKey + ":" + en, JSON.stringify(state));
+  } catch (e) {
+    /* storage unavailable; drill still works, just won't persist */
+  }
+}
+
+function clearDomain(domain) {
+  domain.words.forEach(w => {
+    try { localStorage.removeItem(STORE_PREFIX + domain.key + ":" + w.en); } catch (e) {}
+  });
+}
+
+function computeScore(domain) {
+  let artTotal = 0, artCorrect = 0, artWrong = 0, sentChecked = 0, sentTotal = 0;
+  domain.words.forEach(w => {
+    const st = loadState(domain.key, w.en) || {};
+    if (w.article) {
+      artTotal++;
+      if (st.articleGuess) {
+        const g = st.articleGuess.trim().toLowerCase();
+        if (g === w.article) artCorrect++; else artWrong++;
+      }
+    }
+    sentTotal += 4;
+    if (st.selfMarks) {
+      ["past", "present", "future", "genitiv"].forEach(t => { if (st.selfMarks[t]) sentChecked++; });
+    }
+  });
+  return { artTotal, artCorrect, artWrong, sentChecked, sentTotal };
+}
+
+function renderRail() {
+  const rail = document.getElementById("rail");
+  rail.innerHTML = "";
+  VOCAB.forEach((d, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tab" + (i === currentDomainIndex ? " active" : "");
+    btn.textContent = d.key;
+    btn.setAttribute("aria-pressed", i === currentDomainIndex ? "true" : "false");
+    btn.addEventListener("click", () => {
+      currentDomainIndex = i;
+      renderRail();
+      renderBoard();
+    });
+    rail.appendChild(btn);
+  });
+}
+
+function renderBoard() {
+  const board = document.getElementById("board");
+  const domain = VOCAB[currentDomainIndex];
+  const score = computeScore(domain);
+  board.innerHTML = "";
+
+  const head = document.createElement("div");
+  head.className = "board-head";
+  const untried = score.artTotal - score.artCorrect - score.artWrong;
+  head.innerHTML =
+    "<h2>" + escapeHtml(domain.title) + "</h2>" +
+    '<div class="tally">' +
+      "<span>Articles: <strong>" + score.artCorrect + "</strong> correct &middot; <strong>" + score.artWrong + "</strong> missed &middot; " + untried + " not yet tried</span>" +
+      "<span>Sentences self-marked: <strong>" + score.sentChecked + "</strong> of " + score.sentTotal + "</span>" +
+    "</div>" +
+    '<button type="button" class="reset-domain">Reset this domain</button>';
+  head.querySelector(".reset-domain").addEventListener("click", () => {
+    if (confirm('Clear your answers for "' + domain.key + '"?')) {
+      clearDomain(domain);
+      renderBoard();
+    }
+  });
+  board.appendChild(head);
+
+  domain.words.forEach(w => board.appendChild(renderCard(domain, w)));
+}
+
+function renderCard(domain, w) {
+  const st = loadState(domain.key, w.en) || {
+    articleGuess: "", past: "", present: "", future: "", genitiv: "",
+    revealed: false, selfMarks: {}
+  };
+  const hasArticle = !!w.article;
+  const persist = () => saveState(domain.key, w.en, st);
+
+  const card = document.createElement("article");
+  card.className = "card";
+
+  const articleFieldHtml = hasArticle
+    ? '<input type="text" class="article-input" maxlength="4" placeholder="?" value="' +
+      escapeHtml(st.articleGuess || "") + '" ' + (st.revealed ? "disabled" : "") +
+      '" aria-label="Article for ' + escapeHtml(w.noun) + '">'
+    : '<span class="no-article">&mdash;</span>';
+
+  const verdictHtml = hasArticle
+    ? (() => {
+        const g = (st.articleGuess || "").trim().toLowerCase();
+        const cls = !g ? "blank" : (g === w.article ? "correct" : "wrong");
+        const mark = !g ? "—" : (g === w.article ? "✓" : "✗");
+        return '<p class="article-verdict ' + cls + '">' + mark + " " + escapeHtml(w.article) + " " + escapeHtml(w.noun) + "</p>";
+      })()
+    : '<p class="article-verdict blank">' + escapeHtml(w.noun) + " &mdash; proper noun, no article</p>";
+
+  card.innerHTML =
+    "<h3>" + escapeHtml(w.en) + "</h3>" +
+    '<div class="noun-row">' + articleFieldHtml + '<span class="noun">' + escapeHtml(w.noun) + "</span></div>" +
+    '<label class="sent-label">Past &middot; Nominativ<input type="text" class="sent-input" data-tense="past" value="' +
+      escapeHtml(st.past || "") + '" ' + (st.revealed ? "disabled" : "") + "></label>" +
+    '<label class="sent-label">Present &middot; Akkusativ<input type="text" class="sent-input" data-tense="present" value="' +
+      escapeHtml(st.present || "") + '" ' + (st.revealed ? "disabled" : "") + "></label>" +
+    '<label class="sent-label">Future &middot; Dativ<input type="text" class="sent-input" data-tense="future" value="' +
+      escapeHtml(st.future || "") + '" ' + (st.revealed ? "disabled" : "") + "></label>" +
+    '<label class="sent-label">Genitiv (any tense)<input type="text" class="sent-input" data-tense="genitiv" value="' +
+      escapeHtml(st.genitiv || "") + '" ' + (st.revealed ? "disabled" : "") + "></label>" +
+    '<div class="card-actions">' +
+      (st.revealed
+        ? '<button type="button" class="try-again">Try again</button>'
+        : '<button type="button" class="check">Check</button>') +
+    "</div>" +
+    '<div class="answer"' + (st.revealed ? "" : " hidden") + ">" +
+      verdictHtml +
+      '<ul class="models">' +
+        "<li><span>Nominativ</span>" + escapeHtml(w.past) + "</li>" +
+        "<li><span>Akkusativ</span>" + escapeHtml(w.present) + "</li>" +
+        "<li><span>Dativ</span>" + escapeHtml(w.future) + "</li>" +
+        "<li><span>Genitiv</span>" + escapeHtml(w.genitiv) + "</li>" +
+      "</ul>" +
+      '<div class="self-mark">' +
+        "<span>Your sentence matched the sense of the model:</span>" +
+        '<label><input type="checkbox" data-tense="past" ' + (st.selfMarks && st.selfMarks.past ? "checked" : "") + "> Nominativ</label>" +
+        '<label><input type="checkbox" data-tense="present" ' + (st.selfMarks && st.selfMarks.present ? "checked" : "") + "> Akkusativ</label>" +
+        '<label><input type="checkbox" data-tense="future" ' + (st.selfMarks && st.selfMarks.future ? "checked" : "") + "> Dativ</label>" +
+        '<label><input type="checkbox" data-tense="genitiv" ' + (st.selfMarks && st.selfMarks.genitiv ? "checked" : "") + "> Genitiv</label>" +
+      "</div>" +
+    "</div>";
+
+  if (hasArticle) {
+    const ai = card.querySelector(".article-input");
+    ai.addEventListener("input", e => { st.articleGuess = e.target.value; persist(); });
+  }
+  card.querySelectorAll(".sent-input").forEach(inp => {
+    inp.addEventListener("input", e => { st[e.target.dataset.tense] = e.target.value; persist(); });
+  });
+  const checkBtn = card.querySelector(".check");
+  if (checkBtn) checkBtn.addEventListener("click", () => { st.revealed = true; persist(); renderBoard(); });
+  const tryBtn = card.querySelector(".try-again");
+  if (tryBtn) tryBtn.addEventListener("click", () => { st.revealed = false; persist(); renderBoard(); });
+  card.querySelectorAll('.self-mark input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener("change", e => {
+      st.selfMarks = st.selfMarks || {};
+      st.selfMarks[e.target.dataset.tense] = e.target.checked;
+      persist();
+      renderBoard();
+    });
+  });
+
+  return card;
+}
+
+renderRail();
+renderBoard();
+</script>
+</body>
+</html>
+"""
+
+def build_drill_html(domains):
+    """Turn DOMAINS into the JSON shape the drill app's JS expects, and
+    splice it into the embedded template."""
+    app_data = []
+    for key, content in domains.items():
+        words = []
+        for row in sorted(content["rows"], key=lambda r: r[0].lower()):
+            english, german, plural, past, present, future, genitiv = row
+            parts = german.split(" ", 1)
+            if parts[0] in ("der", "die", "das") and len(parts) == 2:
+                article, noun = parts[0], parts[1]
+            else:
+                article, noun = None, german
+            words.append({
+                "en": english, "article": article, "noun": noun, "plural": plural,
+                "past": past, "present": present, "future": future, "genitiv": genitiv,
+            })
+        app_data.append({"key": key, "title": content["title"], "words": words})
+
+    vocab_json = json.dumps(app_data, ensure_ascii=False)
+    html = DRILL_HTML_TEMPLATE.replace("__VOCAB_JSON__", vocab_json)
+    total_words = sum(len(d["words"]) for d in app_data)
+    return html, len(app_data), total_words
+
+out_dir_default = os.environ.get("VOCAB_OUT_DIR", os.path.expanduser("~/Documents"))
+xlsx_path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(out_dir_default, "german_vocabulary_by_domain.xlsx")
+html_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(out_dir_default, "german_vocab_drill.html")
+xlsx_path = os.path.abspath(os.path.expanduser(xlsx_path))
+html_path = os.path.abspath(os.path.expanduser(html_path))
+
+os.makedirs(os.path.dirname(xlsx_path), exist_ok=True)
+wb.save(xlsx_path)
+
+drill_html, domain_count, word_count = build_drill_html(DOMAINS)
+os.makedirs(os.path.dirname(html_path), exist_ok=True)
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(drill_html)
 
 home = os.path.expanduser("~")
-display_path = "~" + out_path[len(home):] if out_path.startswith(home) else out_path
-print(f"Saved: {display_path}")
+def _display(p):
+    return "~" + p[len(home):] if p.startswith(home) else p
+
+print(f"Saved: {_display(xlsx_path)}")
 print("Sheets:", wb.sheetnames)
+print(f"Saved: {_display(html_path)}")
+print(f"Domains: {domain_count}, total words: {word_count}")

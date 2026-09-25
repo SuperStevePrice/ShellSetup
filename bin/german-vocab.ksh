@@ -1,12 +1,14 @@
 #!/bin/ksh
 #
-# german-vocab.ksh — rebuilds german_vocabulary_by_domain.xlsx from source,
-# but ONLY when the source (build_german_vocab.py) is newer than the
-# existing output file. If nothing has changed, this is a no-op.
+# german-vocab.ksh — rebuilds german_vocabulary_by_domain.xlsx AND
+# german_vocab_drill.html from source (build_german_vocab.py now
+# produces both from the same DOMAINS data in one run), but ONLY when
+# the source is newer than the existing outputs. If both outputs are
+# already current, this is a no-op.
 #
 # Usage:
-#   german-vocab.ksh                 # writes to ~/Documents (or $VOCAB_OUT_DIR)
-#   german-vocab.ksh /path/to/out.xlsx
+#   german-vocab.ksh                              # both outputs -> ~/Documents (or $VOCAB_OUT_DIR)
+#   german-vocab.ksh /path/to/out.xlsx /path/to/out.html
 #
 # Requires: python3 with the 'openpyxl' package installed.
 
@@ -15,7 +17,8 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 typeset BUILDER="${SCRIPT_DIR}/build_german_vocab.py"
 
 typeset OUT_DIR="${VOCAB_OUT_DIR:-$HOME/Documents}"
-typeset OUT_FILE="${1:-${OUT_DIR}/german_vocabulary_by_domain.xlsx}"
+typeset XLSX_FILE="${1:-${OUT_DIR}/german_vocabulary_by_domain.xlsx}"
+typeset HTML_FILE="${2:-${OUT_DIR}/german_vocab_drill.html}"
 
 if [[ ! -f "${BUILDER}" ]]; then
     print -u2 "german-vocab.ksh: cannot find ${BUILDER}"
@@ -32,11 +35,14 @@ if ! python3 -c "import openpyxl" >/dev/null 2>&1; then
     exit 1
 fi
 
-# Skip the rebuild if the output already exists and is at least as new
-# as the source. Only regenerate when the source has actually changed.
-if [[ -f "${OUT_FILE}" && ! "${BUILDER}" -nt "${OUT_FILE}" ]]; then
-    print "german-vocab.ksh: ${OUT_FILE} is already up to date; nothing to do."
+# Skip the rebuild only if BOTH outputs already exist and are at least
+# as new as the source. Either one being missing or stale rebuilds both,
+# since a single build_german_vocab.py run regenerates them together.
+if [[ -f "${XLSX_FILE}" && -f "${HTML_FILE}" ]] \
+    && [[ ! "${BUILDER}" -nt "${XLSX_FILE}" ]] \
+    && [[ ! "${BUILDER}" -nt "${HTML_FILE}" ]]; then
+    print "german-vocab.ksh: both outputs are already up to date; nothing to do."
     exit 0
 fi
 
-exec python3 "${BUILDER}" "${OUT_FILE}"
+exec python3 "${BUILDER}" "${XLSX_FILE}" "${HTML_FILE}"
