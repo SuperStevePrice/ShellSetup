@@ -27,3 +27,6 @@ set -o vi
 HISTFILE=~/.ksh_history
 HISTSIZE=1000
 
+
+# Private API keys (not in SS; see set_api_key.ksh)
+[[ -r ~/.secrets/api_keys.ksh ]] && . ~/.secrets/api_keys.ksh
