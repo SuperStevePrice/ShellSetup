@@ -5,12 +5,21 @@
 #
 # Requires: macOS (uses the built-in 'say' command). No installs needed.
 
-# No Linux support yet — 'say' is macOS-only. Bail out cleanly rather
-# than failing deep inside the script with a cryptic error.
-if [[ "$(uname)" != "Darwin" ]]; then
-    print "Linux version coming soon! Well, maybe."
-    exit 0
-fi
+# No Linux or Windows support yet — 'say' is macOS-only. Bail out cleanly
+# rather than failing deep inside the script with a cryptic error.
+# (On Windows, ksh only runs under a Unix layer like Cygwin/MSYS/MinGW,
+# which 'uname' reports as CYGWIN*/MINGW*/MSYS* rather than "Windows".)
+case "$(uname)" in
+    Darwin) ;;   # proceed normally
+    CYGWIN*|MINGW*|MSYS*)
+        print "Windows version coming soon! Well, maybe."
+        exit 0
+        ;;
+    *)
+        print "Linux version coming soon! Well, maybe."
+        exit 0
+        ;;
+esac
 
 # Defaults — change these to taste.
 # Run './speak.ksh -l' to see every installed voice and its locale.
@@ -27,11 +36,13 @@ typeset RATE=""
 typeset OUTFILE=""
 typeset INPUT=""
 typeset LANG_FLAG=""   # "g" or "e", so we know which default/validation applies
+typeset PFLAG=""       # set if -p (print text while speaking) was given
+typeset NFLAG=""       # set if -n (natural/continuous reading, no per-line pause) was given
 
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
 usage() {
-    print "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-r rate] [-o outfile.aiff|.m4a]"
+    print "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-r rate] [-o outfile.aiff|.m4a] [-p] [-n]"
     print "       $0 -l            (list available voices)"
     print "       $0 -t            (speak English then German test sentences)"
     print "       $0 -h | --help   (full help)"
@@ -86,6 +97,24 @@ OPTIONS (any order, mixed freely)
                          .aiff           saved as AIFF (uncompressed)
                          .m4a            saved as AAC-compressed M4A
                        Example: -o out.m4a
+
+    -p                 Print the text to the screen in sync with the
+                       voice: each line is printed, then spoken, then
+                       the next line, and so on — so what's on screen
+                       stays in step with what you're hearing.
+                       Example: speak notes.txt -p
+                       Note: combined with -o (saving to an audio file),
+                       line-by-line sync doesn't apply — the whole text
+                       is printed up front instead, since the output
+                       is one continuous audio file, not line-by-line.
+
+    -n                 Natural reading: only meaningful together with -p.
+                       Prints the whole text up front, then speaks it in
+                       one continuous, uninterrupted pass instead of
+                       pausing between lines. Use -p alone for
+                       memorization (paced, line-by-line); add -n when
+                       you just want to listen naturally while reading
+                       along. Example: speak notes.txt -p -n
 
     -l                 List every voice installed on this Mac, with its
                        locale (e.g. "Anna  de_DE", "Daniel  en_GB").
@@ -151,8 +180,17 @@ HELPEOF
 }
 
 # Look up a voice's locale (e.g. "de_DE") from 'say -v ?'. Empty if not found.
+# Some voices list as e.g. "Anna (Premium)   de_DE   # ..." — extra text
+# between the name and the locale — so we don't assume a fixed column;
+# instead we find whichever field actually looks like a locale code.
 voice_lang() {
-    say -v '?' | awk -v v="$1" '$1==v {print $2; exit}'
+    say -v '?' | awk -v v="$1" '
+        $0 ~ "^"v"[ \t]" || $0 ~ "^"v"$" {
+            for (i=1; i<=NF; i++) {
+                if ($i ~ /^[a-z][a-z]_[A-Z][A-Z]$/) { print $i; exit }
+            }
+        }
+    '
 }
 
 # Warn (not block) if a voice named under -g/-e doesn't match that language.
@@ -220,6 +258,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         -l) say -v '?'; exit 0 ;;
         -h|--help) help ;;
+        -p) PFLAG=1; shift ;;
+        -n) NFLAG=1; shift ;;
         -t) usage ;;   # -t only makes sense alone (handled above)
         -*) usage ;;
         *)  INPUT="$1"; shift ;;
@@ -241,14 +281,48 @@ if [[ -n "$OUTFILE" ]]; then
     esac
 fi
 
-if [[ "$INPUT" == "-" ]]; then
-    say "${SAY_ARGS[@]}"
-else
-    if [[ ! -f "$INPUT" ]]; then
-        print "Error: file not found: $INPUT"
-        exit 1
+# Real file-not-found check happens before any of this for file input.
+if [[ "$INPUT" != "-" && ! -f "$INPUT" ]]; then
+    print "Error: file not found: $INPUT"
+    exit 1
+fi
+
+if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
+    # Line-by-line sync: print each line right before 'say' speaks it.
+    # 'say' blocks until it finishes a line, so printing-then-speaking
+    # in the same loop iteration keeps the two in step naturally.
+    # Good for memorization/follow-along reading — not for natural listening,
+    # since there's a beat between lines. Use -n for continuous reading instead.
+    if [[ "$INPUT" == "-" ]]; then
+        while IFS= read -r line; do
+            print "$line"
+            [[ -n "$line" ]] && say "${SAY_ARGS[@]}" "$line"
+        done
+    else
+        while IFS= read -r line; do
+            print "$line"
+            [[ -n "$line" ]] && say "${SAY_ARGS[@]}" "$line"
+        done < "$INPUT"
     fi
-    say "${SAY_ARGS[@]}" -f "$INPUT"
+elif [[ -n "$PFLAG" ]]; then
+    # -p combined with -o or -n: skip the line-by-line pausing. Either
+    # saving to one continuous audio file, or you explicitly asked for
+    # a natural, uninterrupted reading (-n) — so print the whole text up
+    # front, then speak it as a single continuous pass.
+    print ""
+    if [[ "$INPUT" == "-" ]]; then
+        tee /dev/stdout | say "${SAY_ARGS[@]}"
+    else
+        cat "$INPUT"
+        print ""
+        say "${SAY_ARGS[@]}" -f "$INPUT"
+    fi
+else
+    if [[ "$INPUT" == "-" ]]; then
+        say "${SAY_ARGS[@]}"
+    else
+        say "${SAY_ARGS[@]}" -f "$INPUT"
+    fi
 fi
 
 if [[ -n "$OUTFILE" ]]; then
