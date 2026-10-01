@@ -40,15 +40,17 @@ esac
 # Samantha...); Linux/espeak-ng uses language codes (de, en-us, en-gb...).
 typeset GERMAN_DEFAULT_VOICE=""
 typeset ENGLISH_DEFAULT_VOICE=""
+typeset SPANISH_DEFAULT_VOICE=""
 case "$PLATFORM" in
-    darwin) GERMAN_DEFAULT_VOICE="Anna";  ENGLISH_DEFAULT_VOICE="Samantha" ;;
-    linux)  GERMAN_DEFAULT_VOICE="de";    ENGLISH_DEFAULT_VOICE="en-us"   ;;
+    darwin) GERMAN_DEFAULT_VOICE="Anna";  ENGLISH_DEFAULT_VOICE="Samantha"; SPANISH_DEFAULT_VOICE="Mónica" ;;
+    linux)  GERMAN_DEFAULT_VOICE="de";    ENGLISH_DEFAULT_VOICE="en-us";    SPANISH_DEFAULT_VOICE="es"     ;;
 esac
 typeset DEFAULT_RATE=""   # leave blank to use the voice's own default rate
 
 # Test sentences used by -t (and by running with no arguments).
 typeset TEST_EN="This is the speak command, reading text aloud with your Mac's built-in voices at whatever rate and voice you choose."
 typeset TEST_DE="Dies ist das Sprachprogramm, das Texte mit den eingebauten Stimmen Ihres Mac in beliebiger Geschwindigkeit und Stimme vorliest."
+typeset TEST_ES="Este es el comando speak, que lee texto en voz alta con las voces integradas de su Mac a la velocidad y con la voz que usted elija."
 
 typeset VOICE=""
 typeset RATE=""
@@ -61,9 +63,9 @@ typeset NFLAG=""       # set if -n (natural/continuous reading, no per-line paus
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
 usage() {
-    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-r rate] [-o outfile] [-p] [-n]"
+    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-r rate] [-o outfile] [-p] [-n]"
     printf '%s\n' "       $0 -l            (list available voices)"
-    printf '%s\n' "       $0 -t            (speak English then German test sentences)"
+    printf '%s\n' "       $0 -t            (speak English, German, then Spanish test sentences)"
     printf '%s\n' "       $0 -h | --help   (full help)"
     printf '%s\n' "See $USAGE_FILE"
     exit 1
@@ -110,6 +112,17 @@ OPTIONS (any order, mixed freely)
                        Same mismatch warning applies if the named voice
                        isn't English.
 
+    -s [voice]         Spanish shortcut. Same pattern as -g/-e.
+                         speak file.txt -s          uses the Spanish
+                                                     default voice for
+                                                     this platform
+                         speak file.txt -s Paulina  uses the named voice
+                                                     (macOS) or a language
+                                                     code like -s es-MX
+                                                     (Linux)
+                       Same mismatch warning applies if the named voice
+                       isn't Spanish.
+
     -r <rate>          Speech rate in words per minute. Typical usable
                        range is roughly 90-720; the voice's own default
                        is usually around 175-200. Example: -r 220
@@ -149,9 +162,10 @@ OPTIONS (any order, mixed freely)
                                -v, -g, or -e on this platform.
 
     -t                 Speak a short English test sentence, then a short
-                       German test sentence, using the English and German
-                       default voices for this platform. Good for
-                       checking that both are installed and sound right.
+                       German one, then a short Spanish one, using each
+                       language's default voice for this platform. Good
+                       for checking that all three are installed and
+                       sound right.
 
     -h, --help         Show this full help text.
 
@@ -166,6 +180,8 @@ EXAMPLES
     speak notes.txt -o out.wav         (Linux)
     speak notes.txt -g
     speak gedicht.txt -g -r 150
+    speak notes.txt -s
+    speak poema.txt -s -r 150
     echo "hello" | speak -
     speak -l
     speak -t
@@ -174,10 +190,12 @@ EXAMPLES
         speak notes.txt -v Samantha
         speak -r 220 -v Daniel wispr-flow-response.txt
         speak notes.txt -g Helga
+        speak notes.txt -s Paulina
 
     Linux only:
         speak notes.txt -v en-gb
         speak notes.txt -g de-AT
+        speak notes.txt -s es-MX
 
 WHILE SPEAKING
     space              Pause / resume the voice (works mid-sentence, in
@@ -191,6 +209,11 @@ NOTES
     - Options can appear before or after the filename, in any order.
     - -v, -g, and -e all just set which voice is used; the last one
       given on the command line wins if you combine them.
+    - After -g/-e/-s, the next token is treated as a filename (not a
+      voice name) if it contains "/" or "." — even if that file doesn't
+      exist at the current path. That way a mistyped path or wrong
+      working directory gives a clear "file not found", instead of the
+      filename silently being swallowed as a bogus voice name.
     - Voice NAMES are platform-specific (see -g/-e/-v above); everything
       else (-r, -p, -n, -o's behavior, -t) works the same way on both.
     - space/q controls need a real terminal; if speak is run from
@@ -257,6 +280,7 @@ check_lang_match() {
         case "$flag" in
             g) [[ "$voice" != de* ]] && printf '%s\n' "Note: '$voice' doesn't look like a German voice code — using it anyway." >&2 ;;
             e) [[ "$voice" != en* ]] && printf '%s\n' "Note: '$voice' doesn't look like an English voice code — using it anyway." >&2 ;;
+            s) [[ "$voice" != es* ]] && printf '%s\n' "Note: '$voice' doesn't look like a Spanish voice code — using it anyway." >&2 ;;
         esac
         return
     fi
@@ -266,6 +290,23 @@ check_lang_match() {
     case "$flag" in
         g) [[ "$lang" != de_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not German — using it anyway." >&2 ;;
         e) [[ "$lang" != en_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not English — using it anyway." >&2 ;;
+        s) [[ "$lang" != es_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not Spanish — using it anyway." >&2 ;;
+    esac
+}
+
+# Peek-ahead helper for -g/-e/-s: is the next token more likely a filename
+# than a voice name? Real voice names on both platforms (Anna, Daniel,
+# Helga, de-AT, es-MX, Mónica...) are bare words/codes — no "/" and no
+# ".". A path or a file with an extension has one or the other, even if
+# that file doesn't currently exist (wrong directory, typo). Without this,
+# a missing/mistyped filename after -g/-e/-s got silently treated as a
+# voice name instead, leaving no input file and a confusing generic usage
+# error — this makes it fall through to the input slot instead, so the
+# real "Error: file not found: ..." message fires.
+looks_like_file() {
+    case "$1" in
+        */*|*.*) return 0 ;;
+        *)       return 1 ;;
     esac
 }
 
@@ -314,6 +355,18 @@ if [[ "$HAVE_TTY" -eq 1 ]]; then
     trap 'stty echo icanon < /dev/tty 2>/dev/null' EXIT INT TERM
 fi
 
+# Discard any characters already sitting in the /dev/tty input queue,
+# without blocking. Used right after we detect a keypress we're about to
+# act on, so leftover duplicate bytes from that same press (key-repeat,
+# terminal buffering) don't get read and acted on again next tick.
+drain_tty() {
+    [[ "$HAVE_TTY" -ne 1 ]] && return
+    typeset junk=""
+    while read -t 0 -n 1 junk < /dev/tty 2>/dev/null; do
+        :
+    done
+}
+
 run_with_controls() {
     if [[ "$HAVE_TTY" -ne 1 ]]; then
         "$@"
@@ -324,11 +377,31 @@ run_with_controls() {
     typeset cpid=$!
     typeset paused=0
     typeset key=""
+    # After any space/q is acted on, the spacebar goes silent for a short
+    # beat (a few poll ticks, ~0.4s at the 0.2s poll interval below) before
+    # it'll respond again. Belt-and-suspenders alongside drain_tty: the
+    # drain clears out whatever's already queued from this same press: the
+    # ignore window below also shrugs off anything that lands a tick or two
+    # later (a laggy key-repeat, a terminal that trickles bytes in). First
+    # press always wins; nothing close behind it gets a second vote.
+    typeset IGNORE_TICKS=0
 
     while kill -0 "$cpid" 2>/dev/null; do
         read -t 0.2 -n 1 key < /dev/tty 2>/dev/null
+
+        if [[ "$IGNORE_TICKS" -gt 0 ]]; then
+            IGNORE_TICKS=$((IGNORE_TICKS - 1))
+            key=""
+            continue
+        fi
+
         case "$key" in
             " ")
+                # Eat any duplicate space bytes left over from this same
+                # press BEFORE acting, so one tap toggles state exactly
+                # once instead of stuttering pause/resume/pause.
+                drain_tty
+
                 if [[ "$paused" -eq 0 ]]; then
                     if kill -STOP "$cpid" 2>/dev/null; then
                         paused=1
@@ -344,8 +417,10 @@ run_with_controls() {
                         printf '%s\n' "Resumed." >&2
                     fi
                 fi
+                IGNORE_TICKS=2
                 ;;
             q|Q)
+                drain_tty
                 kill "$cpid" 2>/dev/null
                 QUIT=1
                 printf '%s\n' "Stopped." >&2
@@ -413,6 +488,18 @@ run_test() {
     printf '\n'
     speak_text "$TEST_DE"
 
+    SAY_ARGS=()
+    case "$PLATFORM" in
+        darwin) SAY_ARGS+=("-v" "$SPANISH_DEFAULT_VOICE"); [[ -n "$DEFAULT_RATE" ]] && SAY_ARGS+=("-r" "$DEFAULT_RATE") ;;
+        linux)  SAY_ARGS+=("-v" "$SPANISH_DEFAULT_VOICE"); [[ -n "$DEFAULT_RATE" ]] && SAY_ARGS+=("-s" "$DEFAULT_RATE") ;;
+    esac
+    printf '\n'
+    printf '%s\n' "Spanish (${SPANISH_DEFAULT_VOICE}): "
+    printf '\n'
+    printf '%s\n' "$TEST_ES"
+    printf '\n'
+    speak_text "$TEST_ES"
+
     printf '\n'
     printf '%s\n' "speak -h will show the usage message."
     printf '\n'
@@ -431,11 +518,12 @@ while [[ $# -gt 0 ]]; do
         -r) RATE="$2"; shift 2 ;;
         -o) OUTFILE="$2"; shift 2 ;;
         -g)
-            # -g optionally takes a voice name. Peek at the next token:
-            # if it's not another option and not an existing file, treat
-            # it as the German voice name; otherwise use the default and
-            # leave that token alone (it's probably the input file).
-            if [[ -n "$2" && "$2" != -* && ! -f "$2" ]]; then
+            # -g optionally takes a voice name. Peek at the next token: if
+            # it's not another option, not an existing file, AND doesn't
+            # even look like a filename (looks_like_file), treat it as the
+            # German voice name; otherwise use the default and leave that
+            # token alone — it's the input file, found or not.
+            if [[ -n "$2" && "$2" != -* && ! -f "$2" ]] && ! looks_like_file "$2"; then
                 VOICE="$2"; LANG_FLAG="g"; shift 2
             else
                 VOICE="$GERMAN_DEFAULT_VOICE"; LANG_FLAG="g"; shift 1
@@ -443,10 +531,18 @@ while [[ $# -gt 0 ]]; do
             ;;
         -e)
             # Same pattern as -g, but for English.
-            if [[ -n "$2" && "$2" != -* && ! -f "$2" ]]; then
+            if [[ -n "$2" && "$2" != -* && ! -f "$2" ]] && ! looks_like_file "$2"; then
                 VOICE="$2"; LANG_FLAG="e"; shift 2
             else
                 VOICE="$ENGLISH_DEFAULT_VOICE"; LANG_FLAG="e"; shift 1
+            fi
+            ;;
+        -s)
+            # Same pattern as -g/-e, but for Spanish.
+            if [[ -n "$2" && "$2" != -* && ! -f "$2" ]] && ! looks_like_file "$2"; then
+                VOICE="$2"; LANG_FLAG="s"; shift 2
+            else
+                VOICE="$SPANISH_DEFAULT_VOICE"; LANG_FLAG="s"; shift 1
             fi
             ;;
         -l) list_voices ;;
