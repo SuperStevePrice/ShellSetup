@@ -9,20 +9,42 @@
 #   space   pause / resume
 #   q       quit (stops playback)
 #
-# Works by sending SIGSTOP/SIGCONT to the underlying 'afplay' process —
-# afplay itself has no native pause, but the OS can suspend any process.
+# Works by sending SIGSTOP/SIGCONT to the underlying player process —
+# none of these players have native pause, but the OS can suspend any process.
+#
+# macOS:  afplay (built in)
+# Linux:  paplay (PulseAudio) if present, else aplay (ALSA) — one of these
+#         is present on nearly every desktop Linux distro. Only plays WAV
+#         reliably without extra codecs, which matches what speak.ksh's
+#         -o produces on Linux (espeak-ng writes WAV only).
 
-# No Linux or Windows support yet — 'afplay' is macOS-only, same as 'say'
-# in speak.ksh. (On Windows, ksh only runs under a Unix layer like
-# Cygwin/MSYS/MinGW, which 'uname' reports as CYGWIN*/MINGW*/MSYS*.)
+typeset PLATFORM=""
+typeset PLAYER=""
+
 case "$(uname)" in
-    Darwin) ;;   # proceed normally
+    Darwin)
+        PLATFORM="darwin"
+        PLAYER="afplay"
+        ;;
+    Linux)
+        PLATFORM="linux"
+        if command -v paplay >/dev/null 2>&1; then
+            PLAYER="paplay"
+        elif command -v aplay >/dev/null 2>&1; then
+            PLAYER="aplay"
+        else
+            print "No audio player found (checked paplay, aplay)."
+            print "Install one with:  sudo apt install pulseaudio-utils"
+            print "(or alsa-utils for aplay), then try again."
+            exit 1
+        fi
+        ;;
     CYGWIN*|MINGW*|MSYS*)
         print "Windows version coming soon! Well, maybe."
         exit 0
         ;;
     *)
-        print "Linux version coming soon! Well, maybe."
+        print "Unsupported platform: $(uname). This tool supports macOS and Linux (Windows coming soon)."
         exit 0
         ;;
 esac
@@ -39,7 +61,12 @@ if [[ ! -f "$FILE" ]]; then
     exit 1
 fi
 
-afplay "$FILE" &
+if [[ "$PLATFORM" == "linux" && "$FILE" != *.wav ]]; then
+    print "Note: on Linux, $PLAYER reliably plays .wav files only."
+    print "If this file isn't a WAV, playback may fail or sound wrong."
+fi
+
+"$PLAYER" "$FILE" &
 typeset PID=$!
 typeset PAUSED=0
 
