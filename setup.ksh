@@ -398,6 +398,21 @@ set_symbolic_links() {
 			print "No symbolic link will be created for ${file}."
 			continue
 		fi
+
+		base=$(basename "$file")
+		case "$base" in
+			_*)
+				# Excluded: a leading underscore marks a shared implementation
+				# file meant to be sourced by a wrapper (e.g. _speak_impl.sh,
+				# sourced by speak.ksh/speak.sh), not invoked directly — so it
+				# gets no extension-stripped symlink of its own. Generic by
+				# convention, unlike the ssh-copy-id case above, so a future
+				# shared-impl file needs no edit here.
+				print "No symbolic link will be created for ${file} (leading underscore = shared implementation file)."
+				continue
+				;;
+		esac
+
 		sym="${file%.*sh}"
 		if [ ! -f "$sym" -o ! -h "$sym" ]; then
 			print "ln -s ${file} ${sym}"
