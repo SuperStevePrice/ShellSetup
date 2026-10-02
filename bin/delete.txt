@@ -1,0 +1,1 @@
+Throwaway test file for remove-bin-files.ksh.
