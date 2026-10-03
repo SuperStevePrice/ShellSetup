@@ -22,3 +22,4 @@ bin/*.py
 *.swp
 
 *.xlsx
+bin/*.bak.*
