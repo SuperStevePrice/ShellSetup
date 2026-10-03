@@ -63,11 +63,12 @@ typeset INPUT=""
 typeset LANG_FLAG=""   # "g" or "e", so we know which default/validation applies
 typeset PFLAG=""       # set if -p (print text while speaking) was given
 typeset NFLAG=""       # set if -n (natural/continuous reading, no per-line pause) was given
+typeset XLANG=""       # set to the language name/code given after -x, if any
 
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
 usage() {
-    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-r rate] [-o outfile] [-p] [-n]"
+    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-r rate] [-o outfile] [-p] [-n] [-x lang]"
     printf '%s\n' "       $0 -l            (list available voices)"
     printf '%s\n' "       $0 -t            (speak English, German, then Spanish test sentences)"
     printf '%s\n' "       $0 -h | --help   (full help)"
@@ -89,11 +90,18 @@ USAGE
 
 ARGUMENTS
     <textfile>        Path to a text file to read aloud. A bare filename
-                       (no "/") is looked for in ~/Documents by default.
-                       If ~/Documents doesn't exist, you'll be prompted
-                       for the full path instead.
+                       (no "/") is first looked for in the current
+                       directory, as always; if not found there, it's
+                       looked for in ~/Documents instead. If ~/Documents
+                       doesn't exist, you'll be prompted for the full path.
     -                  Read from stdin instead of a file (e.g. for piping).
                        Example: echo "hello" | speak -
+
+    Lines starting with "#" are never spoken, in any mode -- they're
+    still shown on screen wherever the text is printed, just skipped by
+    the voice. This matters for files setup.ksh has stamped with a
+    "Last installed:" / "End of File" footer, so that footer doesn't
+    get read aloud.
 
 OPTIONS (any order, mixed freely)
     -v <voice>         Use this exact voice by name (e.g. -v Daniel on
@@ -161,6 +169,29 @@ OPTIONS (any order, mixed freely)
                        you just want to listen naturally while reading
                        along. Example: speak notes.txt -p -n
 
+    -x <language>      Translate each line and speak the translation
+                       right after the original line. <language> accepts
+                       either a common name (English, German, Spanish,
+                       French...) or a code (en, de, es, fr...), case-
+                       insensitive (English, english, and EN all work
+                       the same), and can appear anywhere on the command
+                       line like any other option.
+                       Example: speak gedicht.txt -p -g -x English
+                       Requires translate-shell (the 'trans' command):
+                         macOS:  brew install translate-shell
+                         Linux:  sudo apt install translate-shell
+                       Source language comes from -g/-e/-s if one of
+                       those is given, else it's auto-detected.
+                       If <language> isn't a language trans can
+                       translate to, you'll get a warning plus the full
+                       list of available languages, and the file is
+                       still spoken normally -- just without translation.
+                       Only takes effect in plain -p mode (no -n, no
+                       -o) -- translation is interleaved line-by-line,
+                       which needs that loop. Combined with -n or -o,
+                       or without -p at all, -x is ignored with a note
+                       rather than failing outright.
+
     -l                 List every voice installed on this machine.
                        macOS:  name + locale (e.g. "Anna  de_DE").
                        Linux:  espeak-ng's own voice table (language
@@ -189,6 +220,7 @@ EXAMPLES
     speak gedicht.txt -g -r 150
     speak notes.txt -s
     speak poema.txt -s -r 150
+    speak gedicht.txt -p -g -x English
     echo "hello" | speak -
     speak -l
     speak -t
@@ -221,12 +253,19 @@ NOTES
       exist at the current path. That way a mistyped path or wrong
       working directory gives a clear "file not found", instead of the
       filename silently being swallowed as a bogus voice name.
-    - A bare filename (no "/") is looked for in ~/Documents by default.
+    - A bare filename (no "/") is checked in the current directory
+      first, as always. If not found there, ~/Documents is tried next.
       If ~/Documents doesn't exist, you'll be prompted for the full
       path instead. Give a relative (e.g. ./notes.txt) or absolute path
       directly to bypass this and use that path as-is.
     - Voice NAMES are platform-specific (see -g/-e/-v above); everything
       else (-r, -p, -n, -o's behavior, -t) works the same way on both.
+    - -x only works in plain -p mode (no -n, no -o); elsewhere it's
+      ignored with a note, since it needs the line-by-line loop.
+    - Lines starting with "#" are never spoken, in any mode -- useful
+      for files setup.ksh has stamped with its install footer. They're
+      still printed on screen wherever the text is shown, just not
+      spoken.
     - space/q controls need a real terminal; if speak is run from
       somewhere with no controlling terminal (cron, certain pipelines),
       these are silently skipped and it just speaks straight through.
@@ -327,6 +366,90 @@ list_voices() {
         linux)  espeak-ng --voices ;;
     esac
     exit 0
+}
+
+# --- Comment-line filtering -----------------------------------------------
+# Lines starting with "#" (e.g. the "Last installed:"/"End of File" footer
+# setup.ksh stamps onto installed text files) are never spoken -- in any
+# mode, not just -p. They're still shown on screen wherever the script
+# already prints text, just never passed to say/espeak-ng.
+#
+# Used for whole-file speaking (plain mode, or -p combined with -n/-o,
+# where the file goes to say/espeak-ng's own -f flag rather than through
+# our line-by-line loop): makes a comment-stripped temp copy first, since
+# say/espeak-ng read the file directly and have no way to skip lines
+# themselves. The line-by-line loop below filters inline instead and
+# never needs this.
+strip_comments_to_tmp() {
+    typeset src="$1"
+    typeset tmp
+    tmp=$(mktemp "${TMPDIR:-/tmp}/speak_filtered.XXXXXX")
+    grep -v '^#' "$src" > "$tmp"
+    printf '%s' "$tmp"
+}
+
+# --- Translation (-x) helpers ------------------------------------------
+
+# Turn a common language name or an existing code into a code trans,
+# say, and espeak-ng can all work with. Anything not in this short list
+# is passed through lowercased as-is -- trans itself recognizes many
+# full language names too, so this isn't the only safety net, just a
+# shortcut for the handful of languages this script also has a known
+# default voice for.
+resolve_lang_code() {
+    typeset input
+    input=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+    case "$input" in
+        english|en)          printf '%s' "en" ;;
+        german|deutsch|de)   printf '%s' "de" ;;
+        spanish|espanol|es)  printf '%s' "es" ;;
+        french|francais|fr)  printf '%s' "fr" ;;
+        italian|it)          printf '%s' "it" ;;
+        portuguese|pt)       printf '%s' "pt" ;;
+        dutch|nl)            printf '%s' "nl" ;;
+        russian|ru)          printf '%s' "ru" ;;
+        japanese|ja)         printf '%s' "ja" ;;
+        chinese|zh)          printf '%s' "zh" ;;
+        *)                   printf '%s' "$input" ;;
+    esac
+}
+
+# Translate one line of text via translate-shell. -brief keeps trans
+# from printing dictionary/extra info -- just the translation itself.
+translate_line() {
+    typeset line="$1"
+    trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null
+}
+
+# Full list of languages translate-shell can translate to/from, one per
+# line (code, name, etc. -- whatever trans itself prints).
+list_available_languages() {
+    trans -list-languages-all 2>/dev/null
+}
+
+# Check the resolved target code against that list before trusting it.
+# Prints a warning plus the full list and returns failure if it's not
+# recognized, rather than silently calling trans with a bogus code and
+# getting back an empty/garbled result with no clear explanation.
+#
+# If the list itself can't be retrieved (older translate-shell version,
+# flag name changed, network hiccup for whatever trans needs to build
+# it), this doesn't block -- there's nothing solid to check against, so
+# it lets trans itself be the final word once it actually runs.
+validate_target_lang() {
+    typeset code="$1" raw="$2"
+    typeset lang_list
+    lang_list=$(list_available_languages)
+
+    [[ -z "$lang_list" ]] && return 0
+
+    if printf '%s\n' "$lang_list" | tr '[:upper:]' '[:lower:]' | grep -qiE "(^|[^a-z])${code}([^a-z]|\$)"; then
+        return 0
+    fi
+
+    printf '%s\n' "Warning: '$raw' is not a recognized language for translation. Available languages:" >&2
+    printf '%s\n' "$lang_list" >&2
+    return 1
 }
 
 [[ "$1" == "-h" || "$1" == "--help" ]] && help
@@ -457,18 +580,33 @@ speak_text() {   # speak a single line/string of text
     esac
 }
 
-speak_file() {   # speak the contents of a file
+speak_file() {   # speak the contents of a file, skipping comment lines
     typeset f="$1"
+    typeset filtered
+    filtered=$(strip_comments_to_tmp "$f")
     case "$PLATFORM" in
-        darwin) run_with_controls say "${SAY_ARGS[@]}" -f "$f" ;;
-        linux)  run_with_controls espeak-ng "${SAY_ARGS[@]}" -f "$f" ;;
+        darwin) run_with_controls say "${SAY_ARGS[@]}" -f "$filtered" ;;
+        linux)  run_with_controls espeak-ng "${SAY_ARGS[@]}" -f "$filtered" ;;
     esac
+    rm -f "$filtered"
 }
 
-speak_stdin() {  # speak whatever's piped in on stdin
+speak_stdin() {  # speak whatever's piped in on stdin, skipping comment lines
+    typeset tmp
+    tmp=$(mktemp "${TMPDIR:-/tmp}/speak_stdin_filtered.XXXXXX")
+    grep -v '^#' > "$tmp"
     case "$PLATFORM" in
-        darwin) run_with_controls say "${SAY_ARGS[@]}" ;;
-        linux)  run_with_controls espeak-ng "${SAY_ARGS[@]}" ;;   # espeak-ng also reads stdin with no -f/text given
+        darwin) run_with_controls say "${SAY_ARGS[@]}" -f "$tmp" ;;
+        linux)  run_with_controls espeak-ng "${SAY_ARGS[@]}" -f "$tmp" ;;
+    esac
+    rm -f "$tmp"
+}
+
+speak_translation_text() {   # speak one translated line, using the TARGET voice/rate (TRANS_SAY_ARGS), not the source's
+    typeset text="$1"
+    case "$PLATFORM" in
+        darwin) run_with_controls say "${TRANS_SAY_ARGS[@]}" "$text" ;;
+        linux)  run_with_controls espeak-ng "${TRANS_SAY_ARGS[@]}" "$text" ;;
     esac
 }
 
@@ -560,6 +698,7 @@ while [[ $# -gt 0 ]]; do
         -h|--help) help ;;
         -p) PFLAG=1; shift ;;
         -n) NFLAG=1; shift ;;
+        -x) XLANG="$2"; shift 2 ;;
         -t) usage ;;   # -t only makes sense alone (handled above)
         -*) usage ;;
         *)  INPUT="$1"; shift ;;
@@ -569,6 +708,66 @@ done
 [[ -z "$INPUT" ]] && usage
 
 [[ -n "$VOICE" && -n "$LANG_FLAG" ]] && check_lang_match "$LANG_FLAG" "$VOICE"
+
+# --- Translation (-x) setup ----------------------------------------------
+typeset XENABLED=0
+typeset SOURCE_CODE="auto"
+typeset TARGET_CODE=""
+typeset TARGET_VOICE=""
+typeset -a TRANS_SAY_ARGS
+
+if [[ -n "$XLANG" ]]; then
+    if ! command -v trans >/dev/null 2>&1; then
+        printf '%s\n' "Error: -x needs translate-shell (the 'trans' command), which isn't installed."
+        printf '%s\n' "  macOS: brew install translate-shell"
+        printf '%s\n' "  Linux: sudo apt install translate-shell"
+        exit 1
+    fi
+
+    case "$LANG_FLAG" in
+        g) SOURCE_CODE="de" ;;
+        e) SOURCE_CODE="en" ;;
+        s) SOURCE_CODE="es" ;;
+        *) SOURCE_CODE="auto" ;;
+    esac
+
+    TARGET_CODE=$(resolve_lang_code "$XLANG")
+
+    if validate_target_lang "$TARGET_CODE" "$XLANG"; then
+        case "$TARGET_CODE" in
+            en) TARGET_VOICE="$ENGLISH_DEFAULT_VOICE" ;;
+            de) TARGET_VOICE="$GERMAN_DEFAULT_VOICE" ;;
+            es) TARGET_VOICE="$SPANISH_DEFAULT_VOICE" ;;
+            *)
+                # No known default voice for this target on this platform.
+                # On Linux, espeak-ng's voice names ARE language codes, so
+                # the target code itself usually works directly as a voice.
+                # On macOS there's no equivalent shortcut, so TARGET_VOICE
+                # stays blank and 'say' falls back to its system default.
+                [[ "$PLATFORM" == "linux" ]] && TARGET_VOICE="$TARGET_CODE"
+                ;;
+        esac
+
+        if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
+            XENABLED=1
+        else
+            printf '%s\n' "Note: -x only works in plain -p mode (no -n, no -o) -- ignoring -x for this run." >&2
+        fi
+    fi
+    # else: validate_target_lang already printed the warning and the
+    # list of available languages; XENABLED stays 0, so the file is
+    # still spoken normally, just without translation.
+fi
+
+if [[ "$XENABLED" -eq 1 ]]; then
+    [[ -n "$TARGET_VOICE" ]] && TRANS_SAY_ARGS+=("-v" "$TARGET_VOICE")
+    if [[ -n "$RATE" ]]; then
+        case "$PLATFORM" in
+            darwin) TRANS_SAY_ARGS+=("-r" "$RATE") ;;
+            linux)  TRANS_SAY_ARGS+=("-s" "$RATE") ;;
+        esac
+    fi
+fi
 
 typeset -a SAY_ARGS
 [[ -n "$VOICE" ]] && SAY_ARGS+=("-v" "$VOICE")
@@ -604,20 +803,28 @@ if [[ -n "$OUTFILE" ]]; then
 fi
 
 # --- Resolve default directory for a bare filename ---------------------
-# If INPUT is a bare filename (no "/"), look for it in ~/Documents by
-# default. If ~/Documents doesn't exist, prompt for the full path
-# instead. A relative path like ./notes.txt or an absolute path is left
-# alone and checked as given below.
+# If INPUT is a bare filename (no "/"), the CURRENT DIRECTORY is checked
+# first, same as always -- this is what lets "speak poem.txt" keep
+# working from inside ~/Projects/SS or anywhere else the file actually
+# lives. Only if it's NOT found there does ~/Documents get tried as a
+# fallback default location. If ~/Documents doesn't exist either, prompt
+# for the full path instead. A relative path like ./notes.txt or an
+# absolute path is left alone and checked as given, below.
 if [[ "$INPUT" != "-" ]]; then
     case "$INPUT" in
         */*) ;;   # a path was given -- leave it as-is
         *)
-            if [[ -d "$HOME/Documents" ]]; then
-                INPUT="$HOME/Documents/$INPUT"
-            else
-                printf '%s\n' "~/Documents does not exist."
-                printf '%s' "Enter the full path to the text file: "
-                read INPUT
+            if [[ ! -f "$INPUT" ]]; then
+                # Not in the current directory -- try ~/Documents next.
+                if [[ -d "$HOME/Documents" ]]; then
+                    [[ -f "$HOME/Documents/$INPUT" ]] && INPUT="$HOME/Documents/$INPUT"
+                    # If it's not in ~/Documents either, leave INPUT as the
+                    # bare name -- the file-not-found check below reports it.
+                else
+                    printf '%s\n' "~/Documents does not exist."
+                    printf '%s' "Enter the full path to the text file: "
+                    read INPUT
+                fi
             fi
             ;;
     esac
@@ -639,13 +846,37 @@ if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
     if [[ "$INPUT" == "-" ]]; then
         while IFS= read -r line; do
             printf '%s\n' "$line"
-            [[ -n "$line" ]] && speak_text "$line"
+            if [[ -n "$line" && "$line" != '#'* ]]; then
+                speak_text "$line"
+                if [[ "$XENABLED" -eq 1 && "$QUIT" -ne 1 ]]; then
+                    typeset translated
+                    translated=$(translate_line "$line")
+                    if [[ -n "$translated" ]]; then
+                        printf '%s\n' "$translated"
+                        speak_translation_text "$translated"
+                    else
+                        printf '%s\n' "(translation unavailable)" >&2
+                    fi
+                fi
+            fi
             [[ "$QUIT" -eq 1 ]] && break
         done
     else
         while IFS= read -r line; do
             printf '%s\n' "$line"
-            [[ -n "$line" ]] && speak_text "$line"
+            if [[ -n "$line" && "$line" != '#'* ]]; then
+                speak_text "$line"
+                if [[ "$XENABLED" -eq 1 && "$QUIT" -ne 1 ]]; then
+                    typeset translated
+                    translated=$(translate_line "$line")
+                    if [[ -n "$translated" ]]; then
+                        printf '%s\n' "$translated"
+                        speak_translation_text "$translated"
+                    else
+                        printf '%s\n' "(translation unavailable)" >&2
+                    fi
+                fi
+            fi
             [[ "$QUIT" -eq 1 ]] && break
         done < "$INPUT"
     fi
