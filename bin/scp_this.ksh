@@ -12,57 +12,68 @@
 #	scp_this.ksh
 #	
 # PURPOSE:
-#	scp a source file or directory to a remote machine.
+#	scp a source file or directory to the same path, or to a given target
+#	path, on every other machine in the Tailscale network (via tss).
 #	
 # USAGE:
-#	scp_this.ksh source_dir target
+#	scp_this.ksh source target
+#
+#	target is the destination path on each remote machine. Use a bare
+#	relative filename (e.g. "notes.txt") to land in the remote user's
+#	home directory regardless of OS — this matters because your Mac and
+#	Linux home directories live at different absolute paths
+#	(/Users/steve vs /home/steve), so an absolute source path won't
+#	necessarily exist as a valid destination on every machine.
 #
 #-------------------------------------------------------------------------------
 
-# Modify by adding -r for transferring folders.
+typeset scp
 scp=$(which scp)
-print "DEBUG0: $scp"
 
 # Validate command line parameters:
 if [ $# -ne 2 ]
 then
 	print "Usage: $0 source target"
 	exit 1
-else
-	source=$1
 fi
+
+source=$1
+target=$2
 
 if [ -d "$source" ]
 then
 	scp="$scp -r"
 elif [ ! -f "$source" ]
 then
-	print "Source folder does not exist: $source"
-	exit 1
-fi
-
-if [ ! -f "$source" ]
-then
-	print "Source does not exist or is not a regular file: $source"
+	print "Source does not exist or is not a regular file or directory: $source"
 	exit 1
 fi
 
 user=$USER
 
-# Copy to remote servers.  Don't scp to local server.
+# Copy to every other machine in the Tailscale network. Don't scp to the
+# local machine. Host discovery uses tss (Tailscale status), same
+# convention as update-linux-hosts.ksh — NOT /etc/hosts, since not every
+# machine is necessarily listed there.
 scp_source() {
 	source=$1
 	target=$2
 
-	print "DEBUG1: $scp"
-	for server in $(cat /etc/hosts | grep "^10.0.0" | awk '{print $3}')
-	do
-		simple_server=$(hostname | sed 's/\.local//g')
+	# Tailscale lowercases hostnames in its status output, but the
+	# system's own `hostname` command may not — compare case-insensitively
+	# so the local machine is correctly recognized and skipped.
+	typeset -l local_host
+	local_host=$(hostname | sed 's/\.local//g')
 
-		if [ "$server" != "$simple_server" ]
+	tss | awk '{print $2}' | while read -r server
+	do
+		typeset -l server_lc
+		server_lc="$server"
+
+		if [ "$server_lc" != "$local_host" ]
 		then
 			print "$scp $source $user@$server:$target"
-			$scp $source $user@$server:$source
+			$scp $source $user@$server:$target
 			# Check for successful scp
 			if [ "$?" -eq 0 ]
 			then
@@ -81,5 +92,8 @@ scp_source() {
 # MAIN:
 #-------------------------------------------------------------------------------
 print "Transfer Beginning"
-scp_source $1 $2
+scp_source "$source" "$target"
 print "Transfer Complete"
+#-------------------------------------------------------------------------------
+# Last installed: 2023-07-07 00:12:49
+#-- End of File ----------------------------------------------------------------
