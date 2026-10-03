@@ -88,7 +88,10 @@ USAGE
     speak -h | --help
 
 ARGUMENTS
-    <textfile>        Path to a text file to read aloud.
+    <textfile>        Path to a text file to read aloud. A bare filename
+                       (no "/") is looked for in ~/Documents by default.
+                       If ~/Documents doesn't exist, you'll be prompted
+                       for the full path instead.
     -                  Read from stdin instead of a file (e.g. for piping).
                        Example: echo "hello" | speak -
 
@@ -218,6 +221,10 @@ NOTES
       exist at the current path. That way a mistyped path or wrong
       working directory gives a clear "file not found", instead of the
       filename silently being swallowed as a bogus voice name.
+    - A bare filename (no "/") is looked for in ~/Documents by default.
+      If ~/Documents doesn't exist, you'll be prompted for the full
+      path instead. Give a relative (e.g. ./notes.txt) or absolute path
+      directly to bypass this and use that path as-is.
     - Voice NAMES are platform-specific (see -g/-e/-v above); everything
       else (-r, -p, -n, -o's behavior, -t) works the same way on both.
     - space/q controls need a real terminal; if speak is run from
@@ -596,9 +603,29 @@ if [[ -n "$OUTFILE" ]]; then
     esac
 fi
 
+# --- Resolve default directory for a bare filename ---------------------
+# If INPUT is a bare filename (no "/"), look for it in ~/Documents by
+# default. If ~/Documents doesn't exist, prompt for the full path
+# instead. A relative path like ./notes.txt or an absolute path is left
+# alone and checked as given below.
+if [[ "$INPUT" != "-" ]]; then
+    case "$INPUT" in
+        */*) ;;   # a path was given -- leave it as-is
+        *)
+            if [[ -d "$HOME/Documents" ]]; then
+                INPUT="$HOME/Documents/$INPUT"
+            else
+                printf '%s\n' "~/Documents does not exist."
+                printf '%s' "Enter the full path to the text file: "
+                read INPUT
+            fi
+            ;;
+    esac
+fi
+
 # Real file-not-found check happens before any of this for file input.
 if [[ "$INPUT" != "-" && ! -f "$INPUT" ]]; then
-    printf '%s\n' "Error: file not found: $INPUT"
+    printf '%s\n' "Error: path not found: $INPUT"
     exit 1
 fi
 
@@ -646,3 +673,6 @@ fi
 if [[ -n "$OUTFILE" ]]; then
     printf '%s\n' "Saved audio to: $OUTFILE"
 fi
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-01 16:13:40
+#-- End of File ----------------------------------------------------------------
