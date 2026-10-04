@@ -44,3 +44,6 @@ ts() { eval "make_directory $HOME/tests; cd ~/tests/$1"; }
 
 # Function to move to ~/tests
 dl() { eval "cd ~/Downloads/$1"; }
+
+# Function to "cd iCloud"
+cdI() { cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/; }
