@@ -463,7 +463,20 @@ resolve_lang_code() {
 # from printing dictionary/extra info -- just the translation itself.
 translate_line() {
     typeset line="$1"
-    trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null
+    typeset result
+    result=$(trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
+
+    # translate-shell occasionally comes back empty on a transient hiccup
+    # (rate-limited, a dropped connection) rather than a real translation
+    # failure -- a brief pause and one retry clears most of these without
+    # adding real delay to the normal case, where the first call succeeds
+    # and this block never runs at all.
+    if [[ -z "$result" ]]; then
+        sleep 1
+        result=$(trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
+    fi
+
+    printf '%s' "$result"
 }
 
 # Full list of language CODES translate-shell recognizes, one per line
