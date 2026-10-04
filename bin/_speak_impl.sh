@@ -45,9 +45,10 @@ esac
 typeset GERMAN_DEFAULT_VOICE=""
 typeset ENGLISH_DEFAULT_VOICE=""
 typeset SPANISH_DEFAULT_VOICE=""
+typeset FRENCH_DEFAULT_VOICE=""
 case "$PLATFORM" in
-    darwin) GERMAN_DEFAULT_VOICE="Anna";  ENGLISH_DEFAULT_VOICE="Samantha"; SPANISH_DEFAULT_VOICE="Mónica" ;;
-    linux)  GERMAN_DEFAULT_VOICE="de";    ENGLISH_DEFAULT_VOICE="en-us";    SPANISH_DEFAULT_VOICE="es"     ;;
+    darwin) GERMAN_DEFAULT_VOICE="Anna";  ENGLISH_DEFAULT_VOICE="Samantha"; SPANISH_DEFAULT_VOICE="Mónica"; FRENCH_DEFAULT_VOICE="Thomas" ;;
+    linux)  GERMAN_DEFAULT_VOICE="de";    ENGLISH_DEFAULT_VOICE="en-us";    SPANISH_DEFAULT_VOICE="es";     FRENCH_DEFAULT_VOICE="fr"     ;;
 esac
 typeset DEFAULT_RATE=""   # leave blank to use the voice's own default rate
 
@@ -55,12 +56,13 @@ typeset DEFAULT_RATE=""   # leave blank to use the voice's own default rate
 typeset TEST_EN="This is the speak command, reading text aloud with your Mac's built-in voices at whatever rate and voice you choose."
 typeset TEST_DE="Dies ist das Sprachprogramm, das Texte mit den eingebauten Stimmen Ihres Mac in beliebiger Geschwindigkeit und Stimme vorliest."
 typeset TEST_ES="Este es el comando speak, que lee texto en voz alta con las voces integradas de su Mac a la velocidad y con la voz que usted elija."
+typeset TEST_FR="Ceci est la commande speak, qui lit le texte à voix haute avec les voix intégrées de votre Mac, à la vitesse et avec la voix de votre choix."
 
 typeset VOICE=""
 typeset RATE=""
 typeset OUTFILE=""
 typeset INPUT=""
-typeset LANG_FLAG=""   # "g" or "e", so we know which default/validation applies
+typeset LANG_FLAG=""   # "g", "e", "s", or "f", so we know which default/validation applies
 typeset PFLAG=""       # set if -p (print text while speaking) was given
 typeset NFLAG=""       # set if -n (natural/continuous reading, no per-line pause) was given
 typeset XLANG=""       # set to the language name/code given after -x, if any
@@ -68,7 +70,7 @@ typeset XLANG=""       # set to the language name/code given after -x, if any
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
 usage() {
-    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-r rate] [-o outfile] [-p] [-n] [-x lang]"
+    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-x lang]"
     printf '%s\n' "       $0 -l            (list available voices)"
     printf '%s\n' "       $0 -t            (speak English, German, then Spanish test sentences)"
     printf '%s\n' "       $0 -h | --help   (full help)"
@@ -138,6 +140,17 @@ OPTIONS (any order, mixed freely)
                        Same mismatch warning applies if the named voice
                        isn't Spanish.
 
+    -f [voice]         French shortcut. Same pattern as -g/-e/-s.
+                         speak file.txt -f          uses the French
+                                                     default voice for
+                                                     this platform
+                         speak file.txt -f Thomas   uses the named voice
+                                                     (macOS) or a language
+                                                     code like -f fr-CA
+                                                     (Linux)
+                       Same mismatch warning applies if the named voice
+                       isn't French.
+
     -r <rate>          Speech rate in words per minute. Typical usable
                        range is roughly 90-720; the voice's own default
                        is usually around 175-200. Example: -r 220
@@ -199,11 +212,10 @@ OPTIONS (any order, mixed freely)
                                (e.g. "de", "en-us") is what you pass to
                                -v, -g, or -e on this platform.
 
-    -t                 Speak a short English test sentence, then a short
-                       German one, then a short Spanish one, using each
-                       language's default voice for this platform. Good
-                       for checking that all three are installed and
-                       sound right.
+    -t                 Speak a short English test sentence, then German,
+                       Spanish, and French, using each language's default
+                       voice for this platform. Good for checking that
+                       all four are installed and sound right.
 
     -h, --help         Show this full help text.
 
@@ -220,6 +232,8 @@ EXAMPLES
     speak gedicht.txt -g -r 150
     speak notes.txt -s
     speak poema.txt -s -r 150
+    speak notes.txt -f
+    speak texte.txt -f -r 150
     speak gedicht.txt -p -g -x English
     echo "hello" | speak -
     speak -l
@@ -230,11 +244,13 @@ EXAMPLES
         speak -r 220 -v Daniel wispr-flow-response.txt
         speak notes.txt -g Helga
         speak notes.txt -s Paulina
+        speak notes.txt -f Thomas
 
     Linux only:
         speak notes.txt -v en-gb
         speak notes.txt -g de-AT
         speak notes.txt -s es-MX
+        speak notes.txt -f fr-CA
 
 WHILE SPEAKING
     space              Pause / resume the voice (works mid-sentence, in
@@ -246,9 +262,9 @@ WHILE SPEAKING
 
 NOTES
     - Options can appear before or after the filename, in any order.
-    - -v, -g, and -e all just set which voice is used; the last one
-      given on the command line wins if you combine them.
-    - After -g/-e/-s, the next token is treated as a filename (not a
+    - -v, -g, -e, -s, and -f all just set which voice is used; the last
+      one given on the command line wins if you combine them.
+    - After -g/-e/-s/-f, the next token is treated as a filename (not a
       voice name) if it contains "/" or "." — even if that file doesn't
       exist at the current path. That way a mistyped path or wrong
       working directory gives a clear "file not found", instead of the
@@ -258,7 +274,7 @@ NOTES
       If ~/Documents doesn't exist, you'll be prompted for the full
       path instead. Give a relative (e.g. ./notes.txt) or absolute path
       directly to bypass this and use that path as-is.
-    - Voice NAMES are platform-specific (see -g/-e/-v above); everything
+    - Voice NAMES are platform-specific (see -g/-e/-s/-f/-v above); everything
       else (-r, -p, -n, -o's behavior, -t) works the same way on both.
     - -x only works in plain -p mode (no -n, no -o); elsewhere it's
       ignored with a note, since it needs the line-by-line loop.
@@ -266,6 +282,10 @@ NOTES
       for files setup.ksh has stamped with its install footer. They're
       still printed on screen wherever the text is shown, just not
       spoken.
+    - Decorative divider lines (made up entirely of characters like
+      "====", "----", "****", "____", "~~~~", or a mix of these, with
+      no actual letters or digits) are skipped the same way -- shown
+      on screen, never read aloud.
     - space/q controls need a real terminal; if speak is run from
       somewhere with no controlling terminal (cron, certain pipelines),
       these are silently skipped and it just speaks straight through.
@@ -331,6 +351,7 @@ check_lang_match() {
             g) [[ "$voice" != de* ]] && printf '%s\n' "Note: '$voice' doesn't look like a German voice code — using it anyway." >&2 ;;
             e) [[ "$voice" != en* ]] && printf '%s\n' "Note: '$voice' doesn't look like an English voice code — using it anyway." >&2 ;;
             s) [[ "$voice" != es* ]] && printf '%s\n' "Note: '$voice' doesn't look like a Spanish voice code — using it anyway." >&2 ;;
+            f) [[ "$voice" != fr* ]] && printf '%s\n' "Note: '$voice' doesn't look like a French voice code — using it anyway." >&2 ;;
         esac
         return
     fi
@@ -341,6 +362,7 @@ check_lang_match() {
         g) [[ "$lang" != de_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not German — using it anyway." >&2 ;;
         e) [[ "$lang" != en_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not English — using it anyway." >&2 ;;
         s) [[ "$lang" != es_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not Spanish — using it anyway." >&2 ;;
+        f) [[ "$lang" != fr_* ]] && printf '%s\n' "Note: '$voice' is a $lang voice, not French — using it anyway." >&2 ;;
     esac
 }
 
@@ -380,11 +402,34 @@ list_voices() {
 # say/espeak-ng read the file directly and have no way to skip lines
 # themselves. The line-by-line loop below filters inline instead and
 # never needs this.
+# A "divider" line is one made up entirely of punctuation commonly used
+# for ASCII section rules/underlines -- "====", "----", "****", "____",
+# "~~~~", mixes of these, etc. -- with no actual letters or digits in it.
+# Such lines are meant to be *looked at*, not read aloud; speaking "equals
+# equals equals..." fifty times is just noise. They're still printed on
+# screen wherever the script already shows text -- only the speaking is
+# skipped, same as comment lines.
+#
+# Implementation: strip every character in the divider-character set out
+# of the line; if nothing's left, it was made up entirely of those
+# characters. A blank/whitespace-only line also strips down to nothing,
+# but that's handled separately (callers already skip empty lines), so
+# it never reaches this check in practice.
+is_divider_line() {
+    typeset stripped
+    stripped=$(printf '%s' "$1" | tr -d ' \t=_*+.^#~>/\\-')
+    [[ -z "$stripped" ]]
+}
+
 strip_comments_to_tmp() {
     typeset src="$1"
-    typeset tmp
+    typeset tmp line
     tmp=$(mktemp "${TMPDIR:-/tmp}/speak_filtered.XXXXXX")
-    grep -v '^#' "$src" > "$tmp"
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ "$line" == '#'* ]] && continue
+        is_divider_line "$line" && continue
+        printf '%s\n' "$line"
+    done < "$src" > "$tmp"
     printf '%s' "$tmp"
 }
 
@@ -421,10 +466,15 @@ translate_line() {
     trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null
 }
 
-# Full list of languages translate-shell can translate to/from, one per
-# line (code, name, etc. -- whatever trans itself prints).
+# Full list of language CODES translate-shell recognizes, one per line
+# (en, de, es, fr, ...) -- this is what gets checked against the
+# resolved code below, so it has to be the codes list, not a list of
+# language NAMES (an earlier version of this called -list-languages-all,
+# which both doesn't exist as a real trans flag, and -- even swapped for
+# the real -list-languages-english -- would still be the wrong kind of
+# list to check a short code like "en" against).
 list_available_languages() {
-    trans -list-languages-all 2>/dev/null
+    trans -list-codes 2>/dev/null
 }
 
 # Check the resolved target code against that list before trusting it.
@@ -591,10 +641,14 @@ speak_file() {   # speak the contents of a file, skipping comment lines
     rm -f "$filtered"
 }
 
-speak_stdin() {  # speak whatever's piped in on stdin, skipping comment lines
-    typeset tmp
+speak_stdin() {  # speak whatever's piped in on stdin, skipping comment/divider lines
+    typeset tmp line
     tmp=$(mktemp "${TMPDIR:-/tmp}/speak_stdin_filtered.XXXXXX")
-    grep -v '^#' > "$tmp"
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ "$line" == '#'* ]] && continue
+        is_divider_line "$line" && continue
+        printf '%s\n' "$line"
+    done > "$tmp"
     case "$PLATFORM" in
         darwin) run_with_controls say "${SAY_ARGS[@]}" -f "$tmp" ;;
         linux)  run_with_controls espeak-ng "${SAY_ARGS[@]}" -f "$tmp" ;;
@@ -649,6 +703,18 @@ run_test() {
     printf '\n'
     speak_text "$TEST_ES"
 
+    SAY_ARGS=()
+    case "$PLATFORM" in
+        darwin) SAY_ARGS+=("-v" "$FRENCH_DEFAULT_VOICE"); [[ -n "$DEFAULT_RATE" ]] && SAY_ARGS+=("-r" "$DEFAULT_RATE") ;;
+        linux)  SAY_ARGS+=("-v" "$FRENCH_DEFAULT_VOICE"); [[ -n "$DEFAULT_RATE" ]] && SAY_ARGS+=("-s" "$DEFAULT_RATE") ;;
+    esac
+    printf '\n'
+    printf '%s\n' "French (${FRENCH_DEFAULT_VOICE}): "
+    printf '\n'
+    printf '%s\n' "$TEST_FR"
+    printf '\n'
+    speak_text "$TEST_FR"
+
     printf '\n'
     printf '%s\n' "speak -h will show the usage message."
     printf '\n'
@@ -694,6 +760,14 @@ while [[ $# -gt 0 ]]; do
                 VOICE="$SPANISH_DEFAULT_VOICE"; LANG_FLAG="s"; shift 1
             fi
             ;;
+        -f)
+            # Same pattern as -g/-e/-s, but for French.
+            if [[ -n "$2" && "$2" != -* && ! -f "$2" ]] && ! looks_like_file "$2"; then
+                VOICE="$2"; LANG_FLAG="f"; shift 2
+            else
+                VOICE="$FRENCH_DEFAULT_VOICE"; LANG_FLAG="f"; shift 1
+            fi
+            ;;
         -l) list_voices ;;
         -h|--help) help ;;
         -p) PFLAG=1; shift ;;
@@ -728,6 +802,7 @@ if [[ -n "$XLANG" ]]; then
         g) SOURCE_CODE="de" ;;
         e) SOURCE_CODE="en" ;;
         s) SOURCE_CODE="es" ;;
+        f) SOURCE_CODE="fr" ;;
         *) SOURCE_CODE="auto" ;;
     esac
 
@@ -738,6 +813,7 @@ if [[ -n "$XLANG" ]]; then
             en) TARGET_VOICE="$ENGLISH_DEFAULT_VOICE" ;;
             de) TARGET_VOICE="$GERMAN_DEFAULT_VOICE" ;;
             es) TARGET_VOICE="$SPANISH_DEFAULT_VOICE" ;;
+            fr) TARGET_VOICE="$FRENCH_DEFAULT_VOICE" ;;
             *)
                 # No known default voice for this target on this platform.
                 # On Linux, espeak-ng's voice names ARE language codes, so
@@ -846,7 +922,7 @@ if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
     if [[ "$INPUT" == "-" ]]; then
         while IFS= read -r line; do
             printf '%s\n' "$line"
-            if [[ -n "$line" && "$line" != '#'* ]]; then
+            if [[ -n "$line" && "$line" != '#'* ]] && ! is_divider_line "$line"; then
                 speak_text "$line"
                 if [[ "$XENABLED" -eq 1 && "$QUIT" -ne 1 ]]; then
                     typeset translated
@@ -864,7 +940,7 @@ if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
     else
         while IFS= read -r line; do
             printf '%s\n' "$line"
-            if [[ -n "$line" && "$line" != '#'* ]]; then
+            if [[ -n "$line" && "$line" != '#'* ]] && ! is_divider_line "$line"; then
                 speak_text "$line"
                 if [[ "$XENABLED" -eq 1 && "$QUIT" -ne 1 ]]; then
                     typeset translated
@@ -904,6 +980,3 @@ fi
 if [[ -n "$OUTFILE" ]]; then
     printf '%s\n' "Saved audio to: $OUTFILE"
 fi
-#-------------------------------------------------------------------------------
-# Last installed: 2026-10-01 16:13:40
-#-- End of File ----------------------------------------------------------------
