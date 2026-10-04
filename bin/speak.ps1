@@ -41,6 +41,8 @@ $UsageFile = Join-Path $env:USERPROFILE "Documents\speak.usage"
 
 $TestEN = "This is the speak command, reading text aloud with your Mac's built-in voices at whatever rate and voice you choose."
 $TestDE = "Dies ist das Sprachprogramm, das Texte mit den eingebauten Stimmen Ihres Mac in beliebiger Geschwindigkeit und Stimme vorliest."
+$TestES = "Este es el comando speak, que lee texto en voz alta con las voces integradas de su Mac a la velocidad y con la voz que usted elija."
+$TestFR = "Ceci est la commande speak, qui lit le texte à voix haute avec les voix intégrées de votre Mac, à la vitesse et avec la voix de votre choix."
 
 function Find-VoiceByCulturePrefix {
     param([string]$Prefix)
@@ -53,6 +55,8 @@ function Find-VoiceByCulturePrefix {
 
 $GermanDefaultVoice  = Find-VoiceByCulturePrefix "de"
 $EnglishDefaultVoice = Find-VoiceByCulturePrefix "en"
+$SpanishDefaultVoice = Find-VoiceByCulturePrefix "es"
+$FrenchDefaultVoice  = Find-VoiceByCulturePrefix "fr"
 if (-not $EnglishDefaultVoice) {
     # Should essentially never happen — Windows always ships an English
     # voice — but fall back to whatever's currently selected just in case.
@@ -63,9 +67,9 @@ if (-not $EnglishDefaultVoice) {
 # Usage / help
 # ---------------------------------------------------------------------------
 function Show-Usage {
-    Write-Host "Usage: speak.ps1 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-r rate] [-o outfile.wav] [-p] [-n]"
+    Write-Host "Usage: speak.ps1 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile.wav] [-p] [-n]"
     Write-Host "       speak.ps1 -l            (list available voices)"
-    Write-Host "       speak.ps1 -t            (speak English then German test sentences)"
+    Write-Host "       speak.ps1 -t            (speak English/German/Spanish/French test sentences)"
     Write-Host "       speak.ps1 -h            (full help)"
     Write-Host "See $UsageFile"
     exit 1
@@ -105,6 +109,14 @@ OPTIONS (any order, mixed freely)
     -e [voice]          English shortcut. Same pattern as -g; Windows
                         ships at least one English voice by default.
 
+    -s [voice]          Spanish shortcut. Same pattern as -g — needs a
+                        Spanish language/speech pack installed, or it
+                        warns and falls back to the current voice.
+
+    -f [voice]          French shortcut. Same pattern as -g — needs a
+                        French language/speech pack installed, or it
+                        warns and falls back to the current voice.
+
     -r <rate>           Speech rate on WINDOWS' OWN SCALE: -10 (slowest)
                         to 10 (fastest), 0 = normal. This is NOT the same
                         scale as the words-per-minute rate used on macOS/
@@ -134,9 +146,10 @@ OPTIONS (any order, mixed freely)
                         and culture/language code) — the name is what you
                         pass to -v, -g, or -e.
 
-    -t                  Speak a short English test sentence, then a short
-                        German one (if a German voice is installed), using
-                        the default voices for this machine.
+    -t                  Speak a short English test sentence, then German,
+                        Spanish, and French ones (for whichever of those
+                        voices are actually installed), using the default
+                        voice for each on this machine.
 
     -h                  Show this full help text.
 
@@ -263,6 +276,36 @@ function Run-Test {
         Write-Host " with Text-to-speech included under that language's options.)"
     }
 
+    if ($SpanishDefaultVoice) {
+        $Synth.SelectVoice($SpanishDefaultVoice)
+        Write-Host ""
+        Write-Host "Spanish ($SpanishDefaultVoice): "
+        Write-Host ""
+        Write-Host $TestES
+        Write-Host ""
+        Speak-WithControls $TestES
+    } else {
+        Write-Host ""
+        Write-Host "No Spanish voice installed — skipping the Spanish test sentence."
+        Write-Host "(Settings > Time & Language > Language & region > Add a language > Spanish,"
+        Write-Host " with Text-to-speech included under that language's options.)"
+    }
+
+    if ($FrenchDefaultVoice) {
+        $Synth.SelectVoice($FrenchDefaultVoice)
+        Write-Host ""
+        Write-Host "French ($FrenchDefaultVoice): "
+        Write-Host ""
+        Write-Host $TestFR
+        Write-Host ""
+        Speak-WithControls $TestFR
+    } else {
+        Write-Host ""
+        Write-Host "No French voice installed — skipping the French test sentence."
+        Write-Host "(Settings > Time & Language > Language & region > Add a language > French,"
+        Write-Host " with Text-to-speech included under that language's options.)"
+    }
+
     Write-Host ""
     Write-Host "speak.ps1 -h will show the usage message."
     Write-Host ""
@@ -314,6 +357,34 @@ while ($i -lt $args.Count) {
             }
             continue
         }
+        '^-s$' {
+            if (($i+1) -lt $args.Count -and $args[$i+1] -notmatch '^-' -and -not (Test-Path $args[$i+1])) {
+                $Voice = $args[$i+1]; $LangFlag = 's'; $i += 2
+            } else {
+                if ($SpanishDefaultVoice) {
+                    $Voice = $SpanishDefaultVoice
+                } else {
+                    Write-Host "Note: no Spanish voice installed — using the current voice instead."
+                    $Voice = $null
+                }
+                $LangFlag = 's'; $i += 1
+            }
+            continue
+        }
+        '^-f$' {
+            if (($i+1) -lt $args.Count -and $args[$i+1] -notmatch '^-' -and -not (Test-Path $args[$i+1])) {
+                $Voice = $args[$i+1]; $LangFlag = 'f'; $i += 2
+            } else {
+                if ($FrenchDefaultVoice) {
+                    $Voice = $FrenchDefaultVoice
+                } else {
+                    Write-Host "Note: no French voice installed — using the current voice instead."
+                    $Voice = $null
+                }
+                $LangFlag = 'f'; $i += 1
+            }
+            continue
+        }
         '^-l$' { Show-Voices }
         '^(-h|--help)$' { Show-Help }
         '^-p$' { $PFlag = $true; $i += 1; continue }
@@ -343,6 +414,18 @@ if ($Voice) {
         $culture = $Synth.Voice.Culture.Name
         if (-not $culture.ToLower().StartsWith('en')) {
             Write-Host "Note: '$Voice' is a $culture voice, not English — using it anyway."
+        }
+    }
+    if ($LangFlag -eq 's') {
+        $culture = $Synth.Voice.Culture.Name
+        if (-not $culture.ToLower().StartsWith('es')) {
+            Write-Host "Note: '$Voice' is a $culture voice, not Spanish — using it anyway."
+        }
+    }
+    if ($LangFlag -eq 'f') {
+        $culture = $Synth.Voice.Culture.Name
+        if (-not $culture.ToLower().StartsWith('fr')) {
+            Write-Host "Note: '$Voice' is a $culture voice, not French — using it anyway."
         }
     }
 }
