@@ -1,4 +1,3 @@
-#
 # _speak_impl.sh — shared implementation, sourced by both speak.ksh and
 # speak.sh. Not meant to be run directly (no shebang, no execute bit, and
 # setup.ksh's set_symbolic_links() skips it on its leading underscore).
@@ -21,7 +20,7 @@
 # ---------------------------------------------------------------------------
 # Platform detection. Everything below that actually speaks goes through
 # PLATFORM so macOS ('say') and Linux ('espeak-ng') share one set of flags
-# (-v, -g, -e, -r, -o, -p, -n, -t, -l, -h) even though the underlying
+# (-v, -g, -e, -r, -o, -p, -n, -c, -t, -l, -h) even though the underlying
 # commands and voice-naming schemes are quite different.
 # ---------------------------------------------------------------------------
 typeset PLATFORM=""
@@ -65,12 +64,13 @@ typeset INPUT=""
 typeset LANG_FLAG=""   # "g", "e", "s", or "f", so we know which default/validation applies
 typeset PFLAG=""       # set if -p (print text while speaking) was given
 typeset NFLAG=""       # set if -n (natural/continuous reading, no per-line pause) was given
+typeset CFLAG=""       # set if -c (continuous, click-free, line-synced streaming) was given
 typeset XLANG=""       # set to the language name/code given after -x, if any
 
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
 usage() {
-    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-x lang]"
+    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-c] [-x lang]"
     printf '%s\n' "       $0 -l            (list available voices)"
     printf '%s\n' "       $0 -t            (speak English, German, then Spanish test sentences)"
     printf '%s\n' "       $0 -h | --help   (full help)"
@@ -95,7 +95,8 @@ ARGUMENTS
                        (no "/") is first looked for in the current
                        directory, as always; if not found there, it's
                        looked for in ~/Documents instead. If ~/Documents
-                       doesn't exist, you'll be prompted for the full path.
+                       doesn't exist, you'll be prompted for the full
+                       path.
     -                  Read from stdin instead of a file (e.g. for piping).
                        Example: echo "hello" | speak -
 
@@ -154,7 +155,9 @@ OPTIONS (any order, mixed freely)
     -r <rate>          Speech rate in words per minute. Typical usable
                        range is roughly 90-720; the voice's own default
                        is usually around 175-200. Example: -r 220
-                       (Same numeric meaning on both platforms.)
+                       (Same numeric meaning on both platforms. Also
+                       used, with -c, as the pacing estimate for when
+                       each line is printed — see -c below.)
 
     -o <outfile>       Save audio to a file instead of speaking it aloud.
                        macOS:   .aiff (uncompressed) or .m4a (AAC)
@@ -173,6 +176,11 @@ OPTIONS (any order, mixed freely)
                        line-by-line sync doesn't apply — the whole text
                        is printed up front instead, since the output
                        is one continuous audio file, not line-by-line.
+                       Note: by default, -p alone spawns a fresh
+                       say/espeak-ng process per line, which causes an
+                       audible click between lines (each process opens
+                       and closes its own audio session). Add -c to
+                       eliminate that — see below.
 
     -n                 Natural reading: only meaningful together with -p.
                        Prints the whole text up front, then speaks it in
@@ -181,6 +189,26 @@ OPTIONS (any order, mixed freely)
                        memorization (paced, line-by-line); add -n when
                        you just want to listen naturally while reading
                        along. Example: speak notes.txt -p -n
+
+    -c                 Continuous, click-free, line-synced: only
+                       meaningful together with -p (and not combined
+                       with -n or -o). Streams every line through ONE
+                       persistent say/espeak-ng process instead of a
+                       new process per line, so there's no audio-device
+                       open/close between lines — no click — while
+                       still printing each line right as it's sent to
+                       be spoken. Unlike plain -p, the sync here is an
+                       ESTIMATE: each line's on-screen timing is paced
+                       by its word count against -r (or 175 wpm if -r
+                       isn't given), not an exact "started speaking"
+                       signal — say/espeak-ng don't expose one. Good
+                       for listening/memorization without the clicks;
+                       if you need exact per-line pause/resume timing,
+                       use plain -p instead. Ignored, with a note, if
+                       combined with -x (translation needs the
+                       line-by-line loop -c replaces).
+                       Example: speak notes.txt -p -c
+                       Example: speak notes.txt -g -p -c -r 150
 
     -x <language>      Translate each line and speak the translation
                        right after the original line. <language> accepts
@@ -203,7 +231,11 @@ OPTIONS (any order, mixed freely)
                        -o) -- translation is interleaved line-by-line,
                        which needs that loop. Combined with -n or -o,
                        or without -p at all, -x is ignored with a note
-                       rather than failing outright.
+                       rather than failing outright. Also takes
+                       priority over -c -- if both are given, -c is
+                       ignored with a note and the line-by-line loop
+                       (with its per-line clicks) is used so
+                       translation can interleave correctly.
 
     -l                 List every voice installed on this machine.
                        macOS:  name + locale (e.g. "Anna  de_DE").
@@ -235,6 +267,7 @@ EXAMPLES
     speak notes.txt -f
     speak texte.txt -f -r 150
     speak gedicht.txt -p -g -x English
+    speak gedicht.txt -g -p -c         (click-free, synced reading)
     echo "hello" | speak -
     speak -l
     speak -t
@@ -254,11 +287,12 @@ EXAMPLES
 
 WHILE SPEAKING
     space              Pause / resume the voice (works mid-sentence, in
-                       any mode: plain, -p, -p -n, -t — whatever you're
-                       running).
+                       any mode: plain, -p, -p -n, -p -c, -t — whatever
+                       you're running).
     q                  Stop speaking entirely and return to the prompt.
-                       In -p line-by-line mode, this also cancels the
-                       remaining lines rather than just the current one.
+                       In -p line-by-line mode (with or without -c),
+                       this also cancels the remaining lines rather
+                       than just the current one.
 
 NOTES
     - Options can appear before or after the filename, in any order.
@@ -275,9 +309,13 @@ NOTES
       path instead. Give a relative (e.g. ./notes.txt) or absolute path
       directly to bypass this and use that path as-is.
     - Voice NAMES are platform-specific (see -g/-e/-s/-f/-v above); everything
-      else (-r, -p, -n, -o's behavior, -t) works the same way on both.
+      else (-r, -p, -n, -c, -o's behavior, -t) works the same way on both.
+    - -c only works in plain -p mode (no -n, no -o); elsewhere it's
+      ignored with a note, since -n and -o already speak the whole file
+      as a single continuous pass and are already click-free.
     - -x only works in plain -p mode (no -n, no -o); elsewhere it's
-      ignored with a note, since it needs the line-by-line loop.
+      ignored with a note, since it needs the line-by-line loop. -x
+      also takes priority over -c when both are given.
     - Lines starting with "#" are never spoken, in any mode -- useful
       for files setup.ksh has stamped with its install footer. They're
       still printed on screen wherever the text is shown, just not
@@ -530,15 +568,16 @@ fi
 
 # --- Universal stop/restart control -----------------------------------------
 # space = pause/resume, q = stop entirely — works the same way no matter
-# which mode is speaking (plain, -p, -p -n, -t, -g/-e, any voice or rate),
-# because every speak_* wrapper below runs through this one function.
+# which mode is speaking (plain, -p, -p -n, -p -c, -t, -g/-e, any voice or
+# rate), because every speak_* wrapper below, and speak_lines_streamed,
+# routes through monitor_pid_controls for this.
 #
-# Mechanics: run the actual 'say'/'espeak-ng' call in the background, then
-# poll the real keyboard (/dev/tty, not stdin — stdin may be busy carrying
-# piped text) for a keypress every 0.2s. Space sends SIGSTOP/SIGCONT to
-# pause/resume the voice process itself; q kills it and sets QUIT=1 so a
-# caller further up (e.g. the -p line-by-line loop) knows to stop entirely
-# rather than moving on to the next line.
+# Mechanics: poll the real keyboard (/dev/tty, not stdin — stdin may be
+# busy carrying piped text, or in -c's case, feeding the FIFO) for a
+# keypress every 0.2s, against whatever pid is currently speaking. Space
+# sends SIGSTOP/SIGCONT to pause/resume the voice process itself; q kills
+# it and sets QUIT=1 so a caller further up (the -p line-by-line loop, or
+# speak_lines_streamed) knows to stop entirely rather than moving on.
 #
 # If there's no real controlling terminal (e.g. run from cron or over a
 # plain pipe with no tty at all), controls are silently skipped and the
@@ -564,14 +603,19 @@ drain_tty() {
     done
 }
 
-run_with_controls() {
+# Polls space/q against an ALREADY-RUNNING background pid. Pulled out of
+# run_with_controls so speak_lines_streamed (which backgrounds its own
+# single persistent say/espeak-ng process rather than going through
+# run_with_controls's own "$@" &) can reuse the identical pause/quit
+# behavior instead of duplicating it.
+monitor_pid_controls() {
+    typeset cpid="$1"
+
     if [[ "$HAVE_TTY" -ne 1 ]]; then
-        "$@"
+        wait "$cpid" 2>/dev/null
         return
     fi
 
-    "$@" &
-    typeset cpid=$!
     typeset paused=0
     typeset key=""
     # After any space/q is acted on, the spacebar goes silent for a short
@@ -630,10 +674,20 @@ run_with_controls() {
     wait "$cpid" 2>/dev/null
 }
 
+run_with_controls() {
+    if [[ "$HAVE_TTY" -ne 1 ]]; then
+        "$@"
+        return
+    fi
+
+    "$@" &
+    monitor_pid_controls "$!"
+}
+
 # --- Cross-platform speak wrappers ------------------------------------------
 # These are the only places that actually invoke 'say' or 'espeak-ng', so
-# everything above and below them (argument parsing, -p/-n sync logic) is
-# identical regardless of platform.
+# everything above and below them (argument parsing, -p/-n/-c sync logic)
+# is identical regardless of platform.
 
 speak_text() {   # speak a single line/string of text
     typeset text="$1"
@@ -675,6 +729,78 @@ speak_translation_text() {   # speak one translated line, using the TARGET voice
         darwin) run_with_controls say "${TRANS_SAY_ARGS[@]}" "$text" ;;
         linux)  run_with_controls espeak-ng "${TRANS_SAY_ARGS[@]}" "$text" ;;
     esac
+}
+
+# -c: stream every (non-comment, non-divider) line of $1 through ONE
+# persistent say/espeak-ng process via a FIFO, instead of spawning a new
+# process per line like the plain -p loop does. One persistent process
+# means one continuous audio session — no device open/close between
+# lines, so no click. Each line is still printed right as it's written
+# into the FIFO, paced by an estimate (word count against -r, or 175 wpm
+# if -r wasn't given) so the screen roughly tracks the voice — this is
+# NOT an exact "started speaking this line" signal, since say/espeak-ng
+# don't expose one; plain -p (without -c) remains the exactly-synced,
+# clickier option if that precision matters more than the clicks.
+speak_lines_streamed() {
+    typeset src="$1"
+    typeset fifo quitflag
+    fifo=$(mktemp -u "${TMPDIR:-/tmp}/speak_fifo.XXXXXX")
+    quitflag=$(mktemp -u "${TMPDIR:-/tmp}/speak_quit.XXXXXX")
+
+    if ! mkfifo "$fifo" 2>/dev/null; then
+        printf '%s\n' "Error: couldn't create a FIFO for -c streaming; falling back to plain -p." >&2
+        return 1
+    fi
+
+    case "$PLATFORM" in
+        darwin) say "${SAY_ARGS[@]}" < "$fifo" & ;;
+        linux)  espeak-ng "${SAY_ARGS[@]}" < "$fifo" & ;;
+    esac
+    typeset spid=$!
+
+    # Open the FIFO for writing on fd 9, separate from stdout, so each
+    # line write below doesn't block waiting for a reader -- say/espeak-ng
+    # above is already attached to the other end as the reader.
+    exec 9> "$fifo"
+
+    # monitor_pid_controls has to run concurrently with the line-feeding
+    # loop below, not before or after it -- so it's backgrounded here. QUIT
+    # set inside that subshell can't cross back into this shell, so a
+    # quitflag FILE stands in for it: the feeding loop checks for the file
+    # each line instead of reading QUIT directly.
+    ( monitor_pid_controls "$spid"; [[ "$QUIT" -eq 1 ]] && : > "$quitflag" 2>/dev/null ) &
+    typeset monitor_job=$!
+
+    typeset wpm="${RATE:-175}"
+
+    feed_lines() {
+        while IFS= read -r line; do
+            [[ -f "$quitflag" ]] && break
+            [[ "$line" == '#'* ]] && continue
+            is_divider_line "$line" && continue
+            [[ -z "$line" ]] && continue
+
+            printf '%s\n' "$line"
+            printf '%s\n' "$line" >&9 2>/dev/null
+
+            typeset nwords pause
+            nwords=$(printf '%s\n' "$line" | wc -w)
+            pause=$(awk -v n="$nwords" -v wpm="$wpm" 'BEGIN { t = (n / wpm) * 60; if (t < 0.3) t = 0.3; printf "%.2f", t }')
+            sleep "$pause"
+        done
+    }
+
+    if [[ "$src" == "-" ]]; then
+        feed_lines
+    else
+        feed_lines < "$src"
+    fi
+
+    exec 9>&-   # close the writer -- say/espeak-ng exits on FIFO EOF
+    wait "$spid" 2>/dev/null
+    wait "$monitor_job" 2>/dev/null
+    [[ -f "$quitflag" ]] && QUIT=1
+    rm -f "$fifo" "$quitflag"
 }
 
 run_test() {
@@ -785,6 +911,7 @@ while [[ $# -gt 0 ]]; do
         -h|--help) help ;;
         -p) PFLAG=1; shift ;;
         -n) NFLAG=1; shift ;;
+        -c) CFLAG=1; shift ;;
         -x) XLANG="$2"; shift 2 ;;
         -t) usage ;;   # -t only makes sense alone (handled above)
         -*) usage ;;
@@ -848,13 +975,18 @@ if [[ -n "$XLANG" ]]; then
     # still spoken normally, just without translation.
 fi
 
-if [[ "$XENABLED" -eq 1 ]]; then
-    [[ -n "$TARGET_VOICE" ]] && TRANS_SAY_ARGS+=("-v" "$TARGET_VOICE")
-    if [[ -n "$RATE" ]]; then
-        case "$PLATFORM" in
-            darwin) TRANS_SAY_ARGS+=("-r" "$RATE") ;;
-            linux)  TRANS_SAY_ARGS+=("-s" "$RATE") ;;
-        esac
+# -x takes priority over -c: translation needs the line-by-line loop
+# that -c replaces, so if both were given, drop -c with a note rather
+# than silently ignoring the translation.
+if [[ "$XENABLED" -eq 1 && -n "$CFLAG" ]]; then
+    printf '%s\n' "Note: -x and -c don't combine -- using the line-by-line loop for translation (clicks included); ignoring -c for this run." >&2
+    CFLAG=""
+fi
+
+if [[ -n "$CFLAG" ]]; then
+    if [[ -z "$PFLAG" || -n "$OUTFILE" || -n "$NFLAG" ]]; then
+        printf '%s\n' "Note: -c only applies in plain -p mode (no -n, no -o) -- ignoring -c for this run." >&2
+        CFLAG=""
     fi
 fi
 
@@ -925,13 +1057,18 @@ if [[ "$INPUT" != "-" && ! -f "$INPUT" ]]; then
     exit 1
 fi
 
-if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
+if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" && -n "$CFLAG" ]]; then
+    # Click-free, line-synced streaming: one persistent say/espeak-ng
+    # process for the whole file instead of one per line. See
+    # speak_lines_streamed above for the sync-estimate tradeoff.
+    speak_lines_streamed "$INPUT"
+elif [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
     # Line-by-line sync: print each line right before speaking it.
     # Both 'say' and 'espeak-ng' block until they finish a line, so
     # printing-then-speaking in the same loop iteration keeps the two
     # in step naturally.
     # Good for memorization/follow-along reading — not for natural listening,
-    # since there's a beat between lines. Use -n for continuous reading instead.
+    # since there's a beat between lines (and, without -c, a click too).
     if [[ "$INPUT" == "-" ]]; then
         while IFS= read -r line; do
             printf '%s\n' "$line"
@@ -993,3 +1130,9 @@ fi
 if [[ -n "$OUTFILE" ]]; then
     printf '%s\n' "Saved audio to: $OUTFILE"
 fi
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-04 09:07:23
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-07 20:41:26
+#-- End of File ----------------------------------------------------------------
