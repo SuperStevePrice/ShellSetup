@@ -22,6 +22,18 @@
 # Manifest:
 #   See contents of folders dots and prep under this project's root folder.
 #-------------------------------------------------------------------------------
+# Always run from this script's own directory, regardless of where it
+# was invoked from. Every relative path below (bin/, docs/, dots/,
+# logs/installation_list.log, etc.) assumes the current directory IS
+# the repo root -- true when you cd into the repo and run ./setup.ksh,
+# but not when it's invoked by a full path from somewhere else (e.g.
+# ~/Projects/SS/setup.ksh while sitting in ~/Downloads). In that case
+# every relative lookup silently resolves against the WRONG directory,
+# the per-file install loop finds nothing to check, and you get a
+# clean-looking "nothing required installation" that really means
+# "found no files to even look at."
+cd "$(dirname "$0")" || { print -u2 "Error: can't cd to $(dirname "$0")"; exit 1; }
+
 typeset -i line_count
 
 platform=$(uname)
