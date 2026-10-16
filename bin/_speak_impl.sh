@@ -72,6 +72,7 @@ typeset USAGE_FILE="$HOME/Documents/speak.usage"
 usage() {
     printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-c] [-x lang]"
     printf '%s\n' "       $0 -l            (list available voices)"
+    printf '%s\n' "       $0 -xl           (list available -x translation languages)"
     printf '%s\n' "       $0 -t            (speak English, German, then Spanish test sentences)"
     printf '%s\n' "       $0 -h | --help   (full help)"
     printf '%s\n' "See $USAGE_FILE"
@@ -87,6 +88,7 @@ as an audio file.
 USAGE
     speak <textfile|-> [options]
     speak -l
+    speak -xl
     speak -t
     speak -h | --help
 
@@ -236,6 +238,12 @@ OPTIONS (any order, mixed freely)
                        ignored with a note and the line-by-line loop
                        (with its per-line clicks) is used so
                        translation can interleave correctly.
+
+    -xl                List every language -x can translate to -- the
+                       common shortcuts (en/de/es/fr, or e/g/s/f, or the
+                       full name) plus the complete list translate-shell
+                       itself recognizes. Requires translate-shell, same
+                       as -x. Example: speak -xl
 
     -l                 List every voice installed on this machine.
                        macOS:  name + locale (e.g. "Anna  de_DE").
@@ -428,6 +436,25 @@ list_voices() {
     exit 0
 }
 
+# Forward declaration note: list_languages (below) calls
+# list_available_languages, which isn't defined until further down in
+# this file -- that's fine, since nothing calls list_languages until
+# the early "-xl" dispatch much later, by which point the whole file
+# has been sourced and the function exists.
+list_languages() {
+    if ! command -v trans >/dev/null 2>&1; then
+        printf '%s\n' "Error: -xl needs translate-shell (the 'trans' command), which isn't installed." >&2
+        printf '%s\n' "  macOS: brew install translate-shell" >&2
+        printf '%s\n' "  Linux: sudo apt install translate-shell" >&2
+        exit 1
+    fi
+    printf '%s\n' "Languages available as an -x translation target (code -- what to pass):"
+    printf '%s\n' "  en, de, es, fr  (or the -e/-g/-s/-f shortcut letters, or the full name)"
+    printf '%s\n' "All codes translate-shell recognizes:"
+    list_available_languages
+    exit 0
+}
+
 # --- Comment-line filtering -----------------------------------------------
 # Lines starting with "#" (e.g. the "Last installed:"/"End of File" footer
 # setup.ksh stamps onto installed text files) are never spoken -- in any
@@ -483,10 +510,14 @@ resolve_lang_code() {
     typeset input
     input=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
     case "$input" in
-        english|en)          printf '%s' "en" ;;
-        german|deutsch|de)   printf '%s' "de" ;;
-        spanish|espanol|es)  printf '%s' "es" ;;
-        french|francais|fr)  printf '%s' "fr" ;;
+        # e/g/s/f match the single-letter shortcuts -e/-g/-s/-f already
+        # use elsewhere in this script for English/German/Spanish/French,
+        # so -x accepts the same shorthand instead of silently rejecting
+        # it and falling back to speaking the file untranslated.
+        e|english|en)        printf '%s' "en" ;;
+        g|german|deutsch|de) printf '%s' "de" ;;
+        s|spanish|espanol|es) printf '%s' "es" ;;
+        f|french|francais|fr) printf '%s' "fr" ;;
         italian|it)          printf '%s' "it" ;;
         portuguese|pt)       printf '%s' "pt" ;;
         dutch|nl)            printf '%s' "nl" ;;
@@ -565,6 +596,7 @@ if [[ "$PLATFORM" == "linux" ]]; then
 fi
 
 [[ "$1" == "-l" ]] && list_voices
+[[ "$1" == "-xl" ]] && list_languages
 
 # --- Universal stop/restart control -----------------------------------------
 # space = pause/resume, q = stop entirely — works the same way no matter
@@ -908,6 +940,7 @@ while [[ $# -gt 0 ]]; do
             fi
             ;;
         -l) list_voices ;;
+        -xl) list_languages ;;
         -h|--help) help ;;
         -p) PFLAG=1; shift ;;
         -n) NFLAG=1; shift ;;
