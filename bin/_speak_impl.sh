@@ -239,11 +239,12 @@ OPTIONS (any order, mixed freely)
                        (with its per-line clicks) is used so
                        translation can interleave correctly.
 
-    -xl                List every language -x can translate to -- the
-                       common shortcuts (en/de/es/fr, or e/g/s/f, or the
-                       full name) plus the complete list translate-shell
-                       itself recognizes. Requires translate-shell, same
-                       as -x. Example: speak -xl
+    -xl                List every language -x can translate to, as
+                       three columns: code, English name, and native
+                       name (e.g. "de  German  Deutsch") -- plus the
+                       common shortcuts (en/de/es/fr, or e/g/s/f, or
+                       the full name) up top. Requires translate-shell,
+                       same as -x. Example: speak -xl
 
     -l                 List every voice installed on this machine.
                        macOS:  name + locale (e.g. "Anna  de_DE").
@@ -448,10 +449,13 @@ list_languages() {
         printf '%s\n' "  Linux: sudo apt install translate-shell" >&2
         exit 1
     fi
-    printf '%s\n' "Languages available as an -x translation target (code -- what to pass):"
-    printf '%s\n' "  en, de, es, fr  (or the -e/-g/-s/-f shortcut letters, or the full name)"
-    printf '%s\n' "All codes translate-shell recognizes:"
-    list_available_languages
+    {
+        printf '%s\n' "Common shortcuts for -x: en, de, es, fr (or the -e/-g/-s/-f shortcut"
+        printf '%s\n' "letters, or the full name -- English, German, Spanish, French)."
+        printf '\n'
+        printf '%-11s%-31s%s\n' "code" "language" "name"
+        trans -list-all
+    } | more
     exit 0
 }
 
