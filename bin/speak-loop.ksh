@@ -18,7 +18,10 @@
 # default. So "laura li_fold.txt" above resolves to
 # ~/Documents/laura li_fold.txt.
 #
-# Wildcards are allowed in the base name (e.g. freude*.txt). If more
+# Wildcards are allowed in the base name (e.g. freude*.txt), whether
+# the shell expands them for you (because you ran from a directory
+# where they matched something) or they reach the script unexpanded
+# (quoted, or no match in the current directory). Either way, if more
 # than one file matches, you're shown a numbered list to pick from --
 # and that same list comes back up after every playback, so you can
 # jump straight from one match to another (e.g. the 1st Schiller verse
@@ -37,34 +40,71 @@ if (( n < 1 )); then
     exit 1
 fi
 
-textfile=${args[n-1]}
-
-if (( n > 1 )); then
-    speak_args=("${args[@]:0:n-1}")
-fi
-
-# If not a fully qualified path, default to ~/Documents using just
-# the base name (any directory part given on the command line is
-# dropped).
-if [[ $textfile != /* ]]; then
-    textfile="$HOME/Documents/${textfile##*/}"
-fi
-
-# Allow wildcards in the base name (e.g. freude_3_f*.txt). The glob
-# itself isn't expanded by the shell at invocation time because it
-# didn't match anything in the current directory, so expand it here
-# against the resolved path instead. IFS is blanked first so that any
-# literal spaces in the filename (e.g. "laura li_fold.txt") aren't
-# mistaken for word breaks during the expansion.
+# If you run a wildcard (e.g. freude*.txt) from a directory where it
+# happens to match something -- most commonly ~/Documents itself --
+# the shell expands it before this script ever sees it, handing us
+# several separate filename arguments instead of one argument
+# containing a "*". Scan backward from the end of the argument list
+# and pull in every trailing argument that resolves to a real file;
+# if two or more do, that's the match list, full stop -- this must
+# run before any wildcard pattern-matching below, or those extra
+# filenames get mistaken for speak options.
 typeset -a matches
-typeset old_ifs=$IFS
-IFS=
-matches=( $textfile )
-IFS=$old_ifs
+typeset -a trailing_resolved
+integer trailing_count=0
+integer idx=n-1
+typeset cand cand_resolved
 
-if (( ${#matches[@]} == 0 )) || [[ ! -f ${matches[0]} ]]; then
-    print -u2 "Error: file '$textfile' not found"
-    exit 1
+while (( idx >= 0 )); do
+    cand=${args[idx]}
+    if [[ $cand == /* ]]; then
+        cand_resolved=$cand
+    else
+        cand_resolved="$HOME/Documents/${cand##*/}"
+    fi
+    if [[ -f $cand_resolved ]]; then
+        trailing_resolved=("$cand_resolved" "${trailing_resolved[@]}")
+        (( trailing_count += 1 ))
+        (( idx -= 1 ))
+    else
+        break
+    fi
+done
+
+if (( trailing_count >= 2 )); then
+    matches=("${trailing_resolved[@]}")
+    speak_args=("${args[@]:0:n-trailing_count}")
+    textfile=${matches[0]}
+else
+    textfile=${args[n-1]}
+
+    if (( n > 1 )); then
+        speak_args=("${args[@]:0:n-1}")
+    fi
+
+    # If not a fully qualified path, default to ~/Documents using just
+    # the base name (any directory part given on the command line is
+    # dropped).
+    if [[ $textfile != /* ]]; then
+        textfile="$HOME/Documents/${textfile##*/}"
+    fi
+
+    # Allow wildcards in the base name (e.g. freude_3_f*.txt). This
+    # covers the case where the pattern reached us unexpanded --
+    # typically because you quoted it, or ran it from a directory
+    # where it didn't match anything so the shell left it alone.
+    # IFS is blanked first so that any literal spaces in the filename
+    # (e.g. "laura li_fold.txt") aren't mistaken for word breaks
+    # during the expansion.
+    typeset old_ifs=$IFS
+    IFS=
+    matches=( $textfile )
+    IFS=$old_ifs
+
+    if (( ${#matches[@]} == 0 )) || [[ ! -f ${matches[0]} ]]; then
+        print -u2 "Error: file '$textfile' not found"
+        exit 1
+    fi
 fi
 
 integer current=0
@@ -129,3 +169,6 @@ while true; do
         *) ;;
     esac
 done
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-12 06:51:01
+#-- End of File ----------------------------------------------------------------

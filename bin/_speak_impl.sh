@@ -915,7 +915,20 @@ while [[ $# -gt 0 ]]; do
         -x) XLANG="$2"; shift 2 ;;
         -t) usage ;;   # -t only makes sense alone (handled above)
         -*) usage ;;
-        *)  INPUT="$1"; shift ;;
+        *)
+            # A second (or third...) non-option token here almost always
+            # means a wildcard matched more than one file and the shell
+            # expanded it before we ever saw a "*" -- e.g. "speak
+            # freude*.txt" run from ~/Documents. speak only ever reads one
+            # file; silently keeping just the last token and dropping the
+            # rest would be a quiet data-loss bug, so refuse instead and
+            # point at the tool that's actually built for this.
+            if [[ -n "$INPUT" && "$INPUT" != "-" ]]; then
+                printf '%s\n' "Error: multiple files given ('$INPUT' and '$1', possibly more) -- speak reads only one file at a time." >&2
+                printf '%s\n' "Use speak-loop instead for a wildcard match list." >&2
+                exit 1
+            fi
+            INPUT="$1"; shift ;;
     esac
 done
 
@@ -1135,4 +1148,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-10-07 20:41:26
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-07 20:46:39
 #-- End of File ----------------------------------------------------------------
