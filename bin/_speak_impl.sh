@@ -66,11 +66,12 @@ typeset PFLAG=""       # set if -p (print text while speaking) was given
 typeset NFLAG=""       # set if -n (natural/continuous reading, no per-line pause) was given
 typeset CFLAG=""       # set if -c (continuous, click-free, line-synced streaming) was given
 typeset XLANG=""       # set to the language name/code given after -x, if any
+typeset BFLAG=""       # set if -b (block/paragraph/stanza translation mode) was given, together with -x
 
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
 usage() {
-    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-c] [-x lang]"
+    printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-c] [-x lang] [-b]"
     printf '%s\n' "       $0 -l            (list available voices)"
     printf '%s\n' "       $0 -xl           (list available -x translation languages)"
     printf '%s\n' "       $0 -t            (speak English, German, then Spanish test sentences)"
@@ -212,14 +213,29 @@ OPTIONS (any order, mixed freely)
                        Example: speak notes.txt -p -c
                        Example: speak notes.txt -g -p -c -r 150
 
-    -x <language>      Translate each line and speak the translation
-                       right after the original line. <language> accepts
-                       either a common name (English, German, Spanish,
-                       French...) or a code (en, de, es, fr...), case-
-                       insensitive (English, english, and EN all work
-                       the same), and can appear anywhere on the command
-                       line like any other option.
+    -x <language>      Translate the text and speak the translation.
+                       <language> accepts either a common name (English,
+                       German, Spanish, French...) or a code (en, de,
+                       es, fr...), case-insensitive (English, english,
+                       and EN all work the same), and can appear
+                       anywhere on the command line like any other
+                       option.
+                       By default (no -b), the WHOLE original text is
+                       printed and spoken first, then the WHOLE
+                       translation is printed and spoken after it --
+                       two clean blocks, original then translation.
+                       Add -b to instead translate paragraph by
+                       paragraph (or stanza by stanza, for poetry):
+                       each block of the original, delimited by a blank
+                       line, is printed/spoken, immediately followed by
+                       that block's translation, then on to the next
+                       block. This keeps each chunk of translation in
+                       its surrounding context (so an inverted or
+                       enjambed line translates sensibly) without
+                       waiting for the entire file to finish. See -b
+                       below.
                        Example: speak gedicht.txt -p -g -x English
+                       Example: speak gedicht.txt -p -g -x English -b
                        Requires translate-shell (the 'trans' command):
                          macOS:  brew install translate-shell
                          Linux:  sudo apt install translate-shell
@@ -230,14 +246,28 @@ OPTIONS (any order, mixed freely)
                        list of available languages, and the file is
                        still spoken normally -- just without translation.
                        Only takes effect in plain -p mode (no -n, no
-                       -o) -- translation is interleaved line-by-line,
-                       which needs that loop. Combined with -n or -o,
-                       or without -p at all, -x is ignored with a note
-                       rather than failing outright. Also takes
-                       priority over -c -- if both are given, -c is
-                       ignored with a note and the line-by-line loop
-                       (with its per-line clicks) is used so
-                       translation can interleave correctly.
+                       -o) -- translation needs that loop. Combined
+                       with -n or -o, or without -p at all, -x is
+                       ignored with a note rather than failing
+                       outright. Also takes priority over -c -- if
+                       both are given, -c is ignored with a note and
+                       the block loop is used instead so translation
+                       can run correctly.
+                       Note: each source line is sent to translate-shell
+                       separately and printed back in the same order, so
+                       translation is slower than a single request would
+                       be, but the on-screen order always matches the
+                       original -- it won't come back scrambled or with
+                       lines out of sequence.
+
+    -b                 Block/paragraph/stanza translation mode -- only
+                       meaningful together with -x (ignored, with a
+                       note, if given without -x). See -x above for
+                       what this changes. Blocks are delimited by a
+                       blank line in the source file, so make sure your
+                       text file actually has blank lines between
+                       stanzas/paragraphs if you want -b to split there.
+                       Example: speak gedicht.txt -p -g -x English -b
 
     -xl                List every language -x can translate to, as
                        three columns: code, English name, and native
@@ -275,7 +305,8 @@ EXAMPLES
     speak poema.txt -s -r 150
     speak notes.txt -f
     speak texte.txt -f -r 150
-    speak gedicht.txt -p -g -x English
+    speak gedicht.txt -p -g -x English          (all German, then all English)
+    speak gedicht.txt -p -g -x English -b       (stanza by stanza)
     speak gedicht.txt -g -p -c         (click-free, synced reading)
     echo "hello" | speak -
     speak -l
@@ -323,8 +354,12 @@ NOTES
       ignored with a note, since -n and -o already speak the whole file
       as a single continuous pass and are already click-free.
     - -x only works in plain -p mode (no -n, no -o); elsewhere it's
-      ignored with a note, since it needs the line-by-line loop. -x
-      also takes priority over -c when both are given.
+      ignored with a note, since it needs the block loop. -x also
+      takes priority over -c when both are given.
+    - -b only does anything together with -x; without -x it's ignored
+      with a note. -b switches -x from "all original, then all
+      translation" (the default) to stanza/paragraph-by-paragraph,
+      splitting on blank lines in the source file.
     - Lines starting with "#" are never spoken, in any mode -- useful
       for files setup.ksh has stamped with its install footer. They're
       still printed on screen wherever the text is shown, just not
@@ -532,22 +567,49 @@ resolve_lang_code() {
     esac
 }
 
-# Translate one line of text via translate-shell. -brief keeps trans
-# from printing dictionary/extra info -- just the translation itself.
+# Some versions/situations of translate-shell print a failure like
+# "[ERROR] Null response." to STDOUT rather than stderr, so a bare
+# emptiness check on $result isn't enough on its own -- this catches
+# both: a truly empty result, and one that's actually an error message
+# that leaked through so it never gets spoken aloud as if it were a
+# real translation.
+is_trans_error() {
+    [[ -z "$1" ]] && return 0
+    case "$1" in
+        '[ERROR]'*) return 0 ;;
+    esac
+    return 1
+}
+
+# Translate one line (or block) of text via translate-shell. -brief
+# keeps trans from printing dictionary/extra info -- just the
+# translation itself.
+#
+# translate-shell's default engine (Google) occasionally comes back
+# empty -- or with an "[ERROR] ..." line -- on a transient hiccup
+# (most commonly HTTP 429, Google rate-limiting the free endpoint
+# translate-shell uses) rather than a real, lasting failure. This
+# tries, in order: the default engine once, the default engine again
+# after a short pause, then Bing (-e bing) as a fallback engine, before
+# finally giving up. Each step only runs if the one before it didn't
+# produce a usable result, so the normal case -- first call succeeds --
+# is exactly as fast as before.
 translate_line() {
     typeset line="$1"
     typeset result
+
     result=$(trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
 
-    # translate-shell occasionally comes back empty on a transient hiccup
-    # (rate-limited, a dropped connection) rather than a real translation
-    # failure -- a brief pause and one retry clears most of these without
-    # adding real delay to the normal case, where the first call succeeds
-    # and this block never runs at all.
-    if [[ -z "$result" ]]; then
+    if is_trans_error "$result"; then
         sleep 1
         result=$(trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
     fi
+
+    if is_trans_error "$result"; then
+        result=$(trans -e bing -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
+    fi
+
+    is_trans_error "$result" && result=""
 
     printf '%s' "$result"
 }
@@ -767,6 +829,147 @@ speak_translation_text() {   # speak one translated line, using the TARGET voice
     esac
 }
 
+# --- Whole-text / block translation (-x, with or without -b) --------------
+#
+# Both modes below work off one global array, RAW_LINES: every line of
+# the source, in order, comments and blank lines included -- blank
+# lines are what -b splits blocks on, and comment/divider lines are
+# still shown on screen (read_all_lines keeps them) but never handed to
+# a voice (translate_lines_in_order drops them when building what
+# actually gets translated).
+
+typeset -a RAW_LINES
+
+read_all_lines() {   # fills the global RAW_LINES from a file or stdin ("-")
+    typeset src="$1"
+    typeset line
+    RAW_LINES=()
+    if [[ "$src" == "-" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            RAW_LINES+=("$line")
+        done
+    else
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            RAW_LINES+=("$line")
+        done < "$src"
+    fi
+}
+
+speak_lines_synced() {   # print+speak RAW_LINES[$1..$2] one at a time, source voice (SAY_ARGS) -- what actually keeps -p's on-screen text in step with the voice, same as the plain -p loop elsewhere in this script.
+    typeset -i i a=$1 b=$2
+    typeset l
+    for (( i = a; i <= b; i++ )); do
+        l="${RAW_LINES[i]}"
+        printf '%s\n' "$l"
+        if [[ -n "$l" && "$l" != '#'* ]] && ! is_divider_line "$l"; then
+            speak_text "$l"
+        fi
+        [[ "$QUIT" -eq 1 ]] && return
+    done
+}
+
+speak_translation_lines_synced() {   # print+speak a (possibly multi-line) translation one line at a time, target voice (TRANS_SAY_ARGS) -- same sync behavior as speak_lines_synced, just on the translated side
+    typeset text="$1"
+    typeset line
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        printf '%s\n' "$line"
+        [[ -n "$line" ]] && speak_translation_text "$line"
+        [[ "$QUIT" -eq 1 ]] && return
+    done <<< "$text"
+}
+
+# Translate RAW_LINES[$1..$2] ONE SOURCE LINE AT A TIME, dropping
+# comment and divider lines, and join the results back into one
+# multi-line string in the SAME order we fed them in.
+#
+# This replaced an earlier version that joined the whole range into
+# one multi-line string and sent it to translate-shell as a single
+# call. That seemed like the better design (one request keeps
+# enjambed/inverted lines in context for a more natural translation),
+# but in practice translate-shell can return a multi-line translation
+# with its lines out of order or interleaved -- observed firsthand
+# with a short poem, where the translation came back with stanzas
+# scrambled and the title relocated to the end. Translating one line
+# per call is slower (more requests) and loses that cross-line
+# context, but the order of what WE get back is entirely under our
+# own control -- each call returns one line's translation before the
+# next line is ever sent -- so this can't happen.
+translate_lines_in_order() {
+    typeset -i i a=$1 b=$2
+    typeset out="" l translated
+    for (( i = a; i <= b; i++ )); do
+        l="${RAW_LINES[i]}"
+        [[ "$l" == '#'* ]] && continue
+        is_divider_line "$l" && continue
+        [[ -z "$l" ]] && continue
+
+        translated=$(translate_line "$l")
+        [[ -z "$translated" ]] && translated="(translation unavailable for this line)"
+
+        if [[ -z "$out" ]]; then
+            out="$translated"
+        else
+            out="$out
+$translated"
+        fi
+    done
+    printf '%s' "$out"
+}
+
+# Default -x behavior: the ENTIRE original text, printed and spoken as
+# one block, followed by the ENTIRE translation, printed and spoken as
+# one block.
+speak_translate_whole() {
+    typeset -i last=$(( ${#RAW_LINES[@]} - 1 ))
+    typeset translated
+
+    speak_lines_synced 0 "$last"
+    [[ "$QUIT" -eq 1 ]] && return
+
+    translated=$(translate_lines_in_order 0 "$last")
+    if [[ -n "$translated" ]]; then
+        printf '\n'
+        speak_translation_lines_synced "$translated"
+    else
+        printf '%s\n' "(translation unavailable)" >&2
+    fi
+}
+
+# -b behavior: walk the file one blank-line-delimited block (paragraph
+# or stanza) at a time -- original block, then that block's
+# translation, then on to the next block.
+speak_translate_blocks() {
+    typeset -i n=${#RAW_LINES[@]}
+    typeset -i i=0 start
+    typeset translated
+
+    while (( i < n )); do
+        while (( i < n )) && [[ -z "${RAW_LINES[i]}" ]]; do
+            printf '\n'
+            (( i += 1 ))
+        done
+        (( i >= n )) && break
+
+        start=$i
+        while (( i < n )) && [[ -n "${RAW_LINES[i]}" ]]; do
+            (( i += 1 ))
+        done
+
+        speak_lines_synced "$start" "$(( i - 1 ))"
+        [[ "$QUIT" -eq 1 ]] && return
+
+        translated=$(translate_lines_in_order "$start" "$(( i - 1 ))")
+        if [[ -n "$translated" ]]; then
+            printf '\n'
+            speak_translation_lines_synced "$translated"
+            printf '\n'
+        else
+            printf '%s\n' "(translation unavailable)" >&2
+        fi
+        [[ "$QUIT" -eq 1 ]] && return
+    done
+}
+
 # -c: stream every (non-comment, non-divider) line of $1 through ONE
 # persistent say/espeak-ng process via a FIFO, instead of spawning a new
 # process per line like the plain -p loop does. One persistent process
@@ -950,6 +1153,7 @@ while [[ $# -gt 0 ]]; do
         -n) NFLAG=1; shift ;;
         -c) CFLAG=1; shift ;;
         -x) XLANG="$2"; shift 2 ;;
+        -b) BFLAG=1; shift ;;
         -t) usage ;;   # -t only makes sense alone (handled above)
         -*) usage ;;
         *)
@@ -1029,8 +1233,15 @@ fi
 # that -c replaces, so if both were given, drop -c with a note rather
 # than silently ignoring the translation.
 if [[ "$XENABLED" -eq 1 && -n "$CFLAG" ]]; then
-    printf '%s\n' "Note: -x and -c don't combine -- using the line-by-line loop for translation (clicks included); ignoring -c for this run." >&2
+    printf '%s\n' "Note: -x and -c don't combine -- using the block loop for translation (clicks included); ignoring -c for this run." >&2
     CFLAG=""
+fi
+
+# -b only means anything alongside a translation that's actually going
+# to happen.
+if [[ -n "$BFLAG" && "$XENABLED" -ne 1 ]]; then
+    printf '%s\n' "Note: -b only applies together with -x (translation) -- ignoring -b for this run." >&2
+    BFLAG=""
 fi
 
 if [[ -n "$CFLAG" ]]; then
@@ -1107,7 +1318,18 @@ if [[ "$INPUT" != "-" && ! -f "$INPUT" ]]; then
     exit 1
 fi
 
-if [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" && -n "$CFLAG" ]]; then
+if [[ "$XENABLED" -eq 1 ]]; then
+    # Translation is already gated to plain -p mode (no -n, no -o) back
+    # where XENABLED was set, and -c was already dropped above if both
+    # were given -- so this always reaches here instead of the ordinary
+    # -p loop below.
+    read_all_lines "$INPUT"
+    if [[ -n "$BFLAG" ]]; then
+        speak_translate_blocks
+    else
+        speak_translate_whole
+    fi
+elif [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" && -n "$CFLAG" ]]; then
     # Click-free, line-synced streaming: one persistent say/espeak-ng
     # process for the whole file instead of one per line. See
     # speak_lines_streamed above for the sync-estimate tradeoff.
@@ -1124,16 +1346,6 @@ elif [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
             printf '%s\n' "$line"
             if [[ -n "$line" && "$line" != '#'* ]] && ! is_divider_line "$line"; then
                 speak_text "$line"
-                if [[ "$XENABLED" -eq 1 && "$QUIT" -ne 1 ]]; then
-                    typeset translated
-                    translated=$(translate_line "$line")
-                    if [[ -n "$translated" ]]; then
-                        printf '%s\n' "$translated"
-                        speak_translation_text "$translated"
-                    else
-                        printf '%s\n' "(translation unavailable)" >&2
-                    fi
-                fi
             fi
             [[ "$QUIT" -eq 1 ]] && break
         done
@@ -1142,16 +1354,6 @@ elif [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
             printf '%s\n' "$line"
             if [[ -n "$line" && "$line" != '#'* ]] && ! is_divider_line "$line"; then
                 speak_text "$line"
-                if [[ "$XENABLED" -eq 1 && "$QUIT" -ne 1 ]]; then
-                    typeset translated
-                    translated=$(translate_line "$line")
-                    if [[ -n "$translated" ]]; then
-                        printf '%s\n' "$translated"
-                        speak_translation_text "$translated"
-                    else
-                        printf '%s\n' "(translation unavailable)" >&2
-                    fi
-                fi
             fi
             [[ "$QUIT" -eq 1 ]] && break
         done < "$INPUT"
@@ -1188,4 +1390,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-10-07 20:46:39
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-23 15:20:25
 #-- End of File ----------------------------------------------------------------
