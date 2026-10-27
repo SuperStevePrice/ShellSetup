@@ -143,6 +143,21 @@ msg() {
         *:skip_same)   print "  -> $1  (no savings, left as-is: $2)" ;;
         *:failed)      print -u2 "  Failed to process: $1" ;;
         *:summary)     print "Done: $1 of $2 file(s) compressed." ;;
+
+        es:not_found_list) print "No encontrado(s): $1" ;;
+        de:not_found_list) print "Nicht gefunden: $1" ;;
+        fr:not_found_list) print "Introuvable(s) : $1" ;;
+        *:not_found_list)  print "Not found: $1" ;;
+
+        es:skip_compressed) print "Omitido (ya es una copia comprimida): $1" ;;
+        de:skip_compressed) print "Uebersprungen (bereits eine komprimierte Kopie): $1" ;;
+        fr:skip_compressed) print "Ignoré (déjà une copie compressée) : $1" ;;
+        *:skip_compressed)  print "Skipped (already a compressed copy): $1" ;;
+
+        es:skip_compressed_list) print "  (se omitieron $1 archivo(s) ya comprimido(s): $2)" ;;
+        de:skip_compressed_list) print "  ($1 bereits komprimierte Datei(en) uebersprungen: $2)" ;;
+        fr:skip_compressed_list) print "  ($1 fichier(s) déjà compressé(s) ignoré(s) : $2)" ;;
+        *:skip_compressed_list)  print "  ($1 already-compressed file(s) skipped: $2)" ;;
     esac
 }
 
@@ -199,6 +214,10 @@ file_size() {
 
 typeset -i count_ok=0
 typeset -i count_total=0
+typeset -a not_found
+not_found=()
+typeset -a skipped_compressed
+skipped_compressed=()
 
 if [[ -n "$OUTDIR" ]]; then
     mkdir -p "$OUTDIR" 2>/dev/null
@@ -209,6 +228,7 @@ for src in "$@"; do
 
     if [[ ! -e "$src" ]]; then
         msg no_file "$src"
+        not_found+=("$src")
         continue
     fi
     if [[ ! -r "$src" ]]; then
@@ -219,6 +239,18 @@ for src in "$@"; do
     base="${src##*/}"
     stem="${base%.*}"
     ext="${base##*.}"
+
+    # Don't re-process the script's own output -- a glob like *.png will
+    # happily match files we wrote on a previous run (NAME_compressed.ext),
+    # and re-compressing those chains into
+    # NAME_compressed_compressed_compressed....ext forever.
+    case "$stem" in
+        *_compressed)
+            msg skip_compressed "$src"
+            skipped_compressed+=("$src")
+            continue
+            ;;
+    esac
 
     if [[ -n "$OUTDIR" ]]; then
         dest="$OUTDIR/$base"
@@ -264,6 +296,14 @@ for src in "$@"; do
         (( pct = (orig_bytes - new_bytes) * 100 / orig_bytes ))
         msg done "$dest" "$(human_size "$orig_bytes")" "$(human_size "$new_bytes")" "$pct"
     else
+        # The "compressed" version was not smaller (can happen when a
+        # palette/indexed PNG gets forced to truecolor on resize). Don't
+        # leave a bloated file behind under the _compressed name -- replace
+        # it with a plain copy of the original so dest always reflects
+        # what's actually on disk, and the reported size is always real.
+        if [[ "$dest" != "$src" ]]; then
+            cp "$src" "$dest" 2>/dev/null
+        fi
         msg skip_same "$dest" "$(human_size "$orig_bytes")"
     fi
 
@@ -271,5 +311,23 @@ for src in "$@"; do
 done
 
 msg summary "$count_ok" "$count_total"
+
+if (( ${#not_found[@]} > 0 )); then
+    typeset joined="${not_found[0]}"
+    typeset -i i
+    for (( i = 1; i < ${#not_found[@]}; i++ )); do
+        joined="${joined}, ${not_found[i]}"
+    done
+    msg not_found_list "$joined"
+fi
+
+if (( ${#skipped_compressed[@]} > 0 )); then
+    typeset joined2="${skipped_compressed[0]}"
+    typeset -i j
+    for (( j = 1; j < ${#skipped_compressed[@]}; j++ )); do
+        joined2="${joined2}, ${skipped_compressed[j]}"
+    done
+    msg skip_compressed_list "${#skipped_compressed[@]}" "$joined2"
+fi
 
 (( count_ok > 0 ))
