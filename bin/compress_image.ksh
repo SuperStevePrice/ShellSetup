@@ -214,10 +214,16 @@ file_size() {
 
 typeset -i count_ok=0
 typeset -i count_total=0
+
+# Tracking arrays for the end-of-run summary. Deliberately NOT using
+# "arr+=(elem)" to append -- that form is unreliable on the older ksh93
+# builds macOS ships as /bin/ksh (can drop or misplace elements on an
+# array that was just reset with "arr=()"). Explicit indexed assignment
+# with a manual counter is unambiguous on every ksh variant.
 typeset -a not_found
-not_found=()
+typeset -i not_found_n=0
 typeset -a skipped_compressed
-skipped_compressed=()
+typeset -i skipped_compressed_n=0
 
 if [[ -n "$OUTDIR" ]]; then
     mkdir -p "$OUTDIR" 2>/dev/null
@@ -228,7 +234,8 @@ for src in "$@"; do
 
     if [[ ! -e "$src" ]]; then
         msg no_file "$src"
-        not_found+=("$src")
+        not_found[not_found_n]="$src"
+        (( not_found_n = not_found_n + 1 ))
         continue
     fi
     if [[ ! -r "$src" ]]; then
@@ -247,7 +254,8 @@ for src in "$@"; do
     case "$stem" in
         *_compressed)
             msg skip_compressed "$src"
-            skipped_compressed+=("$src")
+            skipped_compressed[skipped_compressed_n]="$src"
+            (( skipped_compressed_n = skipped_compressed_n + 1 ))
             continue
             ;;
     esac
@@ -312,22 +320,22 @@ done
 
 msg summary "$count_ok" "$count_total"
 
-if (( ${#not_found[@]} > 0 )); then
+if (( not_found_n > 0 )); then
     typeset joined="${not_found[0]}"
     typeset -i i
-    for (( i = 1; i < ${#not_found[@]}; i++ )); do
+    for (( i = 1; i < not_found_n; i++ )); do
         joined="${joined}, ${not_found[i]}"
     done
     msg not_found_list "$joined"
 fi
 
-if (( ${#skipped_compressed[@]} > 0 )); then
+if (( skipped_compressed_n > 0 )); then
     typeset joined2="${skipped_compressed[0]}"
     typeset -i j
-    for (( j = 1; j < ${#skipped_compressed[@]}; j++ )); do
+    for (( j = 1; j < skipped_compressed_n; j++ )); do
         joined2="${joined2}, ${skipped_compressed[j]}"
     done
-    msg skip_compressed_list "${#skipped_compressed[@]}" "$joined2"
+    msg skip_compressed_list "$skipped_compressed_n" "$joined2"
 fi
 
 (( count_ok > 0 ))
