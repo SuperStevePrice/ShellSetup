@@ -12,7 +12,7 @@
 # remote command is embedded with escaped double quotes so ssh receives
 # it as ONE argument: cd ~/Projects/SS && git status
 
-for server in stevesmacbook-pro imac-linux macbookpro-linux steves-imac
+for server in macbookprom1 imaclinux macbookprolinux imacintel
 do
     print "Server: $server"
 

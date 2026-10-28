@@ -14,18 +14,22 @@
 #   (runs: speak -p -g laura li_fold.txt, then offers to repeat)
 #
 # If textfile.txt is not a fully qualified path (i.e. doesn't start
-# with /), its base name is used and looked up in ~/Documents by
-# default. So "laura li_fold.txt" above resolves to
+# with /), the CURRENT DIRECTORY is checked first -- same precedence
+# 'speak' itself uses -- and only if nothing matches there does it fall
+# back to the base name in ~/Documents. So "laura li_fold.txt" above
+# resolves to ./laura li_fold.txt if that exists here, else
 # ~/Documents/laura li_fold.txt.
 #
 # Wildcards are allowed in the base name (e.g. freude*.txt), whether
 # the shell expands them for you (because you ran from a directory
-# where they matched something) or they reach the script unexpanded
-# (quoted, or no match in the current directory). Either way, if more
-# than one file matches, you're shown a numbered list to pick from --
-# and that same list comes back up after every playback, so you can
-# jump straight from one match to another (e.g. the 1st Schiller verse
-# to the 5th) without re-running the whole command.
+# where they matched something -- that directory is honored, not
+# silently swapped for ~/Documents) or they reach the script unexpanded
+# (quoted, or no match in the current directory, in which case
+# ~/Documents is tried next). Either way, if more than one file
+# matches, you're shown a numbered list to pick from -- and that same
+# list comes back up after every playback, so you can jump straight
+# from one match to another (e.g. the 1st Schiller verse to the 5th)
+# without re-running the whole command.
 
 typeset -a args
 typeset -a speak_args
@@ -54,10 +58,35 @@ typeset -a trailing_resolved
 integer trailing_count=0
 integer idx=n-1
 typeset cand cand_resolved
+integer saw_dir=0
+
+# speak-loop (and speak) read text files, never directories. Keep only
+# regular files in $matches; note (via saw_dir) whether a directory
+# turned up along the way, purely so a later all-directories-no-files
+# failure can say so plainly instead of a bare "not found".
+function filter_to_files {
+    typeset -a kept
+    typeset m
+    for m in "${matches[@]}"; do
+        if [[ -f $m ]]; then
+            kept+=("$m")
+        elif [[ -d $m ]]; then
+            saw_dir=1
+        fi
+    done
+    matches=("${kept[@]}")
+}
 
 while (( idx >= 0 )); do
     cand=${args[idx]}
     if [[ $cand == /* ]]; then
+        cand_resolved=$cand
+    elif [[ -f $cand ]]; then
+        # Found right here in the current directory -- this is exactly
+        # the case where the shell already expanded a wildcard for us
+        # because it matched something in THIS directory, so that's
+        # where the match actually lives; don't reach into ~/Documents
+        # instead.
         cand_resolved=$cand
     else
         cand_resolved="$HOME/Documents/${cand##*/}"
@@ -82,13 +111,6 @@ else
         speak_args=("${args[@]:0:n-1}")
     fi
 
-    # If not a fully qualified path, default to ~/Documents using just
-    # the base name (any directory part given on the command line is
-    # dropped).
-    if [[ $textfile != /* ]]; then
-        textfile="$HOME/Documents/${textfile##*/}"
-    fi
-
     # Allow wildcards in the base name (e.g. freude_3_f*.txt). This
     # covers the case where the pattern reached us unexpanded --
     # typically because you quoted it, or ran it from a directory
@@ -97,12 +119,44 @@ else
     # (e.g. "laura li_fold.txt") aren't mistaken for word breaks
     # during the expansion.
     typeset old_ifs=$IFS
-    IFS=
-    matches=( $textfile )
-    IFS=$old_ifs
+    typeset orig_pattern=$textfile
 
-    if (( ${#matches[@]} == 0 )) || [[ ! -f ${matches[0]} ]]; then
-        print -u2 "Error: file '$textfile' not found"
+    if [[ $textfile == /* ]]; then
+        IFS=
+        matches=( $textfile )
+        IFS=$old_ifs
+        filter_to_files
+    else
+        # Try the pattern as given, relative to the CURRENT DIRECTORY
+        # first -- same precedence 'speak' itself uses -- so running
+        # speak-loop from inside a project directory finds a file
+        # sitting right there instead of silently reaching into
+        # ~/Documents.
+        IFS=
+        matches=( $textfile )
+        IFS=$old_ifs
+        filter_to_files
+
+        # Nothing usable here (no match, or the only match was a
+        # directory -- e.g. *pro* catching a "project_docs" folder) --
+        # fall back to ~/Documents using just the base name (any
+        # directory part given on the command line is dropped for this
+        # fallback).
+        if (( ${#matches[@]} == 0 )); then
+            textfile="$HOME/Documents/${textfile##*/}"
+            IFS=
+            matches=( $textfile )
+            IFS=$old_ifs
+            filter_to_files
+        fi
+    fi
+
+    if (( ${#matches[@]} == 0 )); then
+        if (( saw_dir )); then
+            print -u2 "Error: '$orig_pattern' matches a directory, not a file -- input must be a text file."
+        else
+            print -u2 "Error: file '$textfile' not found"
+        fi
         exit 1
     fi
 fi

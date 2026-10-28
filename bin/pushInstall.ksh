@@ -8,7 +8,7 @@
 # named script from bin/ to ~/bin, stamping the "Last installed" footer.
 #===============================================================================
 
-HOSTS="steves-imac imac-linux macbookpro-linux"
+HOSTS="imacintel imaclinux macbookprolinux"
 
 (( $# )) || set -- syncAll
 

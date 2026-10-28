@@ -26,3 +26,4 @@ bin/*.bak.*
 !bin/fix_bookmarks.py
 !bin/xt.py
 !bin/set_locale.py
+.DS_Store
