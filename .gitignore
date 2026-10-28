@@ -24,3 +24,5 @@ bin/*.py
 *.xlsx
 bin/*.bak.*
 !bin/fix_bookmarks.py
+!bin/xt.py
+!bin/set_locale.py

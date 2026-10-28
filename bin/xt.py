@@ -1,0 +1,348 @@
+#!/Users/steve/miniconda3/bin/python3
+
+## Linux use: "#!/usr/bin/env python3".
+## MacOS use: "#!/Users/steve/anaconda3/bin/python3.10"
+
+#-------------------------------------------------------------------------------
+#         Copyright (C) 2023    Steve Price    SuperStevePrice@gmail.com
+#
+#                       GNU GENERAL PUBLIC LICENSE
+#                        Version 3, 29 June 2007
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# PROGRAM:
+#	xt.py
+#
+# PURPOSE:
+#   This Python program will create a dashboard to toggle rapid xterm creation.
+#
+# FILES:
+#   xtrc.py
+#       Contains handlers for colors, xtrc, and xterm cmd data structures.
+#
+# USAGE:
+#   xt.py
+#
+# PLATFORM:
+#   MacOSX
+#-------------------------------------------------------------------------------
+import socket
+import subprocess
+import os
+import sys
+import tkinter as tk
+from tkinter import messagebox
+from tkmacosx import Button as TkButton
+
+import xtrc as xt
+import argparse
+import font_selector
+from set_locale import set_locale
+
+# Call the set_locale function with your desired locale
+set_locale("en_US.UTF-8")
+
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser(description='Run xterm command')
+
+# Add an argument for enabling debug mode
+parser.add_argument('-d', '--debug', action='store_true',
+                    help='Enable debug mode')
+
+args = parser.parse_args()
+debug = args.debug
+
+# Defin global data structures, Tk windows and frames:
+colors = xt.set_colors()
+xtrc = xt.set_xtrc()
+
+root = tk.Tk()
+root.configure(bg='black')
+root.geometry('450x650')
+hostname = socket.gethostname()
+root.title('Xterm Window Maker [' + hostname + ']')
+
+# FUNCTIONS:
+def on_button_click(bg_color, fg_color, custom_xterm):
+    """
+    Handle the spawning of xterm windows with desired attributes.
+
+    Parameters
+    ----------
+    bg_color : TYPE
+        DESCRIPTION.
+    fg_color : TYPE
+        DESCRIPTION.
+    custom_xterm : BooleenVar
+        True if Create Custom Xterm button pressed
+
+    Returns
+    -------
+    click : TYPE
+        DESCRIPTION.
+
+    """
+
+    def click():
+        try:
+            # Always use the current font size and geometry from entry box:
+            xtrc['x_fs'] = entry_font_size.get()
+            xtrc['x_rows'] = entry_rows.get()
+            xtrc['x_cols'] = entry_cols.get()
+
+            # If custome button pressed, use entry box color pair:
+            if custom_xterm:
+                xtrc['x_bg'] = entry_bg.get()
+                xtrc['x_fg'] = entry_fg.get()
+            else:
+                xtrc['x_bg'] = bg_color
+                xtrc['x_fg'] = fg_color
+
+            cmd = xt.set_cmd(xtrc)
+
+            if debug:
+                print("\nDEBUG: Running xterm cmd:", cmd)
+
+            subprocess.Popen(cmd, shell=True)
+
+        except Exception as exception:
+            print("Error occurred while executing the command:", exception)
+
+    return click
+
+
+def toggle_logging():
+    """
+    Turn xterm logging on and off.
+
+    Returns
+    -------
+    None.
+
+    """
+    if debug:
+        print("\nDEBUG: toggle_logging: x_log: ", xtrc['x_log'])
+
+    if xtrc['x_log'] == 0:
+        xtrc['x_log'] = 1
+    else:
+        xtrc['x_log'] = 0
+
+    if debug:
+        print("DEBUG: toggle_logging: x_log: ", xtrc['x_log'], "\n")
+
+
+def quit_application():
+    """
+    Gracefully quit the application and free all resources.
+    """
+    if messagebox.askokcancel("Quit", "Are you sure you want to quit?"):
+        if 'spyder' in sys.modules:
+            os._exit(0)
+        else:
+            root.quit()
+
+
+def select_font():
+    selected_font = font_selector.run_font_selector()
+    if selected_font is not None:
+        entry_font_name.delete(0, tk.END)
+        entry_font_name.insert(0, selected_font)
+        xtrc['x_fa'] = selected_font
+
+    if debug:
+        print("Font: ", xtrc['x_fa'], " ", selected_font)
+
+
+def create_xterm_specific_buttons():
+    # Calculate the number of rows and columns for the buttons grid
+    # Add 1 for the extra row if there are an odd number of buttons
+    # NUM_ROWS = (len(colors) + 1) // 2
+    NUM_COLUMNS = 2
+
+    # Create the buttons grid
+    for i, color_pair in enumerate(colors):
+        # Calculate the row and column indices
+        row = i // NUM_COLUMNS
+        column = i % NUM_COLUMNS
+
+        button = TkButton(frame_buttons,
+                          text=f'Xterm Window {str(i + 1).zfill(2)}',
+                          bg=color_pair[0], fg=color_pair[1],
+                          activebackground="DarkGrey", relief='raised', bd=6)
+        button.configure(command=on_button_click(color_pair[0],
+                                                 color_pair[1], False))
+        button.grid(row=row, column=column, padx=4, pady=1, sticky=tk.EW)
+
+
+def populate_entry_boxes():
+    """
+    Fetch values from ~/.xtrc and populate input boxes.
+
+    Returns
+    -------
+    None.
+
+    """
+    home = os.path.expanduser("~")
+    xtrc_path = os.path.join(home, ".xtrc")
+
+    if os.path.isfile(xtrc_path):
+        with open(xtrc_path, 'r') as file:
+            xtrc_data = file.read()
+            xtrc_values = {}
+            for item in xtrc_data.split('\n'):
+                if item:
+                    pair = item.split('=')
+                    if len(pair) == 2:
+                        xtrc_values[pair[0]] = pair[1]
+
+        entry_fg.delete(0, tk.END)
+        entry_fg.insert(0, xtrc_values.get('x_fg', ''))
+
+        entry_bg.delete(0, tk.END)
+        entry_bg.insert(0, xtrc_values.get('x_bg', ''))
+
+        entry_cols.delete(0, tk.END)
+        entry_cols.insert(0, xtrc_values.get('x_cols', ''))
+
+        entry_rows.delete(0, tk.END)
+        entry_rows.insert(0, xtrc_values.get('x_rows', ''))
+
+        entry_font_size.delete(0, tk.END)
+        entry_font_size.insert(0, xtrc_values.get('x_fs', ''))
+
+        entry_font_name.delete(0, tk.END)
+        entry_font_name.insert(0, xtrc_values.get('x_fa', ''))
+
+
+# Code to manifest the three logical visual componets:
+#   I.   Buttons to create specific xterm windows based on button colors
+#        "frame_buttons"
+#   II.  Labels and Entry boxes for user editable values foreground and 
+#        background,  Columns, Rows, Font Size, Additional widgets are 
+#        check box to enable logging, Font Selection button, and Custom xterm 
+#        button.
+#        "frame_additional"
+#   III. Quit Button
+#        "frame_additional"
+#
+# Create a frame to hold the buttons grid
+frame_buttons = tk.Frame(root, bg='black')
+frame_buttons.pack(padx=10, pady=5, anchor=tk.CENTER)
+
+# Create a Frame for everything except the 2x8 matrix of xterm buttons:
+# Add row containing Foreground and Background labels/entries
+frame_additional = tk.Frame(root, bg='black')
+frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
+
+# Foreground label and entry
+label_fg = tk.Label(frame_additional, text="Foreground:",
+                    foreground="DarkGrey", background="black")
+label_fg.pack(side=tk.LEFT, padx=(5, 1))
+
+entry_fg = tk.Entry(frame_additional, foreground="Black",
+                    background="Tan", textvariable=tk.StringVar(value=xtrc['x_fg']),
+                    width=8)
+entry_fg.pack(side=tk.LEFT)
+
+# Background label and entry
+label_bg = tk.Label(frame_additional, text="Background:",
+                    foreground="DarkGrey", background="black")
+label_bg.pack(side=tk.LEFT, padx=(1, 1))
+
+entry_bg = tk.Entry(frame_additional, foreground="Black",
+                    background="Tan", textvariable=tk.StringVar(value=xtrc['x_bg']),
+                    width=8)
+entry_bg.pack(side=tk.LEFT)
+
+# Add row for the Cols, Rows, Size:
+frame_additional = tk.Frame(root, bg='black')
+frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
+# Cols label and entry
+label_cols = tk.Label(frame_additional, text="Columns:",
+                      foreground="DarkGrey", background="black")
+label_cols.pack(side=tk.LEFT, padx=(5, 1))
+
+entry_cols = tk.Entry(frame_additional,
+                      foreground="Black", background="Tan", width=2)
+entry_cols.insert(tk.END, str(xtrc['x_cols']))
+entry_cols.pack(side=tk.LEFT)
+
+# Rows label and entry
+label_rows = tk.Label(frame_additional, text="Rows:",
+                      foreground="DarkGrey", background="black")
+label_rows.pack(side=tk.LEFT, padx=(1, 1))
+
+entry_rows = tk.Entry(frame_additional,
+                      foreground="Black", background="Tan", width=2)
+entry_rows.insert(tk.END, str(xtrc['x_rows']))
+entry_rows.pack(side=tk.LEFT)
+
+# Size label and entry
+label_font_size = tk.Label(
+    frame_additional, text="Size:", 
+    foreground="DarkGrey", background="black")
+label_font_size.pack(side=tk.LEFT, padx=(1, 1))
+
+entry_font_size = tk.Entry(
+    frame_additional, foreground="Black", background="Tan", width=2)
+entry_font_size.insert(tk.END, str(xtrc['x_fs']))
+entry_font_size.pack(side=tk.LEFT)
+
+# Create a frame to hold the additional elements
+frame_additional = tk.Frame(root, bg='black')
+frame_additional.pack(padx=10, pady=5, anchor=tk.CENTER)
+
+# Add row for Font Name:
+label_font_name = tk.Label(frame_additional, text="Font Name:",
+                           foreground="DarkGrey", background="black")
+label_font_name.grid(row=3, column=0, padx=5, pady=5, sticky=tk.E)
+entry_font_name = tk.Entry(
+    frame_additional,
+    foreground="Black", background="Tan",
+    textvariable=tk.StringVar(value=xtrc['x_fa']), width=30)
+entry_font_name.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
+
+# Add row for Font Selection button:
+font_selection_button = TkButton(root, text="Font Selection",
+   bg="lightSteelBlue", fg="Navy", 
+   command=select_font, relief='raised', bd=6)
+font_selection_button.pack(padx=5, pady=5, anchor=tk.CENTER)
+
+# Add row for Checkbutton to Enable Logging:
+checkbox_logging = tk.Checkbutton(frame_additional, text="Enable Logging",
+        foreground="DarkGrey", background="black", command=toggle_logging)
+checkbox_logging.grid(row=5, column=0, columnspan=2,
+                      padx=5, pady=5, sticky=tk.N)
+
+# Add row for "Create Custom Xterm: button:
+button_create_custom_xterm = TkButton(root, 
+    text="Create Custom Xterm", bg="darkGrey", fg="Navy", 
+    command=on_button_click(
+    entry_bg.get(), entry_bg.get(), True), 
+    background=entry_bg.get(), foreground=entry_fg.get(), 
+    relief='raised', bd=6)
+button_create_custom_xterm.pack(padx=5, pady=5, anchor=tk.CENTER)
+
+# Create a frame to hold the Quit button
+# G: Quit button
+button_quit = TkButton(root, text="Quit",
+                       bg="LightGrey", fg="DarkRed",
+                       command=quit_application, relief='raised', bd=6)
+button_quit.pack(padx=5, pady=5, anchor=tk.CENTER)
+
+
+# MAIN:
+# Call top two methods to generated all buttons, entry forms and checkboxes:
+# Call the function to create 2x8 matric of  colored butone for xterm:
+create_xterm_specific_buttons()
+
+# Call the function to populate the entry boxes
+populate_entry_boxes()
+
+root.mainloop()
+#-------------------------------------------------------------------------------
+# Last installed: 2023-07-05 17:52:50
+#-- End of File ----------------------------------------------------------------
