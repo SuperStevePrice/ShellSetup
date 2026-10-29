@@ -27,3 +27,4 @@ bin/*.bak.*
 !bin/xt.py
 !bin/set_locale.py
 .DS_Store
+!bin/make_bookmarklet_icons.py
