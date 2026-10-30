@@ -4,14 +4,35 @@
 # normally give it, replaying the same text file until you quit.
 #
 # All arguments are passed straight through to speak, except the last
-# one, which is taken to be the text file.
+# one, which is taken to be the text file -- and except speak-loop's
+# own options below, which must come first, before any speak options.
 #
 # Usage:
-#   speak-loop.ksh [speak-options...] textfile.txt
+#   speak-loop.ksh [-L] [-o output-file] [-s] [speak-options...] textfile.txt
+#
+# speak-loop's own options:
+#   -L            Loop forever: replay automatically with no prompt,
+#                 until you hit Ctrl-C. (Without -L, you're prompted
+#                 after each playback to repeat, switch files, or quit,
+#                 same as before.)
+#   -o outfile    Save the translated text to outfile. Only valid when
+#                 -x (translation) is also among the speak options --
+#                 without translation the saved text would just
+#                 duplicate the input file, so speak-loop refuses and
+#                 exits rather than passing it through. Forwarded to
+#                 speak as `-o outfile`.
+#   -s            Spanish prompts/messages from speak-loop itself
+#                 (match lists, picker prompts, error text). Does not
+#                 affect speak's own output language -- pass speak's
+#                 own language flags separately, as always.
 #
 # Example:
 #   speak-loop.ksh -p -g laura li_fold.txt
 #   (runs: speak -p -g laura li_fold.txt, then offers to repeat)
+#
+#   speak-loop.ksh -L -o freude_de.txt -x de freude.txt
+#   (loops forever; each pass translates to German via speak -x de
+#   and (re)saves the translation to freude_de.txt)
 #
 # If textfile.txt is not a fully qualified path (i.e. doesn't start
 # with /), the CURRENT DIRECTORY is checked first -- same precedence
@@ -26,21 +47,62 @@
 # silently swapped for ~/Documents) or they reach the script unexpanded
 # (quoted, or no match in the current directory, in which case
 # ~/Documents is tried next). Either way, if more than one file
-# matches, you're shown a numbered list to pick from -- and that same
-# list comes back up after every playback, so you can jump straight
-# from one match to another (e.g. the 1st Schiller verse to the 5th)
-# without re-running the whole command.
+# matches, you're shown a numbered list to pick from -- and (unless
+# -L is given) that same list comes back up after every playback, so
+# you can jump straight from one match to another (e.g. the 1st
+# Schiller verse to the 5th) without re-running the whole command.
 
 typeset -a args
 typeset -a speak_args
 typeset textfile
 integer n
 
+integer forever=0
+integer spanish=0
+typeset outfile=""
+
 args=("$@")
+
+# Pull speak-loop's own options off the FRONT of the argument list.
+# These must come before any speak options / the text file, since
+# everything below treats "all args but the trailing file(s)" as
+# belonging to speak.
+while (( ${#args[@]} > 0 )); do
+    case ${args[0]} in
+        -L)
+            forever=1
+            args=("${args[@]:1}")
+            ;;
+        -s)
+            spanish=1
+            args=("${args[@]:1}")
+            ;;
+        -o)
+            if (( ${#args[@]} < 2 )); then
+                if (( spanish )); then
+                    print -u2 "Error: -o requiere un nombre de archivo"
+                else
+                    print -u2 "Error: -o requires a filename argument"
+                fi
+                exit 1
+            fi
+            outfile=${args[1]}
+            args=("${args[@]:2}")
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
 n=${#args[@]}
 
 if (( n < 1 )); then
-    print -u2 "Usage: speak-loop.ksh [speak-options...] textfile.txt"
+    if (( spanish )); then
+        print -u2 "Uso: speak-loop.ksh [-L] [-o archivo-salida] [-s] [opciones-de-speak...] archivo.txt"
+    else
+        print -u2 "Usage: speak-loop.ksh [-L] [-o output-file] [-s] [speak-options...] textfile.txt"
+    fi
     exit 1
 fi
 
@@ -153,12 +215,43 @@ else
 
     if (( ${#matches[@]} == 0 )); then
         if (( saw_dir )); then
-            print -u2 "Error: '$orig_pattern' matches a directory, not a file -- input must be a text file."
+            if (( spanish )); then
+                print -u2 "Error: '$orig_pattern' coincide con un directorio, no un archivo -- la entrada debe ser un archivo de texto."
+            else
+                print -u2 "Error: '$orig_pattern' matches a directory, not a file -- input must be a text file."
+            fi
         else
-            print -u2 "Error: file '$textfile' not found"
+            if (( spanish )); then
+                print -u2 "Error: archivo '$textfile' no encontrado"
+            else
+                print -u2 "Error: file '$textfile' not found"
+            fi
         fi
         exit 1
     fi
+fi
+
+# -o is only meaningful alongside translation; otherwise the saved
+# text would just duplicate the input file. Require -x somewhere in
+# the options being forwarded to speak, then forward -o itself.
+if [[ -n $outfile ]]; then
+    typeset has_x=0
+    typeset sa
+    for sa in "${speak_args[@]}"; do
+        if [[ $sa == -x* ]]; then
+            has_x=1
+            break
+        fi
+    done
+    if (( ! has_x )); then
+        if (( spanish )); then
+            print -u2 "Error: -o requiere que -x (traduccion) tambien este activado"
+        else
+            print -u2 "Error: -o requires -x (translation) to also be given"
+        fi
+        exit 1
+    fi
+    speak_args+=(-o "$outfile")
 fi
 
 integer current=0
@@ -178,11 +271,19 @@ function print_matches {
 }
 
 if (( ${#matches[@]} > 1 )); then
-    print "'$textfile' matches more than one file:"
+    if (( spanish )); then
+        print "'$textfile' coincide con mas de un archivo:"
+    else
+        print "'$textfile' matches more than one file:"
+    fi
     print_matches
 
     while true; do
-        print -n "Pick a number (1-${#matches[@]}), or 'q' to quit: "
+        if (( spanish )); then
+            print -n "Elija un numero (1-${#matches[@]}), o 'q' para salir: "
+        else
+            print -n "Pick a number (1-${#matches[@]}), or 'q' to quit: "
+        fi
         read choice
 
         case $choice in
@@ -195,34 +296,61 @@ if (( ${#matches[@]} > 1 )); then
                 ;;
         esac
 
-        print "Invalid selection."
+        if (( spanish )); then
+            print "Seleccion invalida."
+        else
+            print "Invalid selection."
+        fi
     done
 fi
 
-while true; do
-    speak "${speak_args[@]}" "${matches[current]}"
-
-    if (( ${#matches[@]} > 1 )); then
-        print_matches
-        print -n "Press Enter to repeat, type a number to switch files, or 'q' to quit: "
+if (( forever )); then
+    if (( spanish )); then
+        print "Repitiendo sin parar -- presione Ctrl-C para detener."
     else
-        print -n "Press Enter to repeat, or 'q' to quit: "
+        print "Looping forever -- press Ctrl-C to stop."
     fi
+    while true; do
+        speak "${speak_args[@]}" "${matches[current]}"
+    done
+else
+    while true; do
+        speak "${speak_args[@]}" "${matches[current]}"
 
-    read answer
-
-    case $answer in
-        q|Q) break ;;
-        +([0-9]))
-            if (( ${#matches[@]} > 1 )) && (( answer >= 1 && answer <= ${#matches[@]} )); then
-                current=$((answer - 1))
-            elif (( ${#matches[@]} > 1 )); then
-                print "Invalid selection -- repeating current file."
+        if (( ${#matches[@]} > 1 )); then
+            print_matches
+            if (( spanish )); then
+                print -n "Presione Enter para repetir, escriba un numero para cambiar de archivo, o 'q' para salir: "
+            else
+                print -n "Press Enter to repeat, type a number to switch files, or 'q' to quit: "
             fi
-            ;;
-        *) ;;
-    esac
-done
+        else
+            if (( spanish )); then
+                print -n "Presione Enter para repetir, o 'q' para salir: "
+            else
+                print -n "Press Enter to repeat, or 'q' to quit: "
+            fi
+        fi
+
+        read answer
+
+        case $answer in
+            q|Q) break ;;
+            +([0-9]))
+                if (( ${#matches[@]} > 1 )) && (( answer >= 1 && answer <= ${#matches[@]} )); then
+                    current=$((answer - 1))
+                elif (( ${#matches[@]} > 1 )); then
+                    if (( spanish )); then
+                        print "Seleccion invalida -- repitiendo el archivo actual."
+                    else
+                        print "Invalid selection -- repeating current file."
+                    fi
+                fi
+                ;;
+            *) ;;
+        esac
+    done
+fi
 #-------------------------------------------------------------------------------
-# Last installed: 2026-10-12 06:51:01
+# Last installed: (set by setup.ksh)
 #-- End of File ----------------------------------------------------------------
