@@ -28,3 +28,4 @@ bin/*.bak.*
 !bin/set_locale.py
 .DS_Store
 !bin/make_bookmarklet_icons.py
+!bin/health_sleep.py
