@@ -11,10 +11,11 @@
 #   speak-loop.ksh [-L] [-o output-file] [-s] [speak-options...] textfile.txt
 #
 # speak-loop's own options:
-#   -L            Loop forever: replay automatically with no prompt,
-#                 until you hit Ctrl-C. (Without -L, you're prompted
-#                 after each playback to repeat, switch files, or quit,
-#                 same as before.)
+#   -L            Loop forever on the current (or picked, if multiple
+#                 matches) file. While looping: SPACE pauses/resumes
+#                 the current speak playback, 'q' quits. (Without -L,
+#                 the old behavior applies: prompted after each
+#                 playback to repeat, switch files, or quit.)
 #   -o outfile    Save the translated text to outfile. Only valid when
 #                 -x (translation) is also among the speak options --
 #                 without translation the saved text would just
@@ -22,13 +23,18 @@
 #                 exits rather than passing it through. Forwarded to
 #                 speak as `-o outfile`.
 #   -s            Spanish prompts/messages from speak-loop itself
-#                 (match lists, picker prompts, error text). Does not
-#                 affect speak's own output language -- pass speak's
-#                 own language flags separately, as always.
+#                 (match lists, picker prompts, pause/quit messages,
+#                 error text). Does not affect speak's own output
+#                 language -- pass speak's own language flags
+#                 separately, as always.
 #
 # Example:
 #   speak-loop.ksh -p -g laura li_fold.txt
 #   (runs: speak -p -g laura li_fold.txt, then offers to repeat)
+#
+#   speak-loop.ksh -L -p -g freude_7_schoepfer.txt
+#   (loops forever, printing each line as it's spoken, German voice;
+#   space pauses/resumes, 'q' quits)
 #
 #   speak-loop.ksh -L -o freude_de.txt -x de freude.txt
 #   (loops forever; each pass translates to German via speak -x de
@@ -51,6 +57,8 @@
 # -L is given) that same list comes back up after every playback, so
 # you can jump straight from one match to another (e.g. the 1st
 # Schiller verse to the 5th) without re-running the whole command.
+# With -L, the picker (if needed) runs once up front, then it loops
+# forever on whichever one you chose.
 
 typeset -a args
 typeset -a speak_args
@@ -306,12 +314,65 @@ fi
 
 if (( forever )); then
     if (( spanish )); then
-        print "Repitiendo sin parar -- presione Ctrl-C para detener."
+        print "Repitiendo sin parar -- barra espaciadora para pausar, 'q' para salir."
     else
-        print "Looping forever -- press Ctrl-C to stop."
+        print "Looping forever -- space to pause, 'q' to quit."
     fi
+
+    typeset key
+    integer paused=0
+    integer pid
+
+    # Enable job control so the backgrounded speak process gets its
+    # own process group -- SIGSTOP/SIGCONT/SIGTERM sent to -$pid (the
+    # group, note the leading dash) then reaches any subprocess speak
+    # itself spawns (e.g. say/espeak-ng), not just speak's own
+    # top-level process.
+    set -m
+
+    # Safety net: if something other than 'q' kills this script (an
+    # accidental Ctrl-C, a closed terminal), still take the
+    # backgrounded speak process down with it instead of leaving it
+    # running headless. $pid is expanded when the trap FIRES, not now,
+    # so it always refers to whichever playback is current.
+    trap 'kill -TERM -$pid 2>/dev/null' INT TERM
+
     while true; do
-        speak "${speak_args[@]}" "${matches[current]}"
+        speak "${speak_args[@]}" "${matches[current]}" &
+        pid=$!
+        paused=0
+
+        while kill -0 $pid 2>/dev/null; do
+            if read -n1 -t 0.2 key 2>/dev/null; then
+                case $key in
+                    ' ')
+                        if (( paused )); then
+                            kill -CONT -$pid 2>/dev/null
+                            paused=0
+                            if (( spanish )); then
+                                print "(reanudado)"
+                            else
+                                print "(resumed)"
+                            fi
+                        else
+                            kill -STOP -$pid 2>/dev/null
+                            paused=1
+                            if (( spanish )); then
+                                print "(pausado -- barra espaciadora para reanudar, 'q' para salir)"
+                            else
+                                print "(paused -- space to resume, q to quit)"
+                            fi
+                        fi
+                        ;;
+                    q|Q)
+                        kill -CONT -$pid 2>/dev/null
+                        kill -TERM -$pid 2>/dev/null
+                        wait $pid 2>/dev/null
+                        exit 0
+                        ;;
+                esac
+            fi
+        done
     done
 else
     while true; do
