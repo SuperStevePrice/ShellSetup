@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date
 
 # Change this if you ever want to look further back by default.
 DEFAULT_SINCE = "2026-01-01"
+DEFAULT_DRUG_LOG = os.path.expanduser("~/logs/sleep_drug_log.csv")
 
 FMT = "%Y-%m-%d %H:%M:%S %z"
 REC = re.compile(r'<Record type="HKCategoryTypeIdentifierSleepAnalysis"[^>]*>')
@@ -69,6 +70,26 @@ def is_real_night(rows, night_start_hour, night_end_hour):
     ends_by_morning = last_hour < night_end_hour or last_hour >= night_start_hour
     return starts_at_night and ends_by_morning
 
+def load_drug_log(path):
+    """Read sleep_drug_log.ksh's CSV (date,drug,melatonin,notes) into a
+    dict keyed by date string. Missing file is not an error -- the
+    drug-log columns just come back blank for every night. A malformed
+    row is skipped rather than crashing the whole report."""
+    log = {}
+    if not path or not os.path.exists(path):
+        return log
+    with open(path, newline="") as f:
+        for row in csv.DictReader(f):
+            d = (row.get("date") or "").strip()
+            if not d:
+                continue
+            log[d] = {
+                "drug": (row.get("drug") or "").strip(),
+                "melatonin": (row.get("melatonin") or "").strip(),
+                "notes": (row.get("notes") or "").strip(),
+            }
+    return log
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("path")
@@ -84,6 +105,11 @@ def main():
     ap.add_argument("--since", default=DEFAULT_SINCE,
                      help=f"ignore nights before this date, YYYY-MM-DD (default {DEFAULT_SINCE}); "
                           f"pass --since 1900-01-01 to disable")
+    ap.add_argument("--drug-log", default=DEFAULT_DRUG_LOG,
+                     help=f"sleep_drug_log.ksh CSV to merge in as Drug/Mel columns "
+                          f"(default {DEFAULT_DRUG_LOG}; pass --no-drug-log to omit entirely)")
+    ap.add_argument("--no-drug-log", action="store_true",
+                     help="don't show Drug/Mel columns at all, even if the log file exists")
     a = ap.parse_args()
 
     recs = read_records(a.path)
@@ -117,9 +143,18 @@ def main():
         print("No nights matched (try --include-naps or adjust --night-start/--night-end).")
         return
 
+    drug_log = {} if a.no_drug_log else load_drug_log(a.drug_log)
+
     keys = [a.d] if a.d else sorted(nights)[-a.n:]
-    print(f"{'Night ending':<13}{'Asleep':>8}{'Awake':>8}{'InBed':>8}{'Wakings':>9}  First->Last")
-    print("-" * 68)
+
+    header = f"{'Night ending':<13}{'Asleep':>8}{'Awake':>8}{'InBed':>8}{'Wakings':>9}  First->Last"
+    rule_len = 68
+    if drug_log:
+        header += f"  {'Drug':<10}{'Mel':<4}"
+        rule_len += 16
+    print(header)
+    print("-" * rule_len)
+
     for k in keys:
         rows = nights.get(k, [])
         if not rows:
@@ -138,7 +173,12 @@ def main():
                 inbed += m
         first = rows[0][0].strftime("%H:%M")
         last = max(r[1] for r in rows).strftime("%H:%M")
-        print(f"{k:<13}{asleep/60:>7.1f}h{awake/60:>7.1f}h{inbed/60:>7.1f}h{wakings:>9}  {first}->{last}")
+        line = (f"{k:<13}{asleep/60:>7.1f}h{awake/60:>7.1f}h{inbed/60:>7.1f}h"
+                f"{wakings:>9}  {first}->{last}")
+        if drug_log:
+            entry = drug_log.get(k, {})
+            line += f"  {entry.get('drug', ''):<10}{entry.get('melatonin', ''):<4}"
+        print(line)
 
 if __name__ == "__main__":
     main()
