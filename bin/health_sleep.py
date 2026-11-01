@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Extract Apple Health sleep records and summarize them per night."""
-import argparse, csv, re, sys, zipfile
+import argparse, csv, os, re, sys, zipfile
 from collections import defaultdict
 from datetime import datetime, timedelta, date
 
@@ -15,9 +15,19 @@ def attr(line, name):
     return m.group(1) if m else ""
 
 def open_xml(path):
+    if not os.path.exists(path):
+        print(f"Error: file '{path}' not found", file=sys.stderr)
+        sys.exit(1)
     if path.lower().endswith(".zip"):
-        z = zipfile.ZipFile(path)
-        name = next(n for n in z.namelist() if n.endswith("export.xml"))
+        try:
+            z = zipfile.ZipFile(path)
+            name = next(n for n in z.namelist() if n.endswith("export.xml"))
+        except zipfile.BadZipFile:
+            print(f"Error: '{path}' is not a valid zip file", file=sys.stderr)
+            sys.exit(1)
+        except StopIteration:
+            print(f"Error: '{path}' doesn't contain an export.xml", file=sys.stderr)
+            sys.exit(1)
         return z.open(name)
     return open(path, "rb")
 
@@ -44,11 +54,20 @@ def night_key(start):
     return d.isoformat()
 
 def is_real_night(rows, night_start_hour, night_end_hour):
-    """True if this block's first record falls in the usual bedtime window
-    (hour >= night_start_hour, e.g. 8pm, OR hour < night_end_hour, e.g. 10am).
-    Keeps real nights, filters out afternoon/evening naps."""
+    """True if this block both STARTS in the usual bedtime window
+    (hour >= night_start_hour, e.g. 8pm, OR hour < night_end_hour, e.g.
+    10am) AND ENDS in that same window. Checking only the start hour
+    let a block like 08:27->16:14 (a stuck Sleep Focus session that
+    bled into the afternoon) slip through, since 8am alone satisfies
+    "before 10am" -- but that block didn't END until 4:14pm, which is
+    nowhere near a real wake-up time. Requiring both ends to fall in
+    the window filters that case out while still keeping ordinary
+    nights (e.g. 22:53->04:11)."""
     first_hour = rows[0][0].hour
-    return first_hour >= night_start_hour or first_hour < night_end_hour
+    last_hour = max(r[1] for r in rows).hour
+    starts_at_night = first_hour >= night_start_hour or first_hour < night_end_hour
+    ends_by_morning = last_hour < night_end_hour or last_hour >= night_start_hour
+    return starts_at_night and ends_by_morning
 
 def main():
     ap = argparse.ArgumentParser()
@@ -123,3 +142,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+#-------------------------------------------------------------------------------
+# Last installed: (set by setup.ksh)
+#-- End of File ----------------------------------------------------------------
