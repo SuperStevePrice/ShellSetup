@@ -29,3 +29,4 @@ bin/*.bak.*
 .DS_Store
 !bin/make_bookmarklet_icons.py
 !bin/health_sleep.py
+!bin/nocturia_log.py
