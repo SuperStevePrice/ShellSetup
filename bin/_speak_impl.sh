@@ -743,7 +743,32 @@ drain_tty() {
 monitor_pid_controls() {
     typeset cpid="$1"
 
+    # Hard ceiling on how long any single say/espeak-ng call is allowed to
+    # run (not counting time spent paused). 'say'/'espeak-ng' occasionally
+    # hang outright on macOS/Linux -- no error, no output, just stuck --
+    # and wait has no built-in timeout, so without this a single hung
+    # utterance freezes the rest of the poem (and everything after it)
+    # forever. A killed/timed-out line is treated like the rest of the
+    # script treats "nothing to speak": printed text stays on screen,
+    # QUIT is NOT set, so the caller's loop just moves on to the next
+    # line instead of aborting the whole run.
+    typeset -i SPEAK_TIMEOUT="${SPEAK_TIMEOUT:-30}"
+
     if [[ "$HAVE_TTY" -ne 1 ]]; then
+        # No keyboard to poll here, so just watch the clock: check every
+        # 0.5s whether the process is still alive, and kill it if it's
+        # still going past SPEAK_TIMEOUT. wait only works on a direct
+        # child of THIS shell, which cpid is, so this is safe.
+        typeset -i elapsed=0
+        while kill -0 "$cpid" 2>/dev/null; do
+            sleep 0.5
+            elapsed=$(( elapsed + 1 ))
+            if (( elapsed * 5 >= SPEAK_TIMEOUT * 10 )); then
+                kill -9 "$cpid" 2>/dev/null
+                printf '%s\n' "Warning: speech timed out after ${SPEAK_TIMEOUT}s on this line -- skipping and moving on." >&2
+                break
+            fi
+        done
         wait "$cpid" 2>/dev/null
         return
     fi
@@ -758,6 +783,15 @@ monitor_pid_controls() {
     # later (a laggy key-repeat, a terminal that trickles bytes in). First
     # press always wins; nothing close behind it gets a second vote.
     typeset IGNORE_TICKS=0
+
+    # Elapsed-time bookkeeping for the hang timeout: SECONDS is ksh's
+    # built-in seconds-since-shell-start counter. paused_total accumulates
+    # time spent paused, so a deliberate long pause (reading, thinking)
+    # never gets mistaken for a hang -- only time the process was actually
+    # supposed to be running counts toward SPEAK_TIMEOUT.
+    typeset -i start_time=$SECONDS
+    typeset -i paused_total=0
+    typeset -i pause_started=0
 
     while kill -0 "$cpid" 2>/dev/null; do
         read -t 0.2 -n 1 key < /dev/tty 2>/dev/null
@@ -778,6 +812,7 @@ monitor_pid_controls() {
                 if [[ "$paused" -eq 0 ]]; then
                     if kill -STOP "$cpid" 2>/dev/null; then
                         paused=1
+                        pause_started=$SECONDS
                         printf '\n' >&2
                         printf '%s\n' "Paused. (space = resume, q = stop)" >&2
                     fi
@@ -787,6 +822,7 @@ monitor_pid_controls() {
                 else
                     if kill -CONT "$cpid" 2>/dev/null; then
                         paused=0
+                        paused_total=$(( paused_total + (SECONDS - pause_started) ))
                         printf '%s\n' "Resumed." >&2
                     fi
                 fi
@@ -801,6 +837,16 @@ monitor_pid_controls() {
                 ;;
         esac
         key=""
+
+        if [[ "$paused" -eq 0 ]]; then
+            typeset -i elapsed=$(( SECONDS - start_time - paused_total ))
+            if (( elapsed >= SPEAK_TIMEOUT )); then
+                kill -9 "$cpid" 2>/dev/null
+                printf '\n' >&2
+                printf '%s\n' "Warning: speech timed out after ${SPEAK_TIMEOUT}s on this line -- skipping and moving on." >&2
+                break
+            fi
+        fi
     done
 
     wait "$cpid" 2>/dev/null
