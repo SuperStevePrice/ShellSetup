@@ -935,29 +935,29 @@ read_all_lines() {   # fills the global RAW_LINES from a file or stdin ("-")
     fi
 }
 
-speak_lines_synced() {   # print+speak RAW_LINES[$1..$2] one at a time, source voice (SAY_ARGS) -- what actually keeps -p's on-screen text in step with the voice, same as the plain -p loop elsewhere in this script.
-    typeset -i i a=$1 b=$2
+speak_lines_synced() {   # print+speak each line passed as an argument, in order, source voice (SAY_ARGS) -- what actually keeps -p's on-screen text in step with the voice, same as the plain -p loop elsewhere in this script.
+    # Takes the actual line VALUES as "$@" rather than a numeric index
+    # range into RAW_LINES. Earlier versions passed start/end indices
+    # and read RAW_LINES[i] directly -- that assumed 0-based array
+    # indexing, but the ksh93 build Apple ships on macOS (long frozen,
+    # years out of date) indexes arrays built via += starting at 1, not
+    # 0. RAW_LINES[0] was silently empty and RAW_LINES[last] (computed
+    # as count-1, a 0-based assumption) never pointed at the real final
+    # element, so the last line of every file was dropped -- on both
+    # the German/source side and, independently, on the translated
+    # side, since translate_lines_in_order had the identical index
+    # arithmetic. No loop-style rewrite can fix an indexing-base
+    # mismatch; iterating over "${RAW_LINES[@]}" (or whatever subset is
+    # passed in here) sidesteps the base entirely, since that always
+    # yields every value in order regardless of what the underlying
+    # subscripts happen to be.
     typeset l
-    # Written as an explicit while loop, not a compact C-style
-    # for ((i=a; i<=b; i++)), because the version of ksh93 Apple ships
-    # on macOS (long frozen, years out of date) has been observed to
-    # evaluate that construct with the loop body's first read of $i
-    # lagging one iteration behind the actual counter -- RAW_LINES[i]
-    # on the first pass returns empty, and the very last valid index
-    # (b itself) never gets read at all, silently dropping the last
-    # line. Splitting init/condition/body/increment into separate
-    # statements sidesteps whatever caching/evaluation-order quirk
-    # causes that, and behaves identically (and correctly) on both
-    # modern Linux ksh93 and Apple's older build.
-    i=$a
-    while (( i <= b )); do
-        l="${RAW_LINES[i]}"
+    for l in "$@"; do
         printf '%s\n' "$l"
         if [[ -n "$l" && "$l" != '#'* ]] && ! is_divider_line "$l"; then
             speak_text "$l"
         fi
         [[ "$QUIT" -eq 1 ]] && return
-        (( i += 1 ))
     done
 }
 
@@ -988,22 +988,13 @@ speak_translation_lines_synced() {   # print+speak a (possibly multi-line) trans
 # own control -- each call returns one line's translation before the
 # next line is ever sent -- so this can't happen.
 translate_lines_in_order() {
-    typeset -i i a=$1 b=$2
+    # Takes line VALUES as "$@", same reasoning as speak_lines_synced
+    # above -- see that function's comment for why this isn't index-based.
     typeset out="" l translated
-    # Explicit while loop -- see the comment in speak_lines_synced above
-    # for why the compact C-style for (( )) form is avoided here.
-    i=$a
-    while (( i <= b )); do
-        l="${RAW_LINES[i]}"
-        if [[ "$l" == '#'* ]]; then
-            (( i += 1 )); continue
-        fi
-        if is_divider_line "$l"; then
-            (( i += 1 )); continue
-        fi
-        if [[ -z "$l" ]]; then
-            (( i += 1 )); continue
-        fi
+    for l in "$@"; do
+        [[ "$l" == '#'* ]] && continue
+        is_divider_line "$l" && continue
+        [[ -z "$l" ]] && continue
 
         translated=$(translate_line "$l")
         [[ -z "$translated" ]] && translated="(translation unavailable for this line)"
@@ -1014,7 +1005,6 @@ translate_lines_in_order() {
             out="$out
 $translated"
         fi
-        (( i += 1 ))
     done
     printf '%s' "$out"
 }
@@ -1023,13 +1013,12 @@ $translated"
 # one block, followed by the ENTIRE translation, printed and spoken as
 # one block.
 speak_translate_whole() {
-    typeset -i last=$(( ${#RAW_LINES[@]} - 1 ))
     typeset translated
 
-    speak_lines_synced 0 "$last"
+    speak_lines_synced "${RAW_LINES[@]}"
     [[ "$QUIT" -eq 1 ]] && return
 
-    translated=$(translate_lines_in_order 0 "$last")
+    translated=$(translate_lines_in_order "${RAW_LINES[@]}")
     if [[ -n "$translated" ]]; then
         printf '\n'
         speak_translation_lines_synced "$translated"
@@ -1042,34 +1031,38 @@ speak_translate_whole() {
 # or stanza) at a time -- original block, then that block's
 # translation, then on to the next block.
 speak_translate_blocks() {
-    typeset -i n=${#RAW_LINES[@]}
-    typeset -i i=0 start
-    typeset translated
+    # Walks RAW_LINES by VALUE (not index -- see speak_lines_synced's
+    # comment for why), accumulating each blank-line-delimited block
+    # into the "block" array as it goes, then flushing it once a blank
+    # line (or end of file) closes the block out. A trailing sentinel
+    # empty string is appended to the scan so the final block gets
+    # flushed even when the file doesn't end with its own blank line.
+    typeset -a block
+    typeset l translated
+    block=()
 
-    while (( i < n )); do
-        while (( i < n )) && [[ -z "${RAW_LINES[i]}" ]]; do
-            printf '\n'
-            (( i += 1 ))
-        done
-        (( i >= n )) && break
+    for l in "${RAW_LINES[@]}" ""; do
+        if [[ -z "$l" ]]; then
+            if (( ${#block[@]} > 0 )); then
+                speak_lines_synced "${block[@]}"
+                [[ "$QUIT" -eq 1 ]] && return
 
-        start=$i
-        while (( i < n )) && [[ -n "${RAW_LINES[i]}" ]]; do
-            (( i += 1 ))
-        done
-
-        speak_lines_synced "$start" "$(( i - 1 ))"
-        [[ "$QUIT" -eq 1 ]] && return
-
-        translated=$(translate_lines_in_order "$start" "$(( i - 1 ))")
-        if [[ -n "$translated" ]]; then
-            printf '\n'
-            speak_translation_lines_synced "$translated"
-            printf '\n'
+                translated=$(translate_lines_in_order "${block[@]}")
+                if [[ -n "$translated" ]]; then
+                    printf '\n'
+                    speak_translation_lines_synced "$translated"
+                    printf '\n'
+                else
+                    printf '%s\n' "(translation unavailable)" >&2
+                fi
+                [[ "$QUIT" -eq 1 ]] && return
+                block=()
+            else
+                printf '\n'
+            fi
         else
-            printf '%s\n' "(translation unavailable)" >&2
+            block+=("$l")
         fi
-        [[ "$QUIT" -eq 1 ]] && return
     done
 }
 
