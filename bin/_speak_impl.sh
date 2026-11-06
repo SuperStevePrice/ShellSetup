@@ -938,13 +938,26 @@ read_all_lines() {   # fills the global RAW_LINES from a file or stdin ("-")
 speak_lines_synced() {   # print+speak RAW_LINES[$1..$2] one at a time, source voice (SAY_ARGS) -- what actually keeps -p's on-screen text in step with the voice, same as the plain -p loop elsewhere in this script.
     typeset -i i a=$1 b=$2
     typeset l
-    for (( i = a; i <= b; i++ )); do
+    # Written as an explicit while loop, not a compact C-style
+    # for ((i=a; i<=b; i++)), because the version of ksh93 Apple ships
+    # on macOS (long frozen, years out of date) has been observed to
+    # evaluate that construct with the loop body's first read of $i
+    # lagging one iteration behind the actual counter -- RAW_LINES[i]
+    # on the first pass returns empty, and the very last valid index
+    # (b itself) never gets read at all, silently dropping the last
+    # line. Splitting init/condition/body/increment into separate
+    # statements sidesteps whatever caching/evaluation-order quirk
+    # causes that, and behaves identically (and correctly) on both
+    # modern Linux ksh93 and Apple's older build.
+    i=$a
+    while (( i <= b )); do
         l="${RAW_LINES[i]}"
         printf '%s\n' "$l"
         if [[ -n "$l" && "$l" != '#'* ]] && ! is_divider_line "$l"; then
             speak_text "$l"
         fi
         [[ "$QUIT" -eq 1 ]] && return
+        (( i += 1 ))
     done
 }
 
@@ -977,11 +990,20 @@ speak_translation_lines_synced() {   # print+speak a (possibly multi-line) trans
 translate_lines_in_order() {
     typeset -i i a=$1 b=$2
     typeset out="" l translated
-    for (( i = a; i <= b; i++ )); do
+    # Explicit while loop -- see the comment in speak_lines_synced above
+    # for why the compact C-style for (( )) form is avoided here.
+    i=$a
+    while (( i <= b )); do
         l="${RAW_LINES[i]}"
-        [[ "$l" == '#'* ]] && continue
-        is_divider_line "$l" && continue
-        [[ -z "$l" ]] && continue
+        if [[ "$l" == '#'* ]]; then
+            (( i += 1 )); continue
+        fi
+        if is_divider_line "$l"; then
+            (( i += 1 )); continue
+        fi
+        if [[ -z "$l" ]]; then
+            (( i += 1 )); continue
+        fi
 
         translated=$(translate_line "$l")
         [[ -z "$translated" ]] && translated="(translation unavailable for this line)"
@@ -992,6 +1014,7 @@ translate_lines_in_order() {
             out="$out
 $translated"
         fi
+        (( i += 1 ))
     done
     printf '%s' "$out"
 }
