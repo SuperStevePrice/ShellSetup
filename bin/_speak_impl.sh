@@ -581,6 +581,29 @@ is_trans_error() {
     return 1
 }
 
+# Run "$@", writing its stdout to $outfile, but kill it if it hasn't
+# finished within $secs seconds. Needed because translate-shell's
+# network calls have no built-in timeout -- on a bad connection they
+# can hang indefinitely rather than failing fast with an error, which
+# otherwise wedges the whole script (and every line after it) waiting
+# on a call that will never return. A killed/timed-out call just looks
+# like an empty result to the caller, so the normal retry/fallback
+# logic in translate_line below handles it the same as any other
+# failure -- no special-casing needed there.
+run_with_timeout() {
+    typeset -i secs=$1; shift
+    typeset outfile=$1; shift
+    "$@" > "$outfile" 2>/dev/null &
+    typeset cpid=$!
+    ( sleep "$secs"; kill -9 "$cpid" 2>/dev/null ) &
+    typeset wpid=$!
+    wait "$cpid" 2>/dev/null
+    typeset rc=$?
+    kill "$wpid" 2>/dev/null
+    wait "$wpid" 2>/dev/null
+    return $rc
+}
+
 # Translate one line (or block) of text via translate-shell. -brief
 # keeps trans from printing dictionary/extra info -- just the
 # translation itself.
@@ -594,21 +617,32 @@ is_trans_error() {
 # finally giving up. Each step only runs if the one before it didn't
 # produce a usable result, so the normal case -- first call succeeds --
 # is exactly as fast as before.
+#
+# Each attempt is capped at TRANS_TIMEOUT seconds (default 10) via
+# run_with_timeout above, so a hung network call gets killed and
+# treated as empty rather than freezing the script.
+typeset TRANS_TIMEOUT="${TRANS_TIMEOUT:-10}"
+
 translate_line() {
     typeset line="$1"
-    typeset result
+    typeset result tmp
+    tmp=$(mktemp "${TMPDIR:-/tmp}/speak_trans.XXXXXX")
 
-    result=$(trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
+    run_with_timeout "$TRANS_TIMEOUT" "$tmp" trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line"
+    result=$(cat "$tmp" 2>/dev/null)
 
     if is_trans_error "$result"; then
         sleep 1
-        result=$(trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
+        run_with_timeout "$TRANS_TIMEOUT" "$tmp" trans -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line"
+        result=$(cat "$tmp" 2>/dev/null)
     fi
 
     if is_trans_error "$result"; then
-        result=$(trans -e bing -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line" 2>/dev/null)
+        run_with_timeout "$TRANS_TIMEOUT" "$tmp" trans -e bing -brief "${SOURCE_CODE}:${TARGET_CODE}" "$line"
+        result=$(cat "$tmp" 2>/dev/null)
     fi
 
+    rm -f "$tmp"
     is_trans_error "$result" && result=""
 
     printf '%s' "$result"
@@ -1393,4 +1427,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-10-23 15:20:25
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-23 15:25:46
 #-- End of File ----------------------------------------------------------------
