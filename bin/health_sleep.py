@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Extract Apple Health sleep records and summarize them per night."""
-import argparse, csv, os, re, sys, zipfile
+import argparse, csv, os, re, sqlite3, sys, zipfile
 from collections import defaultdict
 from datetime import datetime, timedelta, date
 
 # Change this if you ever want to look further back by default.
 DEFAULT_SINCE = "2026-01-01"
 DEFAULT_DRUG_LOG = os.path.expanduser("~/logs/sleep_drug_log.csv")
+DEFAULT_DB = os.path.expanduser("~/sleep_study.db")
 
 FMT = "%Y-%m-%d %H:%M:%S %z"
 REC = re.compile(r'<Record type="HKCategoryTypeIdentifierSleepAnalysis"[^>]*>')
@@ -90,6 +91,67 @@ def load_drug_log(path):
             }
     return log
 
+def night_stats(rows):
+    """Compute asleep/awake/inbed hours, wakings, first/last times for one
+    night's rows. Same arithmetic the display loop uses, factored out so
+    the SQLite writer doesn't duplicate or drift from it."""
+    asleep = awake = inbed = 0.0
+    wakings = 0
+    for s, e, v, src in rows:
+        m = (e - s).total_seconds() / 60
+        if "Asleep" in v:
+            asleep += m
+        elif v == "Awake":
+            awake += m
+            wakings += 1
+        elif v == "InBed":
+            inbed += m
+    first = rows[0][0].strftime("%H:%M")
+    last = max(r[1] for r in rows).strftime("%H:%M")
+    return {
+        "asleep_hours": round(asleep / 60, 2),
+        "awake_hours": round(awake / 60, 2),
+        "inbed_hours": round(inbed / 60, 2),
+        "wakings": wakings,
+        "first_record": first,
+        "last_record": last,
+    }
+
+def write_nightly_sleep(db_path, nights):
+    """Upsert every night in `nights` (dict of night-key -> rows) into the
+    nightly_sleep table. Creates the table if it doesn't exist yet, so
+    this works even before setup_sleep_db.ksh has been run. Writes ALL
+    matched nights, not just the ones -n/-d are about to display, so the
+    database stays complete regardless of what this particular run prints."""
+    conn = sqlite3.connect(db_path)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS nightly_sleep (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            night TEXT NOT NULL UNIQUE,
+            asleep_hours REAL,
+            awake_hours REAL,
+            inbed_hours REAL,
+            wakings INTEGER,
+            first_record TEXT,
+            last_record TEXT
+        )
+    """)
+    for k, rows in nights.items():
+        stats = night_stats(rows)
+        conn.execute("""
+            INSERT INTO nightly_sleep (night, asleep_hours, awake_hours, inbed_hours, wakings, first_record, last_record)
+            VALUES (:night, :asleep_hours, :awake_hours, :inbed_hours, :wakings, :first_record, :last_record)
+            ON CONFLICT(night) DO UPDATE SET
+                asleep_hours=excluded.asleep_hours,
+                awake_hours=excluded.awake_hours,
+                inbed_hours=excluded.inbed_hours,
+                wakings=excluded.wakings,
+                first_record=excluded.first_record,
+                last_record=excluded.last_record
+        """, {"night": k, **stats})
+    conn.commit()
+    conn.close()
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("path")
@@ -110,6 +172,10 @@ def main():
                           f"(default {DEFAULT_DRUG_LOG}; pass --no-drug-log to omit entirely)")
     ap.add_argument("--no-drug-log", action="store_true",
                      help="don't show Drug/Mel columns at all, even if the log file exists")
+    ap.add_argument("--db", default=DEFAULT_DB,
+                     help=f"SQLite database to write nightly_sleep rows into (default {DEFAULT_DB})")
+    ap.add_argument("--no-db", action="store_true",
+                     help="don't write to the SQLite database at all")
     a = ap.parse_args()
 
     recs = read_records(a.path)
@@ -145,6 +211,9 @@ def main():
 
     drug_log = {} if a.no_drug_log else load_drug_log(a.drug_log)
 
+    if not a.no_db:
+        write_nightly_sleep(a.db, nights)
+
     keys = [a.d] if a.d else sorted(nights)[-a.n:]
 
     header = f"{'Night ending':<13}{'Asleep':>8}{'Awake':>8}{'InBed':>8}{'Wakings':>9}  First->Last"
@@ -160,21 +229,9 @@ def main():
         if not rows:
             print(f"{k:<13}  no data")
             continue
-        asleep = awake = inbed = 0.0
-        wakings = 0
-        for s, e, v, src in rows:
-            m = (e - s).total_seconds() / 60
-            if "Asleep" in v:
-                asleep += m
-            elif v == "Awake":
-                awake += m
-                wakings += 1
-            elif v == "InBed":
-                inbed += m
-        first = rows[0][0].strftime("%H:%M")
-        last = max(r[1] for r in rows).strftime("%H:%M")
-        line = (f"{k:<13}{asleep/60:>7.1f}h{awake/60:>7.1f}h{inbed/60:>7.1f}h"
-                f"{wakings:>9}  {first}->{last}")
+        stats = night_stats(rows)
+        line = (f"{k:<13}{stats['asleep_hours']:>7.1f}h{stats['awake_hours']:>7.1f}h{stats['inbed_hours']:>7.1f}h"
+                f"{stats['wakings']:>9}  {stats['first_record']}->{stats['last_record']}")
         if drug_log:
             entry = drug_log.get(k, {})
             line += f"  {entry.get('drug', ''):<10}{entry.get('melatonin', ''):<4}"
@@ -184,4 +241,7 @@ if __name__ == "__main__":
     main()
 #-------------------------------------------------------------------------------
 # Last installed: (set by setup.ksh)
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-31 18:11:12
 #-- End of File ----------------------------------------------------------------

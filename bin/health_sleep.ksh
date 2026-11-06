@@ -7,7 +7,7 @@ here=${0%/*}
 [[ "$here" == "$0" ]] && here=.
 
 if [[ $# -lt 1 ]]; then
-    print -u2 "Usage: ${0##*/} export.xml|export.zip [-n nights] [-d YYYY-MM-DD] [-c out.csv] [--since YYYY-MM-DD] [--include-naps] [--night-start H] [--night-end H]"
+    print -u2 "Usage: ${0##*/} export.xml|export.zip [-n nights] [-d YYYY-MM-DD] [-c out.csv] [--since YYYY-MM-DD] [--include-naps] [--night-start H] [--night-end H] [--db PATH] [--no-db]"
     exit 1
 fi
 
@@ -19,3 +19,6 @@ logfile="$logdir/sleep_${ts}.log"
 python3 "$here/health_sleep.py" "$@" > "$logfile" 2>&1
 cat "$logfile"
 print "See: $logfile"
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-30 07:22:49
+#-- End of File ----------------------------------------------------------------
