@@ -350,6 +350,12 @@ if (( forever )); then
     trap 'kill -TERM -$pid 2>/dev/null' INT TERM
 
     while true; do
+        # Blank line before each playback -- including the first, right
+        # after the "Looping forever" message above -- so the spoken
+        # block always has a line of space ahead of it, with nothing
+        # extra tacked on at the end when you quit.
+        print
+
         speak "${speak_args[@]}" "${matches[current]}" &
         pid=$!
         paused=0
@@ -385,11 +391,6 @@ if (( forever )); then
                 esac
             fi
         done
-
-        # Blank line between repeats, so one pass through the text
-        # doesn't visually run into the next when it loops back to
-        # the top.
-        print
     done
 else
     while true; do
