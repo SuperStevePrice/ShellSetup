@@ -716,7 +716,13 @@ fi
 # command just runs normally — there's no keyboard to read from anyway.
 typeset QUIT=0
 typeset HAVE_TTY=0
-[[ -r /dev/tty && -w /dev/tty ]] && HAVE_TTY=1
+# SPEAK_LOOP_CONTROLLED is set by speak-loop.ksh's -L mode, which backgrounds
+# this whole script as its own process group and owns pause/resume/quit
+# itself. A backgrounded process reading its controlling terminal gets
+# SIGTTIN'd by the kernel and silently stopped, so when this is set we
+# skip our own stty/tty-read setup entirely and take the existing
+# no-tty branch below (hang-timeout watching only, no key reads) instead.
+[[ -z "$SPEAK_LOOP_CONTROLLED" && -r /dev/tty && -w /dev/tty ]] && HAVE_TTY=1
 
 if [[ "$HAVE_TTY" -eq 1 ]]; then
     stty -echo -icanon min 1 time 0 < /dev/tty 2>/dev/null
@@ -1492,4 +1498,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-10-23 15:25:46
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-06 10:15:36
 #-- End of File ----------------------------------------------------------------

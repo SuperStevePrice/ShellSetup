@@ -330,6 +330,18 @@ if (( forever )); then
     # top-level process.
     set -m
 
+    # Tell _speak_impl.sh (sourced fresh into every backgrounded `speak`
+    # job below) not to install its OWN pause/resume/quit key-listener
+    # on /dev/tty. A background process group that tries to read its
+    # controlling terminal gets SIGTTIN'd by the kernel and silently
+    # stopped -- so without this, speak's inner listener and this
+    # loop's listener fight over the same keypresses and the kernel
+    # keeps stopping the backgrounded process out from under us. With
+    # this set, _speak_impl.sh falls back to its existing no-tty path
+    # (plain hang-timeout watching, no key reads), and this loop stays
+    # the one and only pause/resume/quit controller while -L is active.
+    export SPEAK_LOOP_CONTROLLED=1
+
     # Safety net: if something other than 'q' kills this script (an
     # accidental Ctrl-C, a closed terminal), still take the
     # backgrounded speak process down with it instead of leaving it
@@ -414,4 +426,7 @@ else
 fi
 #-------------------------------------------------------------------------------
 # Last installed: (set by setup.ksh)
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-10-30 06:38:08
 #-- End of File ----------------------------------------------------------------
