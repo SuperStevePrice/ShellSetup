@@ -385,6 +385,11 @@ if (( forever )); then
                 esac
             fi
         done
+
+        # Blank line between repeats, so one pass through the text
+        # doesn't visually run into the next when it loops back to
+        # the top.
+        print
     done
 else
     while true; do
