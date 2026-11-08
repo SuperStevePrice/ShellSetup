@@ -262,20 +262,57 @@ if [[ -n $outfile ]]; then
     speak_args+=(-o "$outfile")
 fi
 
+integer range_start=0
+integer range_end=0
 integer current=0
 
-# Print the numbered match list, marking the currently selected file.
+# Print the numbered match list, marking every file in the active range.
 function print_matches {
     integer i=1
     typeset m
     for m in "${matches[@]}"; do
-        if (( i - 1 == current )); then
+        if (( i - 1 >= range_start && i - 1 <= range_end )); then
             print "  $i) $m  (current)"
         else
             print "  $i) $m"
         fi
         (( i += 1 ))
     done
+}
+
+# Parse a selection against ${#matches[@]} entries:
+#   N      a single file
+#   N-M    files N through M, inclusive (spaces around the dash are
+#          fine -- "2 -5", "2- 5", "2 - 5" all mean the same as "2-5")
+#   N-     N through the last match, however many there are
+# On success, sets range_start/range_end (0-indexed, inclusive) and
+# returns 0. On bad syntax, end < start, or anything out of 1-N,
+# leaves range_start/range_end untouched and returns 1.
+function parse_range {
+    typeset raw=${1// /}
+    integer n=${#matches[@]}
+    integer s e
+
+    if [[ $raw == +([0-9]) ]]; then
+        s=$raw
+        e=$raw
+    elif [[ $raw == +([0-9])-+([0-9]) ]]; then
+        s=${raw%%-*}
+        e=${raw#*-}
+    elif [[ $raw == +([0-9])- ]]; then
+        s=${raw%-}
+        e=$n
+    else
+        return 1
+    fi
+
+    if (( s < 1 || s > n || e < s || e > n )); then
+        return 1
+    fi
+
+    range_start=$((s - 1))
+    range_end=$((e - 1))
+    return 0
 }
 
 if (( ${#matches[@]} > 1 )); then
@@ -288,19 +325,16 @@ if (( ${#matches[@]} > 1 )); then
 
     while true; do
         if (( spanish )); then
-            print -n "Elija un numero (1-${#matches[@]}), o 'q' para salir: "
+            print -n "Elija un numero, rango (2-5), o 2- para el resto (1-${#matches[@]}), o 'q' para salir: "
         else
-            print -n "Pick a number (1-${#matches[@]}), or 'q' to quit: "
+            print -n "Pick a number, a range (2-5), or 2- for the rest (1-${#matches[@]}), or 'q' to quit: "
         fi
         read choice
 
         case $choice in
             q|Q) exit 0 ;;
-            +([0-9]))
-                if (( choice >= 1 && choice <= ${#matches[@]} )); then
-                    current=$((choice - 1))
-                    break
-                fi
+            *)
+                parse_range "$choice" && break
                 ;;
         esac
 
@@ -310,7 +344,11 @@ if (( ${#matches[@]} > 1 )); then
             print "Invalid selection."
         fi
     done
+else
+    range_end=$(( ${#matches[@]} - 1 ))
 fi
+
+current=range_start
 
 if (( forever )); then
     if (( spanish )); then
@@ -391,17 +429,26 @@ if (( forever )); then
                 esac
             fi
         done
+
+        (( current += 1 ))
+        if (( current > range_end )); then
+            current=range_start
+        fi
     done
 else
     while true; do
-        speak "${speak_args[@]}" "${matches[current]}"
+        current=range_start
+        while (( current <= range_end )); do
+            speak "${speak_args[@]}" "${matches[current]}"
+            (( current += 1 ))
+        done
 
         if (( ${#matches[@]} > 1 )); then
             print_matches
             if (( spanish )); then
-                print -n "Presione Enter para repetir, escriba un numero para cambiar de archivo, o 'q' para salir: "
+                print -n "Presione Enter para repetir, escriba un numero o rango para cambiar, o 'q' para salir: "
             else
-                print -n "Press Enter to repeat, type a number to switch files, or 'q' to quit: "
+                print -n "Press Enter to repeat, type a number or range to switch, or 'q' to quit: "
             fi
         else
             if (( spanish )); then
@@ -415,18 +462,18 @@ else
 
         case $answer in
             q|Q) break ;;
-            +([0-9]))
-                if (( ${#matches[@]} > 1 )) && (( answer >= 1 && answer <= ${#matches[@]} )); then
-                    current=$((answer - 1))
-                elif (( ${#matches[@]} > 1 )); then
-                    if (( spanish )); then
-                        print "Seleccion invalida -- repitiendo el archivo actual."
-                    else
-                        print "Invalid selection -- repeating current file."
+            "") ;;
+            *)
+                if (( ${#matches[@]} > 1 )); then
+                    if ! parse_range "$answer"; then
+                        if (( spanish )); then
+                            print "Seleccion invalida -- repitiendo el archivo (o rango) actual."
+                        else
+                            print "Invalid selection -- repeating current file(s)."
+                        fi
                     fi
                 fi
                 ;;
-            *) ;;
         esac
     done
 fi
@@ -435,4 +482,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-10-30 06:38:08
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-07 07:48:58
 #-- End of File ----------------------------------------------------------------
