@@ -46,7 +46,7 @@ typeset ENGLISH_DEFAULT_VOICE=""
 typeset SPANISH_DEFAULT_VOICE=""
 typeset FRENCH_DEFAULT_VOICE=""
 case "$PLATFORM" in
-    darwin) GERMAN_DEFAULT_VOICE="Anna";  ENGLISH_DEFAULT_VOICE="Samantha"; SPANISH_DEFAULT_VOICE="Mónica"; FRENCH_DEFAULT_VOICE="Thomas" ;;
+    darwin) GERMAN_DEFAULT_VOICE="Anna (Premium)";  ENGLISH_DEFAULT_VOICE="Samantha"; SPANISH_DEFAULT_VOICE="Mónica"; FRENCH_DEFAULT_VOICE="Thomas" ;;
     linux)  GERMAN_DEFAULT_VOICE="de";    ENGLISH_DEFAULT_VOICE="en-us";    SPANISH_DEFAULT_VOICE="es";     FRENCH_DEFAULT_VOICE="fr"     ;;
 esac
 typeset DEFAULT_RATE=""   # leave blank to use the voice's own default rate
@@ -412,11 +412,24 @@ HELPEOF
 # voices list as e.g. "Anna (Premium)   de_DE   # ..." — extra text between
 # the name and the locale — so we don't assume a fixed column; instead we
 # find whichever field actually looks like a locale code.
+#
+# Matching is done with substr(), not a dynamic regex built from the voice
+# name: many real voice names contain parentheses (Anna (Premium), Reed
+# (German (Germany))), which are regex metacharacters and silently broke
+# an earlier version of this lookup built as "^"v"[ \t]" -- that pattern
+# just never matched any parenthetical name, so the mismatch warning
+# below was quietly doing nothing for most persona/tiered voices.
 voice_lang_darwin() {
     say -v '?' | awk -v v="$1" '
-        $0 ~ "^"v"[ \t]" || $0 ~ "^"v"$" {
-            for (i=1; i<=NF; i++) {
-                if ($i ~ /^[a-z][a-z]_[A-Z][A-Z]$/) { print $i; exit }
+        {
+            n = length(v)
+            if (substr($0, 1, n) == v) {
+                rest = substr($0, n + 1, 1)
+                if (rest == "" || rest == " " || rest == "\t") {
+                    for (i = 1; i <= NF; i++) {
+                        if ($i ~ /^[a-z][a-z]_[A-Z][A-Z]$/) { print $i; exit }
+                    }
+                }
             }
         }
     '
@@ -1501,4 +1514,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-11-06 10:15:36
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-07 07:41:22
 #-- End of File ----------------------------------------------------------------
