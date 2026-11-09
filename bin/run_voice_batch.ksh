@@ -34,7 +34,7 @@
 
 # Defaults resolved 2026-11-09 via Voices > My Voices > Copy Voice ID.
 # Override with -e / -g if you ever switch voices.
-typeset ENGLISH_VOICE_ID="wBXNqKUATyqu0RtYt25i"   # Adam - Radio Announcer
+typeset ENGLISH_VOICE_ID="pVnrL6sighQX7hVz89cp"   # Henry - Deep, Professional, and Soothing (better for poetry than Adam, who reads like a newscaster)
 typeset GERMAN_VOICE_ID="Gubgw9l4dtIoQA9YZHgx"    # Brian (multilingual model handles German)
 
 typeset IN_DIR="$HOME/Documents/elevenLabsUploads"
