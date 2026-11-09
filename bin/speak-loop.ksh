@@ -439,6 +439,11 @@ else
     while true; do
         current=range_start
         while (( current <= range_end )); do
+            # Blank line ahead of each file's playback -- separates one
+            # stanza from the next (and the first stanza from the
+            # range/picker prompt above it) when several files are
+            # played back to back.
+            print
             speak "${speak_args[@]}" "${matches[current]}"
             (( current += 1 ))
         done
@@ -485,4 +490,7 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-11-07 07:48:58
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-08 07:39:29
 #-- End of File ----------------------------------------------------------------
