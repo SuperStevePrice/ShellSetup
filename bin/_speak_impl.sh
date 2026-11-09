@@ -1456,11 +1456,23 @@ elif [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
     # in step naturally.
     # Good for memorization/follow-along reading — not for natural listening,
     # since there's a beat between lines (and, without -c, a click too).
+    #
+    # The brief sleep after each line matters beyond pacing: macOS's speech
+    # synthesis audio session can clip the start of the next utterance if a
+    # new 'say' call fires the instant the previous one's process exits --
+    # the OS hasn't finished releasing the audio session yet. Without this
+    # gap, back-to-back lines (as in speak-loop's -L forever loop) can
+    # intermittently drop a word or an entire line, with no error printed
+    # since nothing actually failed -- the audio was just clipped. Confirmed
+    # this isn't tied to any one voice (happens with plain Anna, not just
+    # Anna (Premium)), so the fix belongs here rather than in voice choice.
+    typeset -r INTERLINE_GAP=0.2
     if [[ "$INPUT" == "-" ]]; then
         while IFS= read -r line; do
             printf '%s\n' "$line"
             if [[ -n "$line" && "$line" != '#'* ]] && ! is_divider_line "$line"; then
                 speak_text "$line"
+                sleep "$INTERLINE_GAP"
             fi
             [[ "$QUIT" -eq 1 ]] && break
         done
@@ -1469,6 +1481,7 @@ elif [[ -n "$PFLAG" && -z "$OUTFILE" && -z "$NFLAG" ]]; then
             printf '%s\n' "$line"
             if [[ -n "$line" && "$line" != '#'* ]] && ! is_divider_line "$line"; then
                 speak_text "$line"
+                sleep "$INTERLINE_GAP"
             fi
             [[ "$QUIT" -eq 1 ]] && break
         done < "$INPUT"

@@ -394,6 +394,12 @@ if (( forever )); then
         # extra tacked on at the end when you quit.
         print
 
+        # Same brief gap _speak_impl.sh now adds between lines within one
+        # file, applied here at the boundary between files too -- without
+        # it, the next file's 'say' call can fire before the previous
+        # file's audio session has fully released and clip its first word.
+        sleep 0.2
+
         speak "${speak_args[@]}" "${matches[current]}" &
         pid=$!
         paused=0
@@ -439,13 +445,9 @@ else
     while true; do
         current=range_start
         while (( current <= range_end )); do
-            # Blank line ahead of each file's playback -- separates one
-            # stanza from the next (and the first stanza from the
-            # range/picker prompt above it) when several files are
-            # played back to back.
-            print
             speak "${speak_args[@]}" "${matches[current]}"
             (( current += 1 ))
+            (( current <= range_end )) && sleep 0.2
         done
 
         if (( ${#matches[@]} > 1 )); then
@@ -490,7 +492,4 @@ fi
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-11-07 07:48:58
-#-- End of File ----------------------------------------------------------------
-#-------------------------------------------------------------------------------
-# Last installed: 2026-11-08 07:39:29
 #-- End of File ----------------------------------------------------------------
