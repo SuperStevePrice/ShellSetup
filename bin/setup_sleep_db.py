@@ -51,6 +51,18 @@ CREATE TABLE IF NOT EXISTS nocturia_log (
     notes TEXT
 );
 
+-- Always dropped and recreated below (rather than CREATE VIEW IF NOT
+-- EXISTS) so an existing database picks up changes to this view's
+-- definition on the next run, instead of keeping whatever version was
+-- first created.
+DROP VIEW IF EXISTS nightly_report;
+
+-- Full-outer-join equivalent (SQLite has no FULL OUTER JOIN): every
+-- night that has EITHER sleep data OR a drug-log entry shows up, even
+-- when the other side hasn't arrived yet. A drug entry logged before
+-- the matching Watch export has synced (very common -- you log the
+-- night before you can export) now appears with blank sleep columns
+-- instead of silently vanishing from the report.
 CREATE VIEW IF NOT EXISTS nightly_report AS
 SELECT
     s.night,
@@ -67,12 +79,34 @@ SELECT
     (SELECT ROUND(SUM(amount_oz), 1) FROM nocturia_log n WHERE n.night = s.night) AS urination_total_oz
 FROM nightly_sleep s
 LEFT JOIN (
-    -- last-entry-wins per night, matching sleep_drug_log's own behavior
     SELECT night, drug, melatonin, notes
     FROM sleep_drug_log sd
     WHERE sd.id = (SELECT MAX(id) FROM sleep_drug_log sd2 WHERE sd2.night = sd.night)
 ) d ON d.night = s.night
-ORDER BY s.night;
+
+UNION
+
+SELECT
+    d.night,
+    NULL AS asleep_hours,
+    NULL AS awake_hours,
+    NULL AS inbed_hours,
+    NULL AS wakings,
+    NULL AS first_record,
+    NULL AS last_record,
+    d.drug,
+    d.melatonin,
+    d.notes AS drug_notes,
+    (SELECT COUNT(*) FROM nocturia_log n WHERE n.night = d.night) AS urination_count,
+    (SELECT ROUND(SUM(amount_oz), 1) FROM nocturia_log n WHERE n.night = d.night) AS urination_total_oz
+FROM (
+    SELECT night, drug, melatonin, notes
+    FROM sleep_drug_log sd
+    WHERE sd.id = (SELECT MAX(id) FROM sleep_drug_log sd2 WHERE sd2.night = sd.night)
+) d
+WHERE d.night NOT IN (SELECT night FROM nightly_sleep)
+
+ORDER BY night DESC;
 """
 
 def connect(db_path):
