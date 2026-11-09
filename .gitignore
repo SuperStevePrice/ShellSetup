@@ -30,3 +30,4 @@ bin/*.bak.*
 !bin/make_bookmarklet_icons.py
 !bin/health_sleep.py
 !bin/nocturia_log.py
+!bin/setup_sleep_db.py
