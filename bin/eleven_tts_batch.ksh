@@ -22,6 +22,10 @@
 #   -o DIR     Output directory for .mp3 files (default: same as -i)
 #   -m MODEL   Model ID (default: eleven_multilingual_v2 -- good for German/English)
 #   -c LIMIT   Max characters per API call before splitting (default: 9500)
+#   -r SPEED   Speaking rate passed to ElevenLabs voice_settings.speed
+#              (default: 1.0 = normal. ElevenLabs allows roughly 0.7
+#              (slower) to 1.2 (faster). Use e.g. -r 0.8 to slow a
+#              lullaby down; leave unset for everything else.)
 #   -l         List available voices (name + voice_id) and exit
 #   -s         Spanish status messages instead of English
 #   -h         Help
@@ -33,10 +37,11 @@ typeset IN_DIR="$HOME/Documents/elevenlabsUploads"
 typeset OUT_DIR=""
 typeset MODEL="eleven_multilingual_v2"
 typeset LIMIT=9500
+typeset SPEED="1.0"
 typeset DO_LIST=0
 typeset SPANISH=0
 
-while getopts "k:v:i:o:m:c:lsh" opt; do
+while getopts "k:v:i:o:m:c:r:lsh" opt; do
   case $opt in
     k) API_KEY="$OPTARG" ;;
     v) VOICE_ID="$OPTARG" ;;
@@ -44,6 +49,7 @@ while getopts "k:v:i:o:m:c:lsh" opt; do
     o) OUT_DIR="$OPTARG" ;;
     m) MODEL="$OPTARG" ;;
     c) LIMIT="$OPTARG" ;;
+    r) SPEED="$OPTARG" ;;
     l) DO_LIST=1 ;;
     s) SPANISH=1 ;;
     h)
@@ -227,10 +233,14 @@ with open(sys.argv[1], "r", encoding="utf-8") as fh:
 payload = {
     "text": text,
     "model_id": sys.argv[2],
-    "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
+    "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "speed": float(sys.argv[3])
+    }
 }
 json.dump(payload, sys.stdout)
-' "$chunkfile" "$MODEL" > "$WORK_DIR/payload.json"
+' "$chunkfile" "$MODEL" "$SPEED" > "$WORK_DIR/payload.json"
 
     http_code=$(curl -s -o "$outfile" -w "%{http_code}" \
       -X POST "https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}" \
@@ -257,3 +267,6 @@ rm -rf "$WORK_DIR"
 
 msg "Done. $done_count succeeded, $failed failed, out of $total_parts part(s) across $total_files file(s)." \
     "Listo. $done_count exitosos, $failed fallidos, de $total_parts parte(s) en $total_files archivo(s)."
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-09 09:38:29
+#-- End of File ----------------------------------------------------------------
