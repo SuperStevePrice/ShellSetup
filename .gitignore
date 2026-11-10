@@ -31,3 +31,4 @@ bin/*.bak.*
 !bin/health_sleep.py
 !bin/nocturia_log.py
 !bin/setup_sleep_db.py
+backup-predeploy/
