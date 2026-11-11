@@ -184,6 +184,130 @@ def run_sql_file(conn, path):
     conn.commit()
     print(f"  ran {path}")
 
+def export_xlsx(conn, path):
+    """Write the full nightly_report to a formatted .xlsx file -- opens
+    natively in Numbers (or Excel) via a Finder double-click. No
+    formulas here (this is a data export, not a model), so no recalc
+    step is needed."""
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill
+    from openpyxl.utils import get_column_letter
+
+    cur = conn.execute("SELECT * FROM nightly_report")
+    cols = [d[0] for d in cur.description]
+    rows = cur.fetchall()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sleep Report"
+
+    header_font = Font(name="Arial", bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="1A4480", end_color="1A4480", fill_type="solid")
+    body_font = Font(name="Arial", size=10)
+
+    for j, col in enumerate(cols, start=1):
+        c = ws.cell(row=1, column=j, value=col.replace("_", " ").title())
+        c.font = header_font
+        c.fill = header_fill
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    for i, row in enumerate(rows, start=2):
+        for j, val in enumerate(row, start=1):
+            c = ws.cell(row=i, column=j, value=val)
+            c.font = body_font
+            if cols[j-1] in ("drug_notes",):
+                c.alignment = Alignment(wrap_text=True, vertical="top")
+            else:
+                c.alignment = Alignment(vertical="top")
+
+    # Column widths: generous for notes, snug for everything else
+    widths = {"night": 12, "asleep_hours": 11, "awake_hours": 11, "inbed_hours": 11,
+              "wakings": 9, "first_record": 11, "last_record": 11, "drug": 24,
+              "melatonin": 10, "drug_notes": 70, "urination_count": 12, "urination_total_oz": 12}
+    for j, col in enumerate(cols, start=1):
+        ws.column_dimensions[get_column_letter(j)].width = widths.get(col, 14)
+
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = ws.dimensions
+
+    path = os.path.expanduser(path)
+    wb.save(path)
+    return path, len(rows)
+
+def export_pdf(conn, path):
+    """Write the full nightly_report as a clean, paginated landscape PDF
+    table -- meant for sharing with a doctor: read-only, no app needed
+    to open it, renders identically everywhere."""
+    from reportlab.lib.pagesizes import letter, landscape
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import inch
+
+    cur = conn.execute("SELECT * FROM nightly_report")
+    cols = [d[0] for d in cur.description]
+    rows = cur.fetchall()
+
+    path = os.path.expanduser(path)
+    doc = SimpleDocTemplate(path, pagesize=landscape(letter),
+                             topMargin=0.5*inch, bottomMargin=0.5*inch,
+                             leftMargin=0.4*inch, rightMargin=0.4*inch)
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('TitleStyle', parent=styles['Title'], fontSize=16, spaceAfter=4)
+    sub_style = ParagraphStyle('SubStyle', parent=styles['Normal'], fontSize=9,
+                                textColor=colors.grey, spaceAfter=12)
+    cell_style = ParagraphStyle('Cell', parent=styles['Normal'], fontSize=8, leading=10)
+    header_style = ParagraphStyle('Header', parent=styles['Normal'], fontSize=8,
+                                   leading=10, textColor=colors.white, alignment=1)
+
+    story = []
+    story.append(Paragraph("Sleep Study Report", title_style))
+    from datetime import date as _date
+    story.append(Paragraph(f"Generated {_date.today().isoformat()} &mdash; {len(rows)} night(s) on record",
+                            sub_style))
+
+    header_labels = {
+        "night": "Night", "asleep_hours": "Asleep (hrs)", "awake_hours": "Awake (hrs)",
+        "inbed_hours": "In Bed (hrs)", "wakings": "Wakings", "first_record": "First",
+        "last_record": "Last", "drug": "Medication(s)", "melatonin": "Melatonin",
+        "drug_notes": "Notes", "urination_count": "Nocturia #", "urination_total_oz": "Oz Total",
+    }
+    headers = [header_labels.get(c, c.replace("_", " ").title()) for c in cols]
+    data = [[Paragraph(h, header_style) for h in headers]]
+    for row in rows:
+        line = []
+        for col, val in zip(cols, row):
+            if val is None:
+                val = ""
+            if col == "drug_notes":
+                line.append(Paragraph(str(val), cell_style))
+            else:
+                line.append(Paragraph(str(val), cell_style))
+        data.append(line)
+
+    # Column widths tuned for landscape letter (~10.2" usable width)
+    width_map = {"night": 0.78, "asleep_hours": 0.58, "awake_hours": 0.55, "inbed_hours": 0.58,
+                 "wakings": 0.55, "first_record": 0.5, "last_record": 0.5, "drug": 1.3,
+                 "melatonin": 0.68, "drug_notes": 2.85, "urination_count": 0.62,
+                 "urination_total_oz": 0.6}
+    col_widths = [width_map.get(c, 0.6) * inch for c in cols]
+
+    table = Table(data, colWidths=col_widths, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a4480')),
+        ('GRID', (0, 0), (-1, -1), 0.4, colors.HexColor('#cccccc')),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f5f7fa')]),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('LEFTPADDING', (0, 0), (-1, -1), 4),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+    ]))
+    story.append(table)
+
+    doc.build(story)
+    return path, len(rows)
+
 def report(conn, n):
     cur = conn.execute("SELECT * FROM nightly_report ORDER BY night DESC LIMIT ?", (n,))
     cols = [d[0] for d in cur.description]
@@ -208,6 +332,18 @@ def main():
                      help="path to a prescriptions INSERT .sql file to run")
     ap.add_argument("--report", action="store_true", help="print the consolidated nightly_report view")
     ap.add_argument("-n", type=int, default=14, help="with --report: number of recent nights (default 14)")
+    DEFAULT_XLSX = "~/Desktop/sleep_report.xlsx"
+    DEFAULT_PDF = "~/Desktop/sleep_report.pdf"
+    ap.add_argument("--export-xlsx", metavar="PATH", nargs="?", const=DEFAULT_XLSX,
+                     help=f"write the full nightly_report to this .xlsx file (opens in Numbers/Excel); "
+                          f"with --report, this now happens automatically to {DEFAULT_XLSX} unless "
+                          f"--no-export is given")
+    ap.add_argument("--export-pdf", metavar="PATH", nargs="?", const=DEFAULT_PDF,
+                     help=f"write the full nightly_report to this .pdf file (for sharing with a doctor); "
+                          f"with --report, this now happens automatically to {DEFAULT_PDF} unless "
+                          f"--no-export is given")
+    ap.add_argument("--no-export", action="store_true",
+                     help="with --report: skip the automatic .xlsx/.pdf export")
     a = ap.parse_args()
 
     conn = connect(a.db)
@@ -227,6 +363,24 @@ def main():
     if a.report:
         print()
         report(conn, a.n)
+
+        # Auto-export both formats alongside the report by default, so
+        # the Numbers/PDF files are always kept current without having
+        # to remember any extra flags -- opt out with --no-export, or
+        # override either path with an explicit --export-xlsx/--export-pdf.
+        if not a.no_export:
+            if not a.export_xlsx:
+                a.export_xlsx = DEFAULT_XLSX
+            if not a.export_pdf:
+                a.export_pdf = DEFAULT_PDF
+
+    if a.export_xlsx:
+        path, n_rows = export_xlsx(conn, a.export_xlsx)
+        print(f"  wrote {n_rows} row(s) to {path}")
+
+    if a.export_pdf:
+        path, n_rows = export_pdf(conn, a.export_pdf)
+        print(f"  wrote {n_rows} row(s) to {path}")
 
     conn.close()
 
