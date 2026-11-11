@@ -1,7 +1,8 @@
 #!/bin/ksh
 # morning_sleep.ksh - one-stop morning sleep-study routine.
-# Prompts for last night's medication, melatonin, and notes, logs them,
-# runs health_sleep on the Watch export, then shows the consolidated
+# Confirms the four standing nightly meds (default yes), lets you add
+# any extra one-off drugs, asks melatonin + notes, logs it, runs
+# health_sleep on the Watch export, then shows the consolidated
 # database report (sleep + drug + nocturia, joined by night).
 #
 # Usage:
@@ -17,6 +18,17 @@ while getopts "f:" opt; do
         *) print -u2 "Usage: ${0##*/} [-f export.zip|export.xml]"; exit 1 ;;
     esac
 done
+
+# --- own timestamped log, per standing instruction -------------------
+# Written as a brace-group piped to tee, not `exec > >(tee ...)`:
+# that process-substitution form hit an "Illegal byte sequence" error
+# on Steve's Mac (locale/parsing quirk in that ksh build), so this
+# avoids it entirely -- same end result (everything shown on screen
+# also lands in the log file), just without that syntax.
+mkdir -p ~/logs
+LOGFILE=~/logs/morning_sleep.$(date +%Y%m%d_%H%M%S).log
+
+{
 
 # --- find the export file if not given with -f ---------------------
 if [[ -z "$EXPORT_FILE" ]]; then
@@ -38,9 +50,7 @@ if [[ ! -f "$EXPORT_FILE" ]]; then
 fi
 
 # --- unzip export.zip if needed, reusing an existing extract if one's
-#     already there (health_sleep can read a .zip directly, but a
-#     plain .xml is faster on repeat runs and this was asked for
-#     explicitly) --------------------------------------------------
+#     already there ---------------------------------------------------
 if [[ "$EXPORT_FILE" == *.zip ]]; then
     ZIP_DIR=$(dirname "$EXPORT_FILE")
     XML_CANDIDATE="$ZIP_DIR/apple_health_export/export.xml"
@@ -63,37 +73,57 @@ print -n "Night's date (YYYY-MM-DD) [$DEFAULT_DATE]: "
 read NIGHT_DATE
 [[ -z "$NIGHT_DATE" ]] && NIGHT_DATE="$DEFAULT_DATE"
 
-# --- prompt for drug (single letter), melatonin, notes --------------
-DRUG=""
-while [[ -z "$DRUG" ]]; do
-    print -n "Sleep medication: Z=ZzzQuil, L=Lunesta, T=Trazodone: "
-    read DRUG_LETTER
-    DRUG_LETTER=$(print "$DRUG_LETTER" | tr '[:lower:]' '[:upper:]')
-    case "$DRUG_LETTER" in
-        Z) DRUG="ZzzQuil" ;;
-        L) DRUG="Lunesta" ;;
-        T) DRUG="Trazodone" ;;
-        *) print "Please enter Z, L, or T." ;;
-    esac
+# --- the four standing nightly meds, default yes --------------------
+typeset -a STANDING_DRUGS
+STANDING_DRUGS=("Lisinopril (blood pressure)" "Trazodone (sleep)" "Prilosec (heartburn)" "Flomax (prostate/bladder)")
+typeset DRUG_LIST=""
+typeset SKIPPED=""
+
+for entry in "${STANDING_DRUGS[@]}"; do
+    name="${entry%% \(*}"
+    print -n "${entry} - taken? [Y/n]: "
+    read ans
+    ans=$(print "$ans" | tr '[:lower:]' '[:upper:]')
+    if [[ "$ans" == "N" ]]; then
+        SKIPPED="${SKIPPED:+$SKIPPED, }$name"
+    else
+        DRUG_LIST="${DRUG_LIST:+$DRUG_LIST, }$name"
+    fi
 done
 
-MEL=""
-while [[ "$MEL" != "Y" && "$MEL" != "N" ]]; do
-    print -n "Melatonin taken? (Y/N): "
-    read MEL
-    MEL=$(print "$MEL" | tr '[:lower:]' '[:upper:]')
+# --- open-ended loop for any additional, one-off drugs ---------------
+while true; do
+    print -n "Additional drug not listed above (Enter to finish): "
+    read EXTRA
+    [[ -z "$EXTRA" ]] && break
+    DRUG_LIST="${DRUG_LIST:+$DRUG_LIST, }$EXTRA"
+    print -n "Any more to add? [y/N]: "
+    read more
+    more=$(print "$more" | tr '[:lower:]' '[:upper:]')
+    [[ "$more" != "Y" ]] && break
 done
+
+# --- notes -------------------------------------------------------------
+# Melatonin is no longer part of the regimen going forward (Steve has
+# stopped taking it), so there's no prompt for it anymore -- the
+# sleep_drug_log column still exists for the historical ZzzQuil/
+# Lunesta/Trazodone experiment data, it's just always logged as N now.
+MEL="N"
 
 print -n "Notes (optional, Enter to skip): "
 read NOTES
 
+if [[ -n "$SKIPPED" ]]; then
+    NOTES="${NOTES:+$NOTES; }(skipped: $SKIPPED)"
+fi
+
 # --- log the drug entry ---------------------------------------------
 print ""
-print "Logging last night's medication..."
+print "Logging last night's medications..."
 if [[ -n "$NOTES" ]]; then
-    sleep_drug_log "$NIGHT_DATE" "$DRUG" "$MEL" "$NOTES"
+    sleep_drug_log "$NIGHT_DATE" "$DRUG_LIST" "$MEL" "$NOTES"
 else
-    sleep_drug_log "$NIGHT_DATE" "$DRUG" "$MEL"
+    sleep_drug_log "$NIGHT_DATE" "$DRUG_LIST" "$MEL"
 fi
 
 # --- run health_sleep -------------------------------------------------
@@ -105,3 +135,8 @@ health_sleep "$EXPORT_FILE"
 print ""
 print "Generating the consolidated report..."
 setup_sleep_db.ksh --import-drug-log ~/logs/sleep_drug_log.csv --report
+
+} 2>&1 | tee "$LOGFILE"
+
+print ""
+print "See: $LOGFILE"
