@@ -5,6 +5,12 @@ from datetime import datetime
 
 DEFAULT_DB = os.path.expanduser("~/sleep_study.db")
 
+# Nights before this date are pre-study background data (short
+# durations, odd hour-only timestamps, no medications logged) that
+# predate the real sleep study and shouldn't appear in reports shared
+# with Dr. Syed. Change this if the study's start date changes.
+DEFAULT_REPORT_SINCE = "2026-11-01"
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS prescriptions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -193,7 +199,7 @@ def export_xlsx(conn, path):
     from openpyxl.styles import Font, Alignment, PatternFill
     from openpyxl.utils import get_column_letter
 
-    cur = conn.execute("SELECT * FROM nightly_report")
+    cur = conn.execute("SELECT * FROM nightly_report WHERE night >= ? ORDER BY night DESC", (DEFAULT_REPORT_SINCE,))
     cols = [d[0] for d in cur.description]
     rows = cur.fetchall()
 
@@ -244,7 +250,7 @@ def export_pdf(conn, path):
     from reportlab.lib import colors
     from reportlab.lib.units import inch
 
-    cur = conn.execute("SELECT * FROM nightly_report")
+    cur = conn.execute("SELECT * FROM nightly_report WHERE night >= ? ORDER BY night DESC", (DEFAULT_REPORT_SINCE,))
     cols = [d[0] for d in cur.description]
     rows = cur.fetchall()
 
@@ -309,7 +315,7 @@ def export_pdf(conn, path):
     return path, len(rows)
 
 def report(conn, n):
-    cur = conn.execute("SELECT * FROM nightly_report ORDER BY night DESC LIMIT ?", (n,))
+    cur = conn.execute("SELECT * FROM nightly_report WHERE night >= ? ORDER BY night DESC LIMIT ?", (DEFAULT_REPORT_SINCE, n))
     cols = [d[0] for d in cur.description]
     rows = cur.fetchall()
     if not rows:
@@ -386,3 +392,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-11 06:11:52
+#-- End of File ----------------------------------------------------------------
