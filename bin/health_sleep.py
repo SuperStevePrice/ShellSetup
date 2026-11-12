@@ -55,6 +55,25 @@ def night_key(start):
     d = start.date() if start.hour < 18 else start.date() + timedelta(days=1)
     return d.isoformat()
 
+def get_last_contiguous_rows(rows, gap_minutes=90):
+    """Return only the rows from the final contiguous run -- a run
+    where each record starts within gap_minutes of the previous
+    record's end. An early blip separated from the main sleep block by
+    a longer gap (e.g. resting on the couch at 6:42pm, then up again
+    until going to bed at 9:55pm) is dropped, so it doesn't anchor
+    is_real_night's start-time check or inflate night_stats's hours."""
+    threshold = timedelta(minutes=gap_minutes)
+    start_idx = 0
+    for i in range(1, len(rows)):
+        if rows[i][0] - rows[i - 1][1] > threshold:
+            start_idx = i
+    return rows[start_idx:]
+
+def last_contiguous_start(rows, gap_minutes=90):
+    """Return the start time of the first record in the final
+    contiguous run (see get_last_contiguous_rows)."""
+    return get_last_contiguous_rows(rows, gap_minutes)[0][0]
+
 def is_real_night(rows, night_start_hour, night_end_hour):
     """True if this block both STARTS in the usual bedtime window
     (hour >= night_start_hour, e.g. 8pm, OR hour < night_end_hour, e.g.
@@ -64,8 +83,14 @@ def is_real_night(rows, night_start_hour, night_end_hour):
     "before 10am" -- but that block didn't END until 4:14pm, which is
     nowhere near a real wake-up time. Requiring both ends to fall in
     the window filters that case out while still keeping ordinary
-    nights (e.g. 22:53->04:11)."""
-    first_hour = rows[0][0].hour
+    nights (e.g. 22:53->04:11).
+
+    The start check uses the LAST contiguous run's start time, not the
+    very first record's -- an early blip (e.g. resting on the couch at
+    6:42pm, then up again until going to bed at 9:55pm) got bucketed
+    into the same night_key group as the real sleep that followed, and
+    its early hour wrongly disqualified the whole night."""
+    first_hour = last_contiguous_start(rows).hour
     last_hour = max(r[1] for r in rows).hour
     starts_at_night = first_hour >= night_start_hour or first_hour < night_end_hour
     ends_by_morning = last_hour < night_end_hour or last_hour >= night_start_hour
@@ -94,7 +119,13 @@ def load_drug_log(path):
 def night_stats(rows):
     """Compute asleep/awake/inbed hours, wakings, first/last times for one
     night's rows. Same arithmetic the display loop uses, factored out so
-    the SQLite writer doesn't duplicate or drift from it."""
+    the SQLite writer doesn't duplicate or drift from it.
+
+    Rows are first narrowed to the final contiguous run (see
+    get_last_contiguous_rows), so an early blip bucketed into the same
+    night_key group doesn't inflate the hours or skew the first/last
+    times."""
+    rows = get_last_contiguous_rows(rows)
     asleep = awake = inbed = 0.0
     wakings = 0
     for s, e, v, src in rows:
@@ -234,7 +265,7 @@ def main():
                 f"{stats['wakings']:>9}  {stats['first_record']}->{stats['last_record']}")
         if drug_log:
             entry = drug_log.get(k, {})
-            line += f"  {entry.get('drug', ''):<10}{entry.get('melatonin', ''):<4}"
+            line += f"  {entry.get('drug', ''):<10} {entry.get('melatonin', ''):<4}"
         print(line)
 
 if __name__ == "__main__":
@@ -244,4 +275,7 @@ if __name__ == "__main__":
 #-- End of File ----------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Last installed: 2026-10-31 18:11:12
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-06 05:34:42
 #-- End of File ----------------------------------------------------------------
