@@ -85,9 +85,9 @@ for entry in "${STANDING_DRUGS[@]}"; do
     read ans
     ans=$(print "$ans" | tr '[:lower:]' '[:upper:]')
     if [[ "$ans" == "N" ]]; then
-        SKIPPED="${SKIPPED:+$SKIPPED, }$name"
+        SKIPPED="${SKIPPED:+$SKIPPED; }$name"
     else
-        DRUG_LIST="${DRUG_LIST:+$DRUG_LIST, }$name"
+        DRUG_LIST="${DRUG_LIST:+$DRUG_LIST; }$name"
     fi
 done
 
@@ -96,7 +96,7 @@ while true; do
     print -n "Additional drug not listed above (Enter to finish): "
     read EXTRA
     [[ -z "$EXTRA" ]] && break
-    DRUG_LIST="${DRUG_LIST:+$DRUG_LIST, }$EXTRA"
+    DRUG_LIST="${DRUG_LIST:+$DRUG_LIST; }$EXTRA"
     print -n "Any more to add? [y/N]: "
     read more
     more=$(print "$more" | tr '[:lower:]' '[:upper:]')
