@@ -136,6 +136,26 @@ print ""
 print "Generating the consolidated report..."
 setup_sleep_db.ksh --import-drug-log ~/logs/sleep_drug_log.csv --report
 
+# --- offer to open the generated reports -----------------------------
+# Both reports land on the Desktop every run regardless; this just
+# saves hunting for them afterward. Default is no either way.
+PDF_PATH="$HOME/Desktop/sleep_report.pdf"
+XLSX_PATH="$HOME/Desktop/sleep_report.xlsx"
+
+if [[ -f "$PDF_PATH" ]]; then
+    print -n "Would you like to open the PDF report? [y/N]: "
+    read OPEN_PDF
+    OPEN_PDF=$(print "$OPEN_PDF" | tr '[:lower:]' '[:upper:]')
+    [[ "$OPEN_PDF" == "Y" ]] && open "$PDF_PATH"
+fi
+
+if [[ -f "$XLSX_PATH" ]]; then
+    print -n "Would you like to open the numbers (xlsx) report? [y/N]: "
+    read OPEN_XLSX
+    OPEN_XLSX=$(print "$OPEN_XLSX" | tr '[:lower:]' '[:upper:]')
+    [[ "$OPEN_XLSX" == "Y" ]] && open "$XLSX_PATH"
+fi
+
 } 2>&1 | tee "$LOGFILE"
 
 print ""
