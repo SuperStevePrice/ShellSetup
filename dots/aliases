@@ -41,3 +41,5 @@ else
     alias python="$(which python3)"
 fi
 alias py=python
+alias elee="cd ~/Documents/elevenLabsUploads/english"
+alias eleg="cd ~/Documents/elevenLabsUploads/german"
