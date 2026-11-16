@@ -339,11 +339,22 @@ def export_pdf(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
                 line.append(Paragraph(str(val), cell_style))
         data.append(line)
 
-    # Column widths tuned for landscape letter (~10.2" usable width)
-    width_map = {"night": 0.78, "asleep_hours": 0.58, "awake_hours": 0.55, "inbed_hours": 0.58,
-                 "wakings": 0.55, "first_record": 0.5, "last_record": 0.5, "drug": 1.3,
-                 "melatonin": 0.68, "drug_notes": 2.85, "urination_count": 0.62,
-                 "urination_total_oz": 0.6, "asleep_rolling_avg": 0.75}
+    # Column widths tuned for landscape letter. Usable width is ~10.2"
+    # between the margins, but SimpleDocTemplate's default Frame adds
+    # its own 6pt padding on each side on top of that, so the real
+    # budget is closer to 9.9" -- these were widened over time without
+    # re-checking that budget, which let the table quietly overflow
+    # both margins once asleep_rolling_avg was added. The savings for
+    # the new column come entirely from the short numeric/code columns
+    # (night, hours, wakings, times, melatonin, nocturia); drug and
+    # drug_notes keep their original width since trimming free-text
+    # columns causes more line-wraps and risks pushing the report onto
+    # a second page. Keep the total at or under ~9.9" when adding or
+    # resizing columns.
+    width_map = {"night": 0.73, "asleep_hours": 0.5, "awake_hours": 0.47, "inbed_hours": 0.5,
+                 "wakings": 0.47, "first_record": 0.43, "last_record": 0.43, "drug": 1.3,
+                 "melatonin": 0.58, "drug_notes": 2.85, "urination_count": 0.53,
+                 "urination_total_oz": 0.45, "asleep_rolling_avg": 0.68}
     col_widths = [width_map.get(c, 0.6) * inch for c in cols]
 
     table = Table(data, colWidths=col_widths, repeatRows=1)
