@@ -1,9 +1,10 @@
 #!/bin/ksh
 # morning_sleep.ksh - one-stop morning sleep-study routine.
-# Confirms the four standing nightly meds (default yes), lets you add
-# any extra one-off drugs, asks melatonin + notes, logs it, runs
-# health_sleep on the Watch export, then shows the consolidated
-# database report (sleep + drug + nocturia, joined by night).
+# Confirms the four standing nightly meds (default yes), asks about the
+# two common as-needed items (Tylenol/CeraVe, default no), lets you add
+# any other one-off drugs, asks notes, logs it, runs health_sleep on
+# the Watch export, then shows the consolidated database report (sleep
+# + drug + nocturia, joined by night).
 #
 # Usage:
 #   morning_sleep.ksh [-f export.zip|export.xml]
@@ -91,6 +92,20 @@ for entry in "${STANDING_DRUGS[@]}"; do
     fi
 done
 
+# --- the two common as-needed items, default no, independent of each
+#     other -- each just appends its standard boilerplate note to the
+#     drug field when answered yes, so the exact wording never has to
+#     be retyped or pasted by hand on the nights they come up ---------
+print -n "Tylenol (neck/rotator cuff pain) - taken? [y/N]: "
+read ans
+ans=$(print "$ans" | tr '[:lower:]' '[:upper:]')
+[[ "$ans" == "Y" ]] && DRUG_LIST="${DRUG_LIST:+$DRUG_LIST; }Tylenol arthritic 2 capsules"
+
+print -n "CeraVe (itching) - used? [y/N]: "
+read ans
+ans=$(print "$ans" | tr '[:lower:]' '[:upper:]')
+[[ "$ans" == "Y" ]] && DRUG_LIST="${DRUG_LIST:+$DRUG_LIST; }CeraVe Itch Relief Moisturizer Lotion over entire torso"
+
 # --- open-ended loop for any additional, one-off drugs ---------------
 while true; do
     print -n "Additional drug not listed above (Enter to finish): "
@@ -160,3 +175,6 @@ fi
 
 print ""
 print "See: $LOGFILE"
+#-------------------------------------------------------------------------------
+# Last installed: (set by setup.ksh)
+#-- End of File ----------------------------------------------------------------
