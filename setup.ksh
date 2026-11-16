@@ -67,7 +67,7 @@ bin_home_dir=~/bin
 
 docs=$(ls docs)
 docs_dir=docs
-docs_home_dir=~/Documents 
+docs_home_dir=~/Documents
 docs_backup_dir=~/Documents/backup
 
 
@@ -144,13 +144,13 @@ create_python_script() {
 
     print $python_script >> logs/installation_list.log
     print "Installed python_script: $python_script"
-} # create_python_script() 
+} # create_python_script()
 
 add_last_lines() {
     #---------------------------------------------------------------------------
     # Function:
     #   add_last_lines()
-    # 
+    #
     # Purpose:
     #   Add 3 lines to the end of each installed file. This will include the
     #   date on line 2.  Lines 1 and 3 are just comment lines # + 79 "-"s.
@@ -176,27 +176,27 @@ add_last_lines() {
 	# print "last_line:	$last_lines"
 	print "Adding last 3 comment lines to file: $file"
 	print "$last_lines" >> $file
-} # add_last_lines() 
+} # add_last_lines()
 
 prepare_public_file() {
 	#---------------------------------------------------------------------------
 	# Function:
 	#	prepare_public_file()
-	#	
+	#
 	# PURPOSE:
-	#	prepare_public_file prints a file minus the last 3 
-	#	lines.	The 3 lines removed are the Last installed trailing lines of 
+	#	prepare_public_file prints a file minus the last 3
+	#	lines.	The 3 lines removed are the Last installed trailing lines of
 	#	installed files. See final_lines variable.
-	#	
+	#
 	#	The file minus the final_lines is copied to a Public folder and used
     #   subsequently in a comparison with a candidate file to determine if it
     #   requires installation or not.
-	#	
+	#
 	#   For xtrc, x_path is platform-specific and must not be stored as TBD
 	#   in the public copy. Instead, the actual installed x_path from ~/.xtrc
 	#   is used so the diff reflects reality and xtrc is only reinstalled when
 	#   something other than x_path has genuinely changed.
-	#	
+	#
 	# USAGE:
 	#	prepare_public_file file full_path
 	#---------------------------------------------------------------------------
@@ -207,9 +207,9 @@ prepare_public_file() {
 
 	if [ ! -f $file ]
 	then
-		print -n "Skipping prepare_public_file() for file $file."        
+		print -n "Skipping prepare_public_file() for file $file."
         print "  No such file."
-		return 
+		return
 	fi
 
 	base=$(basename $file)
@@ -219,7 +219,7 @@ prepare_public_file() {
 	else
 		target_dir=$public_bin
 	fi
-	
+
     if [ X"$file_path" == X"$docs_home_dir" ]
     then
 		target_dir=$public_docs
@@ -290,6 +290,23 @@ backup_install() {
     fi
 
     for file in ${path}/*; do
+        # Skip stray backup files that may be sitting in this directory
+        # (left by an editor, a one-off manual `cp foo foo.bak.<date>`, or
+        # some other tool -- cause unconfirmed, found Nov 2026). Without
+        # this, a *.bak or *.bak.<timestamp> file is treated exactly like
+        # any other source file in $path and gets faithfully reinstalled
+        # into $installed_path on every single run, forever -- which is
+        # how _speak_impl.sh.bak.20261003_124535 kept reappearing in
+        # ~/bin even after being manually deleted from there: deleting the
+        # ~/bin copy never touched the copy still sitting in bin/ itself.
+        bn_check=$(basename "$file")
+        case "$bn_check" in
+            *.bak|*.bak.*)
+                print "Skipping stray backup file: $file"
+                continue
+                ;;
+        esac
+
         ts=$(date +%Y_%m_%d-%H:%M:%S)
 
         if [ $debug == true ]; then
@@ -416,7 +433,7 @@ set_symbolic_links() {
 			_*)
 				# Excluded: a leading underscore marks a shared implementation
 				# file meant to be sourced by a wrapper (e.g. _speak_impl.sh,
-				# sourced by speak.ksh/speak.sh), not invoked directly — so it
+				# sourced by speak.ksh/speak.sh), not invoked directly -- so it
 				# gets no extension-stripped symlink of its own. Generic by
 				# convention, unlike the ssh-copy-id case above, so a future
 				# shared-impl file needs no edit here.
@@ -431,7 +448,7 @@ set_symbolic_links() {
 			ln -s ${file} ${sym}
 		fi
 	done
-} # set_symbolic_links() 
+} # set_symbolic_links()
 
 # Handle backup and installation file for each file that is not present or that
 # has changed since the master source code has changed:
