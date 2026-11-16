@@ -11,7 +11,11 @@ DEFAULT_DB = os.path.expanduser("~/sleep_study.db")
 # with Dr. Syed. Change this if the study's start date changes.
 DEFAULT_REPORT_SINCE = "2026-11-01"
 
-SCHEMA = """
+# Default trailing window (in nights) for the asleep_rolling_avg column.
+# Override per-run with --rolling-window.
+DEFAULT_ROLLING_WINDOW = 7
+
+BASE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS prescriptions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     generic_name TEXT NOT NULL,
@@ -62,6 +66,7 @@ CREATE TABLE IF NOT EXISTS nocturia_log (
 -- definition on the next run, instead of keeping whatever version was
 -- first created.
 DROP VIEW IF EXISTS nightly_report;
+DROP VIEW IF EXISTS nightly_report_base;
 
 -- Full-outer-join equivalent (SQLite has no FULL OUTER JOIN): every
 -- night that has EITHER sleep data OR a drug-log entry shows up, even
@@ -69,7 +74,12 @@ DROP VIEW IF EXISTS nightly_report;
 -- the matching Watch export has synced (very common -- you log the
 -- night before you can export) now appears with blank sleep columns
 -- instead of silently vanishing from the report.
-CREATE VIEW IF NOT EXISTS nightly_report AS
+--
+-- This is the "base" view: every column except the rolling average.
+-- It's kept separate so the rolling-average window function below can
+-- read from it in night-ascending order without interfering with this
+-- view's own ORDER BY night DESC.
+CREATE VIEW IF NOT EXISTS nightly_report_base AS
 SELECT
     s.night,
     s.asleep_hours,
@@ -115,9 +125,42 @@ WHERE d.night NOT IN (SELECT night FROM nightly_sleep)
 ORDER BY night DESC;
 """
 
-def connect(db_path):
+# The wrapper view adds asleep_rolling_avg: the trailing average of
+# asleep_hours over the N most recent nights up to and including this
+# one (N = rolling window). It's computed over nightly_report_base
+# ordered night ASCENDING (so "PRECEDING" means "earlier nights"),
+# then the whole thing is re-sorted DESC to match every other view in
+# this file. SQLite's window AVG() skips NULL asleep_hours (e.g. a
+# drug-log-only night with no sleep data yet) rather than treating
+# them as zero, so a gap doesn't drag the average down -- it's simply
+# excluded from both the sum and the divisor for any window it falls
+# inside.
+#
+# Window size is baked in at connect() time via {rolling_window},
+# since SQLite has no way to parameterize ROWS BETWEEN n PRECEDING.
+ROLLING_SCHEMA = """
+DROP VIEW IF EXISTS nightly_report;
+
+CREATE VIEW IF NOT EXISTS nightly_report AS
+SELECT *
+FROM (
+    SELECT
+        *,
+        ROUND(
+            AVG(asleep_hours) OVER (
+                ORDER BY night
+                ROWS BETWEEN {window_minus_1} PRECEDING AND CURRENT ROW
+            ),
+        2) AS asleep_rolling_avg
+    FROM nightly_report_base
+)
+ORDER BY night DESC;
+"""
+
+def connect(db_path, rolling_window=DEFAULT_ROLLING_WINDOW):
     conn = sqlite3.connect(db_path)
-    conn.executescript(SCHEMA)
+    conn.executescript(BASE_SCHEMA)
+    conn.executescript(ROLLING_SCHEMA.format(window_minus_1=rolling_window - 1))
     conn.commit()
     return conn
 
@@ -190,7 +233,7 @@ def run_sql_file(conn, path):
     conn.commit()
     print(f"  ran {path}")
 
-def export_xlsx(conn, path):
+def export_xlsx(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
     """Write the full nightly_report to a formatted .xlsx file -- opens
     natively in Numbers (or Excel) via a Finder double-click. No
     formulas here (this is a data export, not a model), so no recalc
@@ -211,8 +254,11 @@ def export_xlsx(conn, path):
     header_fill = PatternFill(start_color="1A4480", end_color="1A4480", fill_type="solid")
     body_font = Font(name="Arial", size=10)
 
+    header_labels = {"asleep_rolling_avg": f"Asleep {rolling_window}-Night Avg"}
+
     for j, col in enumerate(cols, start=1):
-        c = ws.cell(row=1, column=j, value=col.replace("_", " ").title())
+        label = header_labels.get(col, col.replace("_", " ").title())
+        c = ws.cell(row=1, column=j, value=label)
         c.font = header_font
         c.fill = header_fill
         c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
@@ -229,7 +275,8 @@ def export_xlsx(conn, path):
     # Column widths: generous for notes, snug for everything else
     widths = {"night": 12, "asleep_hours": 11, "awake_hours": 11, "inbed_hours": 11,
               "wakings": 9, "first_record": 11, "last_record": 11, "drug": 24,
-              "melatonin": 10, "drug_notes": 70, "urination_count": 12, "urination_total_oz": 12}
+              "melatonin": 10, "drug_notes": 70, "urination_count": 12, "urination_total_oz": 12,
+              "asleep_rolling_avg": 14}
     for j, col in enumerate(cols, start=1):
         ws.column_dimensions[get_column_letter(j)].width = widths.get(col, 14)
 
@@ -240,7 +287,7 @@ def export_xlsx(conn, path):
     wb.save(path)
     return path, len(rows)
 
-def export_pdf(conn, path):
+def export_pdf(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
     """Write the full nightly_report as a clean, paginated landscape PDF
     table -- meant for sharing with a doctor: read-only, no app needed
     to open it, renders identically everywhere."""
@@ -277,6 +324,7 @@ def export_pdf(conn, path):
         "inbed_hours": "In Bed (hrs)", "wakings": "Wakings", "first_record": "First",
         "last_record": "Last", "drug": "Medication(s)", "melatonin": "Melatonin",
         "drug_notes": "Notes", "urination_count": "Nocturia #", "urination_total_oz": "Oz Total",
+        "asleep_rolling_avg": f"Asleep {rolling_window}-Night Avg",
     }
     headers = [header_labels.get(c, c.replace("_", " ").title()) for c in cols]
     data = [[Paragraph(h, header_style) for h in headers]]
@@ -295,7 +343,7 @@ def export_pdf(conn, path):
     width_map = {"night": 0.78, "asleep_hours": 0.58, "awake_hours": 0.55, "inbed_hours": 0.58,
                  "wakings": 0.55, "first_record": 0.5, "last_record": 0.5, "drug": 1.3,
                  "melatonin": 0.68, "drug_notes": 2.85, "urination_count": 0.62,
-                 "urination_total_oz": 0.6}
+                 "urination_total_oz": 0.6, "asleep_rolling_avg": 0.75}
     col_widths = [width_map.get(c, 0.6) * inch for c in cols]
 
     table = Table(data, colWidths=col_widths, repeatRows=1)
@@ -350,9 +398,11 @@ def main():
                           f"--no-export is given")
     ap.add_argument("--no-export", action="store_true",
                      help="with --report: skip the automatic .xlsx/.pdf export")
+    ap.add_argument("--rolling-window", type=int, default=DEFAULT_ROLLING_WINDOW,
+                     help=f"nights in the asleep_rolling_avg trailing window (default {DEFAULT_ROLLING_WINDOW})")
     a = ap.parse_args()
 
-    conn = connect(a.db)
+    conn = connect(a.db, rolling_window=a.rolling_window)
     print(f"Database ready at {a.db}")
 
     if a.import_nocturia:
@@ -381,11 +431,11 @@ def main():
                 a.export_pdf = DEFAULT_PDF
 
     if a.export_xlsx:
-        path, n_rows = export_xlsx(conn, a.export_xlsx)
+        path, n_rows = export_xlsx(conn, a.export_xlsx, rolling_window=a.rolling_window)
         print(f"  wrote {n_rows} row(s) to {path}")
 
     if a.export_pdf:
-        path, n_rows = export_pdf(conn, a.export_pdf)
+        path, n_rows = export_pdf(conn, a.export_pdf, rolling_window=a.rolling_window)
         print(f"  wrote {n_rows} row(s) to {path}")
 
     conn.close()
@@ -394,4 +444,7 @@ if __name__ == "__main__":
     main()
 #-------------------------------------------------------------------------------
 # Last installed: 2026-11-11 06:11:52
+#-- End of File ----------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-12 08:06:31
 #-- End of File ----------------------------------------------------------------
