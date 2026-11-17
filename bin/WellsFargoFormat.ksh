@@ -1,5 +1,5 @@
 #!/bin/ksh
-# stmt_redact.ksh -- Wells Fargo statement -> redacted 80-col text + CSV
+# WellsFargoFormat.ksh -- Wells Fargo statement -> redacted 80-col text + CSV
 # usage: WellsFargoFormat.ksh [input.pdf]
 #
 # Requires: pdftotext (poppler)  --  brew install poppler | apt install poppler-utils
@@ -17,7 +17,7 @@
 in=${1:-~/Downloads/statement.pdf}
 
 if [[ ! -f $in ]]; then
-    print -u2 "stmt_redact.ksh: no such file: $in"
+    print -u2 "WellsFargoFormat.ksh: no such file: $in"
     exit 1
 fi
 
