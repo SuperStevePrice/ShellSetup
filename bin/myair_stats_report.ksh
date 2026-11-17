@@ -4,10 +4,19 @@
 # (same stats myAir already computed -- usage, AHI, leak, days-used
 # thresholds -- for each date window, tabled, no bar charts).
 #
+# Before anything else, this also fixes ResMed's own download naming:
+# myAir's "Download my report" saves the file as "myAir-Steve Price.pdf"
+# (a literal space before the surname), which is awkward to reference
+# from a shell. If that bad name is found sitting in ~/Downloads, it's
+# renamed to myAir-Steve-Price.pdf first, every run, whether or not
+# INPUT.pdf is given.
+#
 # Usage:
-#   myair_stats_report.ksh [-s] INPUT.pdf [OUTPUT.pdf]
+#   myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf]]
 #     -s          print status messages in Spanish instead of English
 #     INPUT.pdf   the myAir PDF you downloaded from myair.resmed.com
+#                 (default: ~/Downloads/myAir-Steve-Price.pdf, after
+#                 the rename above)
 #     OUTPUT.pdf  where to write the numbers-only report
 #                 (default: INPUT with _stats before .pdf)
 
@@ -15,7 +24,7 @@ SPANISH=0
 while getopts "s" opt; do
     case $opt in
         s) SPANISH=1 ;;
-        *) print -u2 "Usage: ${0##*/} [-s] INPUT.pdf [OUTPUT.pdf]"; exit 1 ;;
+        *) print -u2 "Usage: ${0##*/} [-s] [INPUT.pdf [OUTPUT.pdf]]"; exit 1 ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -28,10 +37,24 @@ msg() {
     fi
 }
 
+# --- fix ResMed's space-in-filename download, if it's sitting there ---
+BAD_NAME=~/Downloads/"myAir-Steve Price.pdf"
+GOOD_NAME=~/Downloads/myAir-Steve-Price.pdf
+if [[ -f "$BAD_NAME" ]]; then
+    msg "Renaming ResMed's download: 'myAir-Steve Price.pdf' -> 'myAir-Steve-Price.pdf'" \
+        "Renombrando la descarga de ResMed: 'myAir-Steve Price.pdf' -> 'myAir-Steve-Price.pdf'"
+    mv "$BAD_NAME" "$GOOD_NAME"
+fi
+
+# --- default INPUT.pdf to the (now correctly named) latest download ---
 if [[ -z "$1" ]]; then
-    msg "Usage: ${0##*/} [-s] INPUT.pdf [OUTPUT.pdf]" \
-        "Uso: ${0##*/} [-s] ENTRADA.pdf [SALIDA.pdf]"
-    exit 1
+    if [[ -f "$GOOD_NAME" ]]; then
+        set -- "$GOOD_NAME"
+    else
+        msg "Usage: ${0##*/} [-s] [INPUT.pdf [OUTPUT.pdf]]" \
+            "Uso: ${0##*/} [-s] [ENTRADA.pdf [SALIDA.pdf]]"
+        exit 1
+    fi
 fi
 
 mkdir -p ~/logs
