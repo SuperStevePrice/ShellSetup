@@ -18,7 +18,12 @@
 #                 (default: ~/Downloads/myAir-Steve-Price.pdf, after
 #                 the rename above)
 #     OUTPUT.pdf  where to write the numbers-only report
-#                 (default: INPUT with _stats before .pdf)
+#                 (default: ~/Desktop/<INPUT base name>_stats.pdf --
+#                 same place the rest of the Sleep Study Suite lands
+#                 its PDFs)
+#
+# After a successful run, offers to open the finished PDF (default no),
+# same as morning_sleep.ksh does for sleep_report.pdf.
 
 SPANISH=0
 while getopts "s" opt; do
@@ -57,19 +62,41 @@ if [[ -z "$1" ]]; then
     fi
 fi
 
+INPUT="$1"
+
+# --- default OUTPUT.pdf to the Desktop, same as the rest of the Sleep
+#     Study Suite (sleep_report.pdf etc.) rather than next to INPUT ---
+if [[ -n "$2" ]]; then
+    OUTPUT="$2"
+else
+    base=$(basename "${INPUT%.*}")
+    OUTPUT="$HOME/Desktop/${base}_stats.pdf"
+fi
+
 mkdir -p ~/logs
 LOGFILE=~/logs/myair_stats_report.$(date +%Y%m%d_%H%M%S).log
 
 {
 
-msg "Extracting myAir stats from: $1" \
-    "Extrayendo estadisticas de myAir desde: $1"
+msg "Extracting myAir stats from: $INPUT" \
+    "Extrayendo estadisticas de myAir desde: $INPUT"
 
-python3 ~/bin/myair_stats_report.py "$@"
+python3 ~/bin/myair_stats_report.py "$INPUT" "$OUTPUT"
 rc=$?
 
 if [[ $rc -eq 0 ]]; then
     msg "Done." "Listo."
+
+    if [[ -f "$OUTPUT" ]]; then
+        if [[ $SPANISH -eq 1 ]]; then
+            print -n "¿Desea abrir el informe en PDF? [y/N]: "
+        else
+            print -n "Would you like to open the PDF report? [y/N]: "
+        fi
+        read OPEN_PDF
+        OPEN_PDF=$(print "$OPEN_PDF" | tr '[:lower:]' '[:upper:]')
+        [[ "$OPEN_PDF" == "Y" ]] && open "$OUTPUT"
+    fi
 else
     msg "Failed (see above)." "Fallo (vea arriba)."
 fi
