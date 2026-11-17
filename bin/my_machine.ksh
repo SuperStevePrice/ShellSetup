@@ -15,7 +15,7 @@
 #	Print the machine name.
 #	
 # USAGE:
-#	my_machone.ksh
+#	my_machine.ksh
 #-------------------------------------------------------------------------------
 MACHINE_NAME=$(hostname)
 echo "The machine name is $MACHINE_NAME"

@@ -16,7 +16,7 @@
 #	Run diff against all files in project1 and project2 folders
 #	
 # USAGE:
-#    diff_projs.sh /path/to/old_project /path/to/new_project
+#    diff_projects.ksh /path/to/old_project /path/to/new_project
 #-------------------------------------------------------------------------------
 
 # Check the number of arguments

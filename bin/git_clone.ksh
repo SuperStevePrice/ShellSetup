@@ -13,7 +13,7 @@
 #	Use git clone to pull a repository to a local machine.
 #	
 # USAGE:
-#	$0 repository
+#	git_clone.ksh repository
 #	
 #-------------------------------------------------------------------------------
 # NOTE:

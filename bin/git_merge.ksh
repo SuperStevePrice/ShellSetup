@@ -13,7 +13,7 @@
 #	Use git commands to merge a branch into the main repository.
 #	
 # USAGE:
-#	$0 git_repository branch_name
+#	git_merge.ksh git_repository branch_name
 #	
 #-------------------------------------------------------------------------------
 usage="Usage: $0 git_repository branch_name"
