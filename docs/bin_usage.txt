@@ -1,0 +1,4842 @@
+File:	_speak_impl
+
+Description:
+  Shared implementation behind speak.ksh and speak.sh. Reads text aloud with
+  the system text-to-speech (macOS 'say', Linux 'espeak-ng') or saves it to an
+  audio file.
+
+Usage:
+  Not run directly; sourced by speak.ksh / speak.sh (see 'speak').
+
+Notes:
+  Symlink to _speak_impl.sh (same program). Holds all of speak's logic so ksh
+  and bash wrappers never drift apart.
+--------------------------------------------------------------------------------
+
+
+File:	_speak_impl.sh
+
+Description:
+  Shared implementation behind speak.ksh and speak.sh. Reads text aloud with
+  the system text-to-speech (macOS 'say', Linux 'espeak-ng') or saves it to an
+  audio file.
+
+Usage:
+  Not run directly; sourced by speak.ksh / speak.sh (see 'speak').
+
+Notes:
+  Holds all of speak's logic so ksh and bash wrappers never drift apart.
+--------------------------------------------------------------------------------
+
+
+File:	add_mp3_from_text
+
+Description:
+  Generates MP3s from .txt files (poems, songs, prayers...) via ElevenLabs.
+  Prompts once per file for a voice and remembers it in voices.txt. Copies
+  results to Downloads, MyAudio and iCloud MyAudio, then moves the source .txt
+  into english/ or german/ so it is never processed twice. Asks before
+  overwriting an existing MP3.
+
+Usage:
+  1. Drop .txt files into ~/Downloads/add_txt
+  2. add_mp3_from_text.ksh
+
+Notes:
+  Symlink to add_mp3_from_text.ksh (same program). Replaces the old one-off
+  add_*.ksh scripts.
+--------------------------------------------------------------------------------
+
+
+File:	add_mp3_from_text.ksh
+
+Description:
+  Generates MP3s from .txt files (poems, songs, prayers...) via ElevenLabs.
+  Prompts once per file for a voice and remembers it in voices.txt. Copies
+  results to Downloads, MyAudio and iCloud MyAudio, then moves the source .txt
+  into english/ or german/ so it is never processed twice. Asks before
+  overwriting an existing MP3.
+
+Usage:
+  1. Drop .txt files into ~/Downloads/add_txt
+  2. add_mp3_from_text.ksh
+
+Notes:
+  Replaces the old one-off add_*.ksh scripts.
+--------------------------------------------------------------------------------
+
+
+File:	AddToShell
+
+Description:
+  Lists programs in ~/bin that are not yet in ~/Projects/ShellSetup/prep
+  (candidates to add to ShellSetup). Skips symlinks.
+
+Usage:
+  AddToShellSetup.ksh
+
+Notes:
+  Symlink to AddToShell.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	AddToShell.ksh
+
+Description:
+  Lists programs in ~/bin that are not yet in ~/Projects/ShellSetup/prep
+  (candidates to add to ShellSetup). Skips symlinks.
+
+Usage:
+  AddToShellSetup.ksh
+--------------------------------------------------------------------------------
+
+
+File:	Ave.py
+
+Description:
+  Reads the Hail Mary aloud with macOS voices in English, German and Italian.
+
+Usage:
+  Ave.py                              # list languages and speakers, no audio
+  Ave.py --voice VOICE --language LANGUAGE [--rate RATE]
+  Ave.py --all [--language LANGUAGE] [--voice VOICE] [--rate RATE]
+  Ave.py --help
+--------------------------------------------------------------------------------
+
+
+File:	b43_sleep_hook
+
+Description:
+  Installs or removes a systemd sleep hook that unloads the Broadcom b43 Wi-Fi
+  driver before suspend and reloads it on wake, so the 2011 MacBook Pro (Linux)
+  keeps Wi-Fi, Tailscale, ssh and syncAll after sleep.
+
+Usage:
+  ~/bin/b43_sleep_hook.ksh            # install
+  ~/bin/b43_sleep_hook.ksh --remove   # uninstall
+  ~/bin/b43_sleep_hook.ksh --status   # show whether it is installed
+  Uses sudo for the install/remove steps. Linux only.
+
+Notes:
+  Symlink to b43_sleep_hook.ksh (same program). Linux only; uses sudo. Log:
+  journalctl -t b43-sleep-hook --since today
+--------------------------------------------------------------------------------
+
+
+File:	b43_sleep_hook.ksh
+
+Description:
+  Installs or removes a systemd sleep hook that unloads the Broadcom b43 Wi-Fi
+  driver before suspend and reloads it on wake, so the 2011 MacBook Pro (Linux)
+  keeps Wi-Fi, Tailscale, ssh and syncAll after sleep.
+
+Usage:
+  ~/bin/b43_sleep_hook.ksh            # install
+  ~/bin/b43_sleep_hook.ksh --remove   # uninstall
+  ~/bin/b43_sleep_hook.ksh --status   # show whether it is installed
+  Uses sudo for the install/remove steps. Linux only.
+
+Notes:
+  Linux only; uses sudo. Log: journalctl -t b43-sleep-hook --since today
+--------------------------------------------------------------------------------
+
+
+File:	backup_zip_purge
+
+Description:
+  Zips everything in a folder (default ~/Downloads/backup) into a new
+  timestamped zip, skipping existing zips, then (after confirmation) deletes
+  everything at the top level except .zip files.
+
+Usage:
+    backup_zip_purge.ksh [-i DIR] [-y] [-s]
+
+  Options:
+    -i DIR   Directory to zip and clean (default: ~/Downloads/backup)
+    -y       Skip the confirmation prompt and purge immediately
+    -s       Spanish status messages instead of English
+    -h       Help
+
+Notes:
+  Symlink to backup_zip_purge.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	backup_zip_purge.ksh
+
+Description:
+  Zips everything in a folder (default ~/Downloads/backup) into a new
+  timestamped zip, skipping existing zips, then (after confirmation) deletes
+  everything at the top level except .zip files.
+
+Usage:
+    backup_zip_purge.ksh [-i DIR] [-y] [-s]
+
+  Options:
+    -i DIR   Directory to zip and clean (default: ~/Downloads/backup)
+    -y       Skip the confirmation prompt and purge immediately
+    -s       Spanish status messages instead of English
+    -h       Help
+--------------------------------------------------------------------------------
+
+
+File:	bad_chars.py
+
+Description:
+  Reports non-ASCII and control characters (with position and code point) in a
+  UTF-8 text file.
+
+Usage:
+  python3 bad_chars.py <inputfile>
+--------------------------------------------------------------------------------
+
+
+File:	bin_usage_report
+
+Description:
+  Wrapper for bin_usage_report.py: regenerates ~/Documents/bin_usage.txt.
+
+Usage:
+  bin_usage_report
+
+Notes:
+  Symlink to bin_usage_report.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	bin_usage_report.ksh
+
+Description:
+  Wrapper for bin_usage_report.py: regenerates ~/Documents/bin_usage.txt.
+
+Usage:
+  bin_usage_report
+--------------------------------------------------------------------------------
+
+
+File:	bin_usage_report.py
+
+Description:
+  Builds ~/Documents/bin_usage.txt: one block per executable in ~/bin with
+  Description, Usage (copied from the script's own USAGE header when present)
+  and Notes.
+
+Usage:
+  bin_usage_report.py      (normally run via bin_usage_report.ksh)
+
+Notes:
+  Descriptions are hand-written e(...) entries in this file; a new ~/bin file
+  without one stops the run and is listed.
+--------------------------------------------------------------------------------
+
+
+File:	bksy
+
+Description:
+  Posts a long text file to Bluesky as a reply-chained thread. Dry run
+  (preview) unless --post is given.
+
+Usage:
+  python3 bsky_thread.py <textfile>           # dry run (preview only)
+  python3 bsky_thread.py <textfile> --post    # actually post the thread
+
+Notes:
+  Symlink to bsky_thread.py (same program). Credentials in ~/.bsky_config
+  (BSKY_HANDLE, BSKY_APP_PASSWORD).
+--------------------------------------------------------------------------------
+
+
+File:	bless_album
+
+Description:
+  Album version of bless_track: for every enhanced track in NEW_DIR, finds the
+  matching original (by filename stem) in one or more folders and replaces its
+  AUDIO while keeping tags and artwork. Backs up each original first.
+
+Usage:
+  bless_album.ksh [-s] NEW_DIR ORIGINAL_DIR [ORIGINAL_DIR2 ...]
+
+  -s   Spanish status messages
+  -h   show this help
+
+Notes:
+  Symlink to bless_album.ksh (same program). -s = Spanish messages. Originals
+  may be .m4a or .mp3.
+--------------------------------------------------------------------------------
+
+
+File:	bless_album.ksh
+
+Description:
+  Album version of bless_track: for every enhanced track in NEW_DIR, finds the
+  matching original (by filename stem) in one or more folders and replaces its
+  AUDIO while keeping tags and artwork. Backs up each original first.
+
+Usage:
+  bless_album.ksh [-s] NEW_DIR ORIGINAL_DIR [ORIGINAL_DIR2 ...]
+
+  -s   Spanish status messages
+  -h   show this help
+
+Notes:
+  -s = Spanish messages. Originals may be .m4a or .mp3.
+--------------------------------------------------------------------------------
+
+
+File:	bless_track
+
+Description:
+  Replaces the audio inside an existing, fully tagged MP3 with new audio (e.g.
+  a Demucs/mixdown_stems version), keeping tags and artwork. Overwrites in
+  place so Apple Music keeps lyrics, play counts and playlists. Original saved
+  as '<name> (original backup).mp3'.
+
+Usage:
+  bless_track.ksh [-s] NEW_AUDIO ORIGINAL_MP3
+
+  -s   Spanish status messages
+  -h   show this help
+
+Notes:
+  Symlink to bless_track.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	bless_track.ksh
+
+Description:
+  Replaces the audio inside an existing, fully tagged MP3 with new audio (e.g.
+  a Demucs/mixdown_stems version), keeping tags and artwork. Overwrites in
+  place so Apple Music keeps lyrics, play counts and playlists. Original saved
+  as '<name> (original backup).mp3'.
+
+Usage:
+  bless_track.ksh [-s] NEW_AUDIO ORIGINAL_MP3
+
+  -s   Spanish status messages
+  -h   show this help
+--------------------------------------------------------------------------------
+
+
+File:	boot
+
+Description:
+  Forces an immediate reboot of the Mac (sudo shutdown -r now) after a y/n
+  confirmation.
+
+Usage:
+  boot.ksh
+
+Notes:
+  Symlink to boot.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	boot.ksh
+
+Description:
+  Forces an immediate reboot of the Mac (sudo shutdown -r now) after a y/n
+  confirmation.
+
+Usage:
+  boot.ksh
+--------------------------------------------------------------------------------
+
+
+File:	bsky_thread.py
+
+Description:
+  Posts a long text file to Bluesky as a reply-chained thread. Dry run
+  (preview) unless --post is given.
+
+Usage:
+  python3 bsky_thread.py <textfile>           # dry run (preview only)
+  python3 bsky_thread.py <textfile> --post    # actually post the thread
+
+Notes:
+  Credentials in ~/.bsky_config (BSKY_HANDLE, BSKY_APP_PASSWORD).
+--------------------------------------------------------------------------------
+
+
+File:	build_german_vocab.py
+
+Description:
+  Data + builder that regenerates german_vocabulary_by_domain.xlsx (and the
+  german_vocab_drill.html quiz) from the vocabulary data inside this file.
+
+Usage:
+  build_german_vocab.py                # writes
+      ./german_vocabulary_by_domain.xlsx
+  build_german_vocab.py /some/dir/out.xlsx
+  VOCAB_OUT_DIR=~/Documents build_german_vocab.py
+
+Notes:
+  Requires python3 + openpyxl. Normally run via german-vocab.ksh.
+--------------------------------------------------------------------------------
+
+
+File:	bump_volume
+
+Description:
+  Applies a simple volume multiplier to an MP3 (e.g. 1.03 = +3%), writing a new
+  file and keeping ID3 tags.
+
+Usage:
+    bump_volume.ksh -i INPUT.mp3 -g MULTIPLIER [-o OUTPUT.mp3] [-p] [-s]
+
+  Options:
+    -i FILE        Input mp3 (required)
+    -g MULTIPLIER  Volume multiplier, e.g. 1.03 (+3%), 1.05 (+5%), 0.9 (-10%)
+                   (required)
+    -o FILE        Output mp3 path (default: INPUT with "_bumped" before .mp3)
+    -p             Play the result with afplay once it's done
+    -s             Spanish status messages instead of English
+    -h             Help
+
+Notes:
+  Symlink to bump_volume.ksh (same program). Requires ffmpeg. Default output:
+  INPUT_bumped.mp3
+--------------------------------------------------------------------------------
+
+
+File:	bump_volume.ksh
+
+Description:
+  Applies a simple volume multiplier to an MP3 (e.g. 1.03 = +3%), writing a new
+  file and keeping ID3 tags.
+
+Usage:
+    bump_volume.ksh -i INPUT.mp3 -g MULTIPLIER [-o OUTPUT.mp3] [-p] [-s]
+
+  Options:
+    -i FILE        Input mp3 (required)
+    -g MULTIPLIER  Volume multiplier, e.g. 1.03 (+3%), 1.05 (+5%), 0.9 (-10%)
+                   (required)
+    -o FILE        Output mp3 path (default: INPUT with "_bumped" before .mp3)
+    -p             Play the result with afplay once it's done
+    -s             Spanish status messages instead of English
+    -h             Help
+
+Notes:
+  Requires ffmpeg. Default output: INPUT_bumped.mp3
+--------------------------------------------------------------------------------
+
+
+File:	check_txt_encoding
+
+Description:
+  Scans .txt files for non-UTF-8 encoding (common cause of Calibre importing a
+  blank file). Optionally converts them to UTF-8, saving a .bak first.
+
+Usage:
+  ./check_txt_encoding.ksh [directory]        # report only
+  ./check_txt_encoding.ksh [directory] -fix   # report AND convert
+
+  Directory defaults to ~/Documents if omitted.
+  -fix can go before or after the directory argument.
+
+Notes:
+  Symlink to check_txt_encoding.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	check_txt_encoding.ksh
+
+Description:
+  Scans .txt files for non-UTF-8 encoding (common cause of Calibre importing a
+  blank file). Optionally converts them to UTF-8, saving a .bak first.
+
+Usage:
+  ./check_txt_encoding.ksh [directory]        # report only
+  ./check_txt_encoding.ksh [directory] -fix   # report AND convert
+
+  Directory defaults to ~/Documents if omitted.
+  -fix can go before or after the directory argument.
+--------------------------------------------------------------------------------
+
+
+File:	check_vnc
+
+Description:
+  Checks whether VNC (port 5900) is reachable on each Tailscale host.
+
+Usage:
+  ksh check_vnc.ksh [-s]
+  -s   Spanish output
+
+Notes:
+  Symlink to check_vnc.ksh (same program). Host IPs are hard-coded (as of Oct
+  2026).
+--------------------------------------------------------------------------------
+
+
+File:	check_vnc.ksh
+
+Description:
+  Checks whether VNC (port 5900) is reachable on each Tailscale host.
+
+Usage:
+  ksh check_vnc.ksh [-s]
+  -s   Spanish output
+
+Notes:
+  Host IPs are hard-coded (as of Oct 2026).
+--------------------------------------------------------------------------------
+
+
+File:	check_vnc_remote
+
+Description:
+  SSHes into the Linux Tailscale hosts and reports VNC processes, binaries,
+  systemd units and any port-5900 listener.
+
+Usage:
+  ksh check_vnc_remote.ksh [-s]
+  -s   Spanish output
+
+Notes:
+  Symlink to check_vnc_remote.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	check_vnc_remote.ksh
+
+Description:
+  SSHes into the Linux Tailscale hosts and reports VNC processes, binaries,
+  systemd units and any port-5900 listener.
+
+Usage:
+  ksh check_vnc_remote.ksh [-s]
+  -s   Spanish output
+--------------------------------------------------------------------------------
+
+
+File:	clean_nocturia_pilot_error
+
+Description:
+  One-off: removes the two test rows logged with no amount on the night of
+  2026-11-17 (02:08 and 03:23) from ~/.nocturia_log.csv. Backs the file up
+  first and writes nothing unless exactly 2 rows match.
+
+Usage:
+  clean_nocturia_pilot_error.ksh
+
+Notes:
+  Symlink to clean_nocturia_pilot_error.ksh (same program). Hardcoded on
+  purpose; other amount-less rows are left alone.
+--------------------------------------------------------------------------------
+
+
+File:	clean_nocturia_pilot_error.ksh
+
+Description:
+  One-off: removes the two test rows logged with no amount on the night of
+  2026-11-17 (02:08 and 03:23) from ~/.nocturia_log.csv. Backs the file up
+  first and writes nothing unless exactly 2 rows match.
+
+Usage:
+  clean_nocturia_pilot_error.ksh
+
+Notes:
+  Hardcoded on purpose; other amount-less rows are left alone.
+--------------------------------------------------------------------------------
+
+
+File:	clean_text.py
+
+Description:
+  Replaces U+2028/U+2029 (line/paragraph separator) characters in a text file
+  with plain newlines.
+
+Usage:
+  python3 clean_text.py <inputfile> <outputfile>
+--------------------------------------------------------------------------------
+
+
+File:	clone
+
+Description:
+  Notes/script (written with ChatGPT) for cloning the SATA HD of a 2011 MacBook
+  Pro running Elementary OS to an SSD using ddrescue.
+
+Usage:
+  clone.ksh
+
+Notes:
+  Symlink to clone.sh (same program). Header holds step-by-step notes (install
+  gddrescue, lsblk, etc.).
+--------------------------------------------------------------------------------
+
+
+File:	clone.sh
+
+Description:
+  Notes/script (written with ChatGPT) for cloning the SATA HD of a 2011 MacBook
+  Pro running Elementary OS to an SSD using ddrescue.
+
+Usage:
+  clone.ksh
+
+Notes:
+  Header holds step-by-step notes (install gddrescue, lsblk, etc.).
+--------------------------------------------------------------------------------
+
+
+File:	clone_safari.sh.no-slide-show
+
+Description:
+  Older Safari clone (MacBook -> iMac) without the slide-show folder. Moves the
+  iMac's Safari folder and plist into a timestamped backup on its Desktop, then
+  copies over the MacBook's.
+
+Usage:
+  clone_safari.sh.no-slide-show.sh
+
+Notes:
+  Symlink to clone_safari.sh.no-slide-show.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	clone_safari.sh.no-slide-show.sh
+
+Description:
+  Older Safari clone (MacBook -> iMac) without the slide-show folder. Moves the
+  iMac's Safari folder and plist into a timestamped backup on its Desktop, then
+  copies over the MacBook's.
+
+Usage:
+  clone_safari.sh.no-slide-show.sh
+--------------------------------------------------------------------------------
+
+
+File:	clone_safari_slideshow
+
+Description:
+  Clones Safari settings and the slide-show folder from the MacBook to the iMac
+  over SSH. Backs up the iMac's Safari folder, plist and slide show first,
+  pausing for verification at each step.
+
+Usage:
+  Run from MacBook terminal:
+    ./clone_safari_slideshow.sh
+  Ensure SSH access to iMac is configured, and script has execute permission:
+    chmod 755 clone_safari_slideshow.sh
+
+Notes:
+  Symlink to clone_safari_slideshow.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	clone_safari_slideshow.sh
+
+Description:
+  Clones Safari settings and the slide-show folder from the MacBook to the iMac
+  over SSH. Backs up the iMac's Safari folder, plist and slide show first,
+  pausing for verification at each step.
+
+Usage:
+  Run from MacBook terminal:
+    ./clone_safari_slideshow.sh
+  Ensure SSH access to iMac is configured, and script has execute permission:
+    chmod 755 clone_safari_slideshow.sh
+--------------------------------------------------------------------------------
+
+
+File:	colors
+
+Description:
+  Not a program: a list of xterm background/foreground color pairs
+  (CadetBlue/black, tan/black, ...).
+
+Notes:
+  Data file with execute bit set.
+--------------------------------------------------------------------------------
+
+
+File:	commit_pending_changes
+
+Description:
+  One-off: commits specific pending changes in the SS repo (renamed hostnames,
+  speak-loop fix, aliases) and untracks .DS_Store, adding it to .gitignore.
+
+Usage:
+  ./commit_pending_changes.ksh        (English messages)
+  ./commit_pending_changes.ksh -s     (Spanish messages)
+
+Notes:
+  Symlink to commit_pending_changes.ksh (same program). One-off script; likely
+  obsolete.
+--------------------------------------------------------------------------------
+
+
+File:	commit_pending_changes.ksh
+
+Description:
+  One-off: commits specific pending changes in the SS repo (renamed hostnames,
+  speak-loop fix, aliases) and untracks .DS_Store, adding it to .gitignore.
+
+Usage:
+  ./commit_pending_changes.ksh        (English messages)
+  ./commit_pending_changes.ksh -s     (Spanish messages)
+
+Notes:
+  One-off script; likely obsolete.
+--------------------------------------------------------------------------------
+
+
+File:	compat_perl
+
+Description:
+  Searches the system for perl installations that have Perl/Tk and runs xt.pl
+  with them as a compatibility test.
+
+Usage:
+  compat_perl.ksh
+
+Notes:
+  Symlink to compat_perl.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	compat_perl.ksh
+
+Description:
+  Searches the system for perl installations that have Perl/Tk and runs xt.pl
+  with them as a compatibility test.
+
+Usage:
+  compat_perl.ksh
+--------------------------------------------------------------------------------
+
+
+File:	compress_image
+
+Description:
+  Resizes/recompresses images to reduce file size using ImageMagick, or macOS
+  'sips' if ImageMagick is absent.
+
+Usage:
+    compress_image.ksh [options] file1 [file2 ...]
+
+  Options:
+    -w WIDTH    Max width in pixels; taller/wider images are shrunk to
+                fit, smaller ones are left alone. (default: 1600)
+    -q QUALITY  Output quality, 1-100, for JPEG output. (default: 80)
+    -o DIR      Write compressed copies into DIR instead of alongside
+                each original. DIR is created if it doesn't exist.
+    -s          Show messages in Spanish.
+    -g          Show messages in German.
+    -f          Show messages in French.
+    -h, --help  Show this help and exit.
+
+Notes:
+  Symlink to compress_image.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	compress_image.ksh
+
+Description:
+  Resizes/recompresses images to reduce file size using ImageMagick, or macOS
+  'sips' if ImageMagick is absent.
+
+Usage:
+    compress_image.ksh [options] file1 [file2 ...]
+
+  Options:
+    -w WIDTH    Max width in pixels; taller/wider images are shrunk to
+                fit, smaller ones are left alone. (default: 1600)
+    -q QUALITY  Output quality, 1-100, for JPEG output. (default: 80)
+    -o DIR      Write compressed copies into DIR instead of alongside
+                each original. DIR is created if it doesn't exist.
+    -s          Show messages in Spanish.
+    -g          Show messages in German.
+    -f          Show messages in French.
+    -h, --help  Show this help and exit.
+--------------------------------------------------------------------------------
+
+
+File:	create_tmp_X11-unix
+
+Description:
+  Creates /tmp/.X11-unix (if missing) and sets mode 1777, for X11.
+
+Usage:
+  create_tmp_X11-unix.ksh
+
+  Place a call in the MacOS login scripts.
+
+Notes:
+  Symlink to create_tmp_X11-unix.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	create_tmp_X11-unix.ksh
+
+Description:
+  Creates /tmp/.X11-unix (if missing) and sets mode 1777, for X11.
+
+Usage:
+  create_tmp_X11-unix.ksh
+
+  Place a call in the MacOS login scripts.
+--------------------------------------------------------------------------------
+
+
+File:	d
+
+Description:
+  No header. A parse_args() function (-d/--debug, -h/--help) - a copy or draft
+  of parse_args.ksh.
+
+Notes:
+  Symlink to d.ksh (same program). Appears to be a scratch file.
+--------------------------------------------------------------------------------
+
+
+File:	d.ksh
+
+Description:
+  No header. A parse_args() function (-d/--debug, -h/--help) - a copy or draft
+  of parse_args.ksh.
+
+Notes:
+  Appears to be a scratch file.
+--------------------------------------------------------------------------------
+
+
+File:	dbg
+
+Description:
+  Library: provides a ksh function dbg() that prints and logs DEBUG messages,
+  prefixed 'DEBUG: line:'.
+
+Usage:
+  source dbg.ksh  # from another ksh that wishes to use dbg.ksh
+  dbg $msg        # invoking dbg with a message to print and log
+
+  dbg will prepend "DEBUG: line:" to $msg.
+
+Notes:
+  Symlink to dbg.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	dbg.ksh
+
+Description:
+  Library: provides a ksh function dbg() that prints and logs DEBUG messages,
+  prefixed 'DEBUG: line:'.
+
+Usage:
+  source dbg.ksh  # from another ksh that wishes to use dbg.ksh
+  dbg $msg        # invoking dbg with a message to print and log
+
+  dbg will prepend "DEBUG: line:" to $msg.
+--------------------------------------------------------------------------------
+
+
+File:	del_inet6
+
+Description:
+  Deletes the IPv6 default routes on utun0-utun3 (sudo route delete).
+
+Usage:
+  del_inet6.ksh
+
+Notes:
+  Symlink to del_inet6.ksh (same program). No header comments.
+--------------------------------------------------------------------------------
+
+
+File:	del_inet6.ksh
+
+Description:
+  Deletes the IPv6 default routes on utun0-utun3 (sudo route delete).
+
+Usage:
+  del_inet6.ksh
+
+Notes:
+  No header comments.
+--------------------------------------------------------------------------------
+
+
+File:	demucs_batch
+
+Description:
+  Batch-runs Demucs AI stem separation on audio files or a whole folder,
+  producing per-track stems (vocals/drums/bass/other, or vocals + instrumental)
+  for GarageBand.
+
+Usage:
+  demucs_batch.ksh [-s] [-2] [-o OUTDIR] file1.mp3 [file2.wav ...]
+  demucs_batch.ksh [-s] [-2] [-o OUTDIR] -d SOURCE_DIR
+
+  -s          Spanish status messages
+  -2          2-stem split (vocals + instrumental) instead of the
+              default 4-stem split (vocals, drums, bass, other)
+  -d DIR      process every .mp3/.m4a/.wav/.aiff file in DIR
+  -o OUTDIR   where to write stems (default: ~/Desktop/stems)
+  -h          show this help
+
+Notes:
+  Symlink to demucs_batch.ksh (same program). Requires: pip3 install -U demucs
+--------------------------------------------------------------------------------
+
+
+File:	demucs_batch.ksh
+
+Description:
+  Batch-runs Demucs AI stem separation on audio files or a whole folder,
+  producing per-track stems (vocals/drums/bass/other, or vocals + instrumental)
+  for GarageBand.
+
+Usage:
+  demucs_batch.ksh [-s] [-2] [-o OUTDIR] file1.mp3 [file2.wav ...]
+  demucs_batch.ksh [-s] [-2] [-o OUTDIR] -d SOURCE_DIR
+
+  -s          Spanish status messages
+  -2          2-stem split (vocals + instrumental) instead of the
+              default 4-stem split (vocals, drums, bass, other)
+  -d DIR      process every .mp3/.m4a/.wav/.aiff file in DIR
+  -o OUTDIR   where to write stems (default: ~/Desktop/stems)
+  -h          show this help
+
+Notes:
+  Requires: pip3 install -U demucs
+--------------------------------------------------------------------------------
+
+
+File:	deploy-nopasswd
+
+Description:
+  Run on the Mac: copies nopasswd-apt-update.ksh to each Linux host (found via
+  tss) and runs it there to grant passwordless sudo for apt.
+
+Usage:
+  deploy-nopasswd.ksh
+
+Notes:
+  Symlink to deploy-nopasswd.ksh (same program). Prompts once per host for the
+  sudo password.
+--------------------------------------------------------------------------------
+
+
+File:	deploy-nopasswd.ksh
+
+Description:
+  Run on the Mac: copies nopasswd-apt-update.ksh to each Linux host (found via
+  tss) and runs it there to grant passwordless sudo for apt.
+
+Usage:
+  deploy-nopasswd.ksh
+
+Notes:
+  Prompts once per host for the sudo password.
+--------------------------------------------------------------------------------
+
+
+File:	diff_projects
+
+Description:
+  Runs diff on all files between two project folders.
+
+Usage:
+  diff_projects.ksh /path/to/old_project /path/to/new_project
+
+Notes:
+  Symlink to diff_projects.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	diff_projects.ksh
+
+Description:
+  Runs diff on all files between two project folders.
+
+Usage:
+  diff_projects.ksh /path/to/old_project /path/to/new_project
+--------------------------------------------------------------------------------
+
+
+File:	disable_capslock
+
+Description:
+  Disables Caps Lock system-wide at the HID level (hidutil) and installs a
+  LaunchAgent so it re-applies on every login.
+
+Usage:
+  disable_capslock.ksh
+
+Notes:
+  Symlink to disable_capslock.ksh (same program). Logs to ~/logs. To undo:
+  unload/remove ~/Library/LaunchAgents/com.steve.disablecapslock.plist and run
+  hidutil property --set '{"UserKeyMapping":[]}'
+--------------------------------------------------------------------------------
+
+
+File:	disable_capslock.ksh
+
+Description:
+  Disables Caps Lock system-wide at the HID level (hidutil) and installs a
+  LaunchAgent so it re-applies on every login.
+
+Usage:
+  disable_capslock.ksh
+
+Notes:
+  Logs to ~/logs. To undo: unload/remove
+  ~/Library/LaunchAgents/com.steve.disablecapslock.plist and run hidutil
+  property --set '{"UserKeyMapping":[]}'
+--------------------------------------------------------------------------------
+
+
+File:	down
+
+Description:
+  Forces an immediate shutdown of the Mac (sudo shutdown -h now) after y/n
+  confirmation.
+
+Usage:
+  force_down.ksh   (also 'down', 'force_down')
+
+Notes:
+  Symlink to force_down.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	down_utun
+
+Description:
+  Brings down every active utun network interface (sudo ifconfig down), then
+  checks routes.
+
+Usage:
+  down_utun.ksh
+
+Notes:
+  Symlink to down_utun.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	down_utun.ksh
+
+Description:
+  Brings down every active utun network interface (sudo ifconfig down), then
+  checks routes.
+
+Usage:
+  down_utun.ksh
+--------------------------------------------------------------------------------
+
+
+File:	eleven_tts_batch
+
+Description:
+  Batch-converts every .txt in a folder to .mp3 with the ElevenLabs TTS API.
+  Long files are split into numbered parts on paragraph/line boundaries.
+
+Usage:
+  eleven_tts_batch.ksh -l                       # list your voices + IDs
+  eleven_tts_batch.ksh -v VOICE_ID [-i IN_DIR] [-o OUT_DIR] [-m MODEL] [-c
+      LIMIT] [-s]
+
+Notes:
+  Symlink to eleven_tts_batch.ksh (same program). Requires ELEVENLABS_API_KEY,
+  curl, python3.
+--------------------------------------------------------------------------------
+
+
+File:	eleven_tts_batch.ksh
+
+Description:
+  Batch-converts every .txt in a folder to .mp3 with the ElevenLabs TTS API.
+  Long files are split into numbered parts on paragraph/line boundaries.
+
+Usage:
+  eleven_tts_batch.ksh -l                       # list your voices + IDs
+  eleven_tts_batch.ksh -v VOICE_ID [-i IN_DIR] [-o OUT_DIR] [-m MODEL] [-c
+      LIMIT] [-s]
+
+Notes:
+  Requires ELEVENLABS_API_KEY, curl, python3.
+--------------------------------------------------------------------------------
+
+
+File:	encrypt_thumb
+
+Description:
+  Erases an external USB thumb drive (default /dev/disk6) as APFS and starts
+  APFS encryption on it.
+
+Usage:
+  encrypt_thumb.sh
+
+Notes:
+  Symlink to encrypt_thumb.sh (same program). DESTRUCTIVE. Edit DISK and
+  VOLUME_NAME in the script first. Checks the disk is external and removable.
+--------------------------------------------------------------------------------
+
+
+File:	encrypt_thumb.sh
+
+Description:
+  Erases an external USB thumb drive (default /dev/disk6) as APFS and starts
+  APFS encryption on it.
+
+Usage:
+  encrypt_thumb.sh
+
+Notes:
+  DESTRUCTIVE. Edit DISK and VOLUME_NAME in the script first. Checks the disk
+  is external and removable.
+--------------------------------------------------------------------------------
+
+
+File:	extract_emails
+
+Description:
+  Extracts email addresses from 'Name <email@domain>' strings and prints them
+  space-separated (or one per line).
+
+Usage:
+    extract_emails.ksh [-s] [-m] "string"
+    echo "string" | extract_emails.ksh [-s] [-m]
+
+  Options:
+    -s    Print messages in Spanish instead of English
+    -m    Print one address per line (multi-line) instead of the
+          default single space-separated line
+    -h    Show this help message
+
+Notes:
+  Symlink to extract_emails.ksh (same program). Always quote the string (it
+  contains < and >).
+--------------------------------------------------------------------------------
+
+
+File:	extract_emails.ksh
+
+Description:
+  Extracts email addresses from 'Name <email@domain>' strings and prints them
+  space-separated (or one per line).
+
+Usage:
+    extract_emails.ksh [-s] [-m] "string"
+    echo "string" | extract_emails.ksh [-s] [-m]
+
+  Options:
+    -s    Print messages in Spanish instead of English
+    -m    Print one address per line (multi-line) instead of the
+          default single space-separated line
+    -h    Show this help message
+
+Notes:
+  Always quote the string (it contains < and >).
+--------------------------------------------------------------------------------
+
+
+File:	find_audio
+
+Description:
+  Finds audio files only in places you would have made them: Documents (incl.
+  SFP_backup_*), Downloads, Desktop. Skips app libraries and hidden/tool dirs.
+
+Usage:
+    find_audio.ksh [-d DIR]... [-e EXT] [-s]
+
+  Options:
+    -d DIR    Additional directory to search (repeatable). Default search
+              set is: ~/Documents, ~/Downloads, ~/Desktop
+    -e EXT    File extension to search for, without the dot (default: mp3)
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Symlink to find_audio.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	find_audio.ksh
+
+Description:
+  Finds audio files only in places you would have made them: Documents (incl.
+  SFP_backup_*), Downloads, Desktop. Skips app libraries and hidden/tool dirs.
+
+Usage:
+    find_audio.ksh [-d DIR]... [-e EXT] [-s]
+
+  Options:
+    -d DIR    Additional directory to search (repeatable). Default search
+              set is: ~/Documents, ~/Downloads, ~/Desktop
+    -e EXT    File extension to search for, without the dot (default: mp3)
+    -s        Spanish status messages instead of English
+    -h        Help
+--------------------------------------------------------------------------------
+
+
+File:	find_images
+
+Description:
+  Finds image files (jpg, png, gif, heic, webp, ...) in Documents (incl.
+  SFP_backup_*), Downloads and Desktop only. Asks each time whether to also
+  search the iCloud 'Gallery' folder.
+
+Usage:
+    find_images.ksh [-d DIR]... [-e EXT] [-s]
+
+  Options:
+    -d DIR    Additional directory to search (repeatable). Default search
+              set is: ~/Documents, ~/Downloads, ~/Desktop
+    -e EXT    Search only this one extension, without the dot (default:
+              searches all common image extensions)
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Symlink to find_images.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	find_images.ksh
+
+Description:
+  Finds image files (jpg, png, gif, heic, webp, ...) in Documents (incl.
+  SFP_backup_*), Downloads and Desktop only. Asks each time whether to also
+  search the iCloud 'Gallery' folder.
+
+Usage:
+    find_images.ksh [-d DIR]... [-e EXT] [-s]
+
+  Options:
+    -d DIR    Additional directory to search (repeatable). Default search
+              set is: ~/Documents, ~/Downloads, ~/Desktop
+    -e EXT    Search only this one extension, without the dot (default:
+              searches all common image extensions)
+    -s        Spanish status messages instead of English
+    -h        Help
+--------------------------------------------------------------------------------
+
+
+File:	find_it
+
+Description:
+  Wrapper for find: start path, name pattern, repeatable exclude patterns,
+  optional output file. Bare words become *word*; stderr is discarded.
+
+Usage:
+  find_it.ksh -p path -f pattern [-e exclude-pattern ...] [-o outfile]
+
+Notes:
+  Symlink to find_it.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	find_it.ksh
+
+Description:
+  Wrapper for find: start path, name pattern, repeatable exclude patterns,
+  optional output file. Bare words become *word*; stderr is discarded.
+
+Usage:
+  find_it.ksh -p path -f pattern [-e exclude-pattern ...] [-o outfile]
+--------------------------------------------------------------------------------
+
+
+File:	finder
+
+Description:
+  Runs 'find / -name' for Tk.pm, perl and perl.h and prints results.
+
+Usage:
+  finder.ksh
+
+Notes:
+  Symlink to finder.ksh (same program). No header; old Perl/Tk debugging
+  helper.
+--------------------------------------------------------------------------------
+
+
+File:	finder.ksh
+
+Description:
+  Runs 'find / -name' for Tk.pm, perl and perl.h and prints results.
+
+Usage:
+  finder.ksh
+
+Notes:
+  No header; old Perl/Tk debugging helper.
+--------------------------------------------------------------------------------
+
+
+File:	fix-vm-xprofile
+
+Description:
+  Overwrites a broken ~/.xprofile in the Elementary OS VirtualBox VM (via ssh
+  -p 2222) with a clean template: display mode, terminal font, VBoxClient.
+
+Usage:
+  fix-vm-xprofile.sh
+
+Notes:
+  Symlink to fix-vm-xprofile.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	fix-vm-xprofile.sh
+
+Description:
+  Overwrites a broken ~/.xprofile in the Elementary OS VirtualBox VM (via ssh
+  -p 2222) with a clean template: display mode, terminal font, VBoxClient.
+
+Usage:
+  fix-vm-xprofile.sh
+--------------------------------------------------------------------------------
+
+
+File:	fix-xprofile
+
+Description:
+  Patches ~/.xprofile in the VM so GUI commands run only when $DISPLAY is set.
+
+Usage:
+  fix-xprofile.sh
+
+Notes:
+  Symlink to fix-xprofile.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	fix-xprofile.sh
+
+Description:
+  Patches ~/.xprofile in the VM so GUI commands run only when $DISPLAY is set.
+
+Usage:
+  fix-xprofile.sh
+--------------------------------------------------------------------------------
+
+
+File:	fix_bookmarks.py
+
+Description:
+  Restructures a Netscape bookmarks.html (Safari export) so no folder mixes
+  loose links with subfolders - works around Opera/Chromium importers dropping
+  loose links. Verifies link counts match.
+
+Usage:
+  python3 fix_bookmarks.py Bookmarks.html
+  (writes Bookmarks_fixed.html next to it, or pass --out to choose)
+
+Notes:
+  Default output: Bookmarks_fixed.html
+--------------------------------------------------------------------------------
+
+
+File:	font_list.txt
+
+Description:
+  Not a program: font list data file used by good_fonts.sh / font_selector.py
+  (currently mostly 'Last installed' footers).
+
+Notes:
+  Data file with execute bit set.
+--------------------------------------------------------------------------------
+
+
+File:	font_selector.py
+
+Description:
+  Tk GUI: scrollable pick list of fonts from font_list.txt with a sample
+  preview; Submit returns the font, Cancel returns None.
+
+Usage:
+  font_selector.py        At the CLI as a stand alone app.
+  import font_selector    As an imported component of anothe Python script.
+                          The importer should use this line:
+                          selected_font = font_selector.run_font_selector()
+--------------------------------------------------------------------------------
+
+
+File:	force_down
+
+Description:
+  Forces an immediate shutdown of the Mac (sudo shutdown -h now) after y/n
+  confirmation.
+
+Usage:
+  force_down.ksh   (also 'down', 'force_down')
+
+Notes:
+  Symlink to force_down.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	force_down.ksh
+
+Description:
+  Forces an immediate shutdown of the Mac (sudo shutdown -h now) after y/n
+  confirmation.
+
+Usage:
+  force_down.ksh   (also 'down', 'force_down')
+--------------------------------------------------------------------------------
+
+
+File:	german-vocab
+
+Description:
+  Rebuilds german_vocabulary_by_domain.xlsx and german_vocab_drill.html from
+  build_german_vocab.py, only if the source is newer.
+
+Usage:
+  german-vocab.ksh                              # both outputs -> ~/Documents
+      (or $VOCAB_OUT_DIR)
+  german-vocab.ksh /path/to/out.xlsx /path/to/out.html
+
+Notes:
+  Symlink to german-vocab.ksh (same program). Requires python3 + openpyxl.
+--------------------------------------------------------------------------------
+
+
+File:	german-vocab.ksh
+
+Description:
+  Rebuilds german_vocabulary_by_domain.xlsx and german_vocab_drill.html from
+  build_german_vocab.py, only if the source is newer.
+
+Usage:
+  german-vocab.ksh                              # both outputs -> ~/Documents
+      (or $VOCAB_OUT_DIR)
+  german-vocab.ksh /path/to/out.xlsx /path/to/out.html
+
+Notes:
+  Requires python3 + openpyxl.
+--------------------------------------------------------------------------------
+
+
+File:	german_test
+
+Description:
+  Opens the German vocabulary drill/quiz (german_vocab_drill.html) in the
+  default browser, building it via german-vocab.ksh if missing.
+
+Usage:
+  german_test.ksh                 # opens ~/Documents/german_vocab_drill.html
+  german_test.ksh /path/to/file   # explicit override
+
+Notes:
+  Symlink to german_test.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	german_test.ksh
+
+Description:
+  Opens the German vocabulary drill/quiz (german_vocab_drill.html) in the
+  default browser, building it via german-vocab.ksh if missing.
+
+Usage:
+  german_test.ksh                 # opens ~/Documents/german_vocab_drill.html
+  german_test.ksh /path/to/file   # explicit override
+--------------------------------------------------------------------------------
+
+
+File:	german_vocabulary
+
+Description:
+  Opens the German vocabulary workbook: the .numbers copy on macOS if one
+  exists, else the .xlsx (xdg-open on Linux). Builds it if missing.
+
+Usage:
+  german_vocabulary.ksh                 # picks the right default per platform
+  german_vocabulary.ksh /path/to/file   # explicit override
+
+Notes:
+  Symlink to german_vocabulary.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	german_vocabulary.ksh
+
+Description:
+  Opens the German vocabulary workbook: the .numbers copy on macOS if one
+  exists, else the .xlsx (xdg-open on Linux). Builds it if missing.
+
+Usage:
+  german_vocabulary.ksh                 # picks the right default per platform
+  german_vocabulary.ksh /path/to/file   # explicit override
+--------------------------------------------------------------------------------
+
+
+File:	get_ip
+
+Description:
+  Shows the OS, host and first non-loopback IP address (Linux or macOS).
+
+Usage:
+  get_ip.ksh
+
+Notes:
+  Symlink to get_ip.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	get_ip.ksh
+
+Description:
+  Shows the OS, host and first non-loopback IP address (Linux or macOS).
+
+Usage:
+  get_ip.ksh
+--------------------------------------------------------------------------------
+
+
+File:	getraenke
+
+Description:
+  Small interactive German drinks ('Getraenke') ordering prompt, compiled to
+  bash from Amber (amber-lang.com).
+
+Usage:
+  getraenke.sh
+
+Notes:
+  Symlink to getraenke.sh (same program). Generated code; no descriptive
+  header.
+--------------------------------------------------------------------------------
+
+
+File:	getraenke.sh
+
+Description:
+  Small interactive German drinks ('Getraenke') ordering prompt, compiled to
+  bash from Amber (amber-lang.com).
+
+Usage:
+  getraenke.sh
+
+Notes:
+  Generated code; no descriptive header.
+--------------------------------------------------------------------------------
+
+
+File:	git_bin
+
+Description:
+  Installs scripts into ~/bin and the SS repo's bin/, then commits and pushes
+  them. Files found in ~/Downloads are moved to ~/bin first.
+
+Usage:
+  ~/bin/git_bin.ksh "commit message" file.ksh [file.ksh ...]
+  Example:
+    git_bin.ksh "tmreport.ksh: default to first Time Machine destination" \
+        tmreport.ksh
+  Afterwards run setup.ksh, then syncAll.
+
+Notes:
+  Symlink to git_bin.ksh (same program). Afterwards run setup.ksh, then
+  syncAll. Replaces git_tmutil.ksh etc.
+--------------------------------------------------------------------------------
+
+
+File:	git_bin.ksh
+
+Description:
+  Installs scripts into ~/bin and the SS repo's bin/, then commits and pushes
+  them. Files found in ~/Downloads are moved to ~/bin first.
+
+Usage:
+  ~/bin/git_bin.ksh "commit message" file.ksh [file.ksh ...]
+  Example:
+    git_bin.ksh "tmreport.ksh: default to first Time Machine destination" \
+        tmreport.ksh
+  Afterwards run setup.ksh, then syncAll.
+
+Notes:
+  Afterwards run setup.ksh, then syncAll. Replaces git_tmutil.ksh etc.
+--------------------------------------------------------------------------------
+
+
+File:	git_clone
+
+Description:
+  Clones one of SuperStevePrice's GitHub repositories to this machine.
+
+Usage:
+  git_clone.ksh repository
+
+Notes:
+  Symlink to git_clone.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_clone.ksh
+
+Description:
+  Clones one of SuperStevePrice's GitHub repositories to this machine.
+
+Usage:
+  git_clone.ksh repository
+--------------------------------------------------------------------------------
+
+
+File:	git_config
+
+Description:
+  Sets git user name, email and editor.
+
+Usage:
+  git_config.ksh
+
+Notes:
+  Symlink to git_config.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_config.ksh
+
+Description:
+  Sets git user name, email and editor.
+
+Usage:
+  git_config.ksh
+--------------------------------------------------------------------------------
+
+
+File:	git_mail
+
+Description:
+  Sets git user name, email and editor (same as git_config.ksh).
+
+Usage:
+  git_mail.ksh
+
+Notes:
+  Symlink to git_mail.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_mail.ksh
+
+Description:
+  Sets git user name, email and editor (same as git_config.ksh).
+
+Usage:
+  git_mail.ksh
+--------------------------------------------------------------------------------
+
+
+File:	git_merge
+
+Description:
+  Merges a branch into main for a repository.
+
+Usage:
+  git_merge.ksh git_repository branch_name
+
+Notes:
+  Symlink to git_merge.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_merge.ksh
+
+Description:
+  Merges a branch into main for a repository.
+
+Usage:
+  git_merge.ksh git_repository branch_name
+--------------------------------------------------------------------------------
+
+
+File:	git_new
+
+Description:
+  Creates a new repository on GitHub (user SuperStevePrice).
+
+Usage:
+  git_new.ksh repository
+
+Notes:
+  Symlink to git_new.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_new.ksh
+
+Description:
+  Creates a new repository on GitHub (user SuperStevePrice).
+
+Usage:
+  git_new.ksh repository
+--------------------------------------------------------------------------------
+
+
+File:	git_pull
+
+Description:
+  Pulls changes for a project in ~/Projects; prompts for the repo name.
+
+Usage:
+  git_pull.ksh
+
+  The user will be queried for the repository basename
+
+Notes:
+  Symlink to git_pull.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_pull.ksh
+
+Description:
+  Pulls changes for a project in ~/Projects; prompts for the repo name.
+
+Usage:
+  git_pull.ksh
+
+  The user will be queried for the repository basename
+--------------------------------------------------------------------------------
+
+
+File:	git_push
+
+Description:
+  Adds, commits and pushes a project in ~/Projects; prompts for repo name and
+  commit message.
+
+Usage:
+  git_push.ksh
+
+  The user will be queried for the repository basename and commit message.
+
+Notes:
+  Symlink to git_push.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_push.ksh
+
+Description:
+  Adds, commits and pushes a project in ~/Projects; prompts for repo name and
+  commit message.
+
+Usage:
+  git_push.ksh
+
+  The user will be queried for the repository basename and commit message.
+--------------------------------------------------------------------------------
+
+
+File:	git_stat_all
+
+Description:
+  Runs 'git status' in ~/Projects/SS on each machine (macbookprom1, imaclinux,
+  macbookprolinux, imacintel) via ssh.
+
+Usage:
+  git_stat_all.ksh
+
+Notes:
+  Symlink to git_stat_all.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	git_stat_all.ksh
+
+Description:
+  Runs 'git status' in ~/Projects/SS on each machine (macbookprom1, imaclinux,
+  macbookprolinux, imacintel) via ssh.
+
+Usage:
+  git_stat_all.ksh
+--------------------------------------------------------------------------------
+
+
+File:	git_tmutil
+
+Description:
+  One-off: copies tmutil.ksh and tcc_who.ksh into the SS repo and
+  commits/pushes them.
+
+Usage:
+  ~/bin/git_tmutil.ksh
+
+Notes:
+  Symlink to git_tmutil.ksh (same program). Superseded by git_bin.ksh.
+--------------------------------------------------------------------------------
+
+
+File:	git_tmutil.ksh
+
+Description:
+  One-off: copies tmutil.ksh and tcc_who.ksh into the SS repo and
+  commits/pushes them.
+
+Usage:
+  ~/bin/git_tmutil.ksh
+
+Notes:
+  Superseded by git_bin.ksh.
+--------------------------------------------------------------------------------
+
+
+File:	good_fonts
+
+Description:
+  Opens xterm windows in various fonts/sizes and asks you to accept or reject
+  each; accepted ones are saved.
+
+Usage:
+  good_fonts.sh
+
+Notes:
+  Symlink to good_fonts.sh (same program). Input ~/Documents/font_list.txt,
+  output ~/Documents/good_fonts.txt
+--------------------------------------------------------------------------------
+
+
+File:	good_fonts.sh
+
+Description:
+  Opens xterm windows in various fonts/sizes and asks you to accept or reject
+  each; accepted ones are saved.
+
+Usage:
+  good_fonts.sh
+
+Notes:
+  Input ~/Documents/font_list.txt, output ~/Documents/good_fonts.txt
+--------------------------------------------------------------------------------
+
+
+File:	health_sleep
+
+Description:
+  Wrapper for health_sleep.py: summarizes Apple Health (Watch) sleep data per
+  night. Logs each run to ~/logs/sleep_TIMESTAMP.log and prints it.
+
+Usage:
+  health_sleep.ksh export.xml|export.zip [-n nights] [-d YYYY-MM-DD]
+      [-c out.csv] [--since YYYY-MM-DD] [--include-naps] ...
+
+Notes:
+  Symlink to health_sleep.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	health_sleep.ksh
+
+Description:
+  Wrapper for health_sleep.py: summarizes Apple Health (Watch) sleep data per
+  night. Logs each run to ~/logs/sleep_TIMESTAMP.log and prints it.
+
+Usage:
+  health_sleep.ksh export.xml|export.zip [-n nights] [-d YYYY-MM-DD]
+      [-c out.csv] [--since YYYY-MM-DD] [--include-naps] ...
+--------------------------------------------------------------------------------
+
+
+File:	health_sleep.py
+
+Description:
+  Extracts Apple Health sleep records from export.xml/zip and summarizes them
+  per night; joins the sleep-drug log and stores into ~/sleep_study.db.
+
+Usage:
+  health_sleep.py export.zip [-n 7] [-d DATE] [-c out.csv] [--since DATE]
+      [--include-naps] [--night-start H] [--night-end H]
+      [--drug-log F|--no-drug-log] [--db F|--no-db]
+--------------------------------------------------------------------------------
+
+
+File:	hosts_test
+
+Description:
+  Runs ssh against each IP listed in /etc/hosts as a connectivity test.
+
+Usage:
+  hosts_test.ksh
+
+Notes:
+  Symlink to hosts_test.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	hosts_test.ksh
+
+Description:
+  Runs ssh against each IP listed in /etc/hosts as a connectivity test.
+
+Usage:
+  hosts_test.ksh
+--------------------------------------------------------------------------------
+
+
+File:	install-bin-files
+
+Description:
+  Copies files from the current directory into ~/Projects/SS/bin, installs via
+  setup.ksh, commits/pushes, and verifies each is really tracked by git.
+  Companion to remove-bin-files.ksh.
+
+Usage:
+  ksh install-bin-files.ksh file1 [file2 ...]
+
+Notes:
+  Symlink to install-bin-files.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	install-bin-files.ksh
+
+Description:
+  Copies files from the current directory into ~/Projects/SS/bin, installs via
+  setup.ksh, commits/pushes, and verifies each is really tracked by git.
+  Companion to remove-bin-files.ksh.
+
+Usage:
+  ksh install-bin-files.ksh file1 [file2 ...]
+--------------------------------------------------------------------------------
+
+
+File:	install-elementary
+
+Description:
+  Installs an Elementary-OS-like (Pantheon) desktop on Ubuntu ARM64 in an M1
+  Mac VirtualBox VM: desktop, LightDM, Plank.
+
+Usage:
+  install-elementary.sh   (inside the VM)
+
+Notes:
+  Symlink to install-elementary.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	install-elementary.sh
+
+Description:
+  Installs an Elementary-OS-like (Pantheon) desktop on Ubuntu ARM64 in an M1
+  Mac VirtualBox VM: desktop, LightDM, Plank.
+
+Usage:
+  install-elementary.sh   (inside the VM)
+--------------------------------------------------------------------------------
+
+
+File:	install-vb-guest
+
+Description:
+  Installs VirtualBox Guest Additions on Elementary OS (M1 VirtualBox) from the
+  mounted ISO, then reboots.
+
+Usage:
+  install-vb-guest.sh   (inside the VM)
+
+Notes:
+  Symlink to install-vb-guest.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	install-vb-guest.sh
+
+Description:
+  Installs VirtualBox Guest Additions on Elementary OS (M1 VirtualBox) from the
+  mounted ISO, then reboots.
+
+Usage:
+  install-vb-guest.sh   (inside the VM)
+--------------------------------------------------------------------------------
+
+
+File:	installed
+
+Description:
+  Shows the 'Last installed' footer line from a given file.
+
+Usage:
+  installed.ksh file
+
+Notes:
+  Symlink to installed.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	installed.ksh
+
+Description:
+  Shows the 'Last installed' footer line from a given file.
+
+Usage:
+  installed.ksh file
+--------------------------------------------------------------------------------
+
+
+File:	is_leap_year.c
+
+Description:
+  C source: is_leap_year(int year) function, linked by test_year and
+  test_a_year.
+
+Usage:
+  Input:    integer year
+  Return:    boolean
+
+Notes:
+  Source file, not a program. Build with Makefile.
+--------------------------------------------------------------------------------
+
+
+File:	is_leap_year.o
+
+Description:
+  Compiled object of is_leap_year.c.
+
+Notes:
+  Build artifact (make clean).
+--------------------------------------------------------------------------------
+
+
+File:	is_proj
+
+Description:
+  Checks whether ~/Projects/<name> is a git repo (has .git).
+
+Usage:
+  ksh is_project.ksh <ProjectName>        (English messages)
+  ksh is_project.ksh -s <ProjectName>      (Spanish messages)
+  ksh is_project.ksh -g <ProjectName>      (German messages)
+
+Notes:
+  Symlink to is_project.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	is_project
+
+Description:
+  Checks whether ~/Projects/<name> is a git repo (has .git).
+
+Usage:
+  ksh is_project.ksh <ProjectName>        (English messages)
+  ksh is_project.ksh -s <ProjectName>      (Spanish messages)
+  ksh is_project.ksh -g <ProjectName>      (German messages)
+
+Notes:
+  Symlink to is_project.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	is_project.ksh
+
+Description:
+  Checks whether ~/Projects/<name> is a git repo (has .git).
+
+Usage:
+  ksh is_project.ksh <ProjectName>        (English messages)
+  ksh is_project.ksh -s <ProjectName>      (Spanish messages)
+  ksh is_project.ksh -g <ProjectName>      (German messages)
+--------------------------------------------------------------------------------
+
+
+File:	launch
+
+Description:
+  Posts a text file to Bluesky and Mastodon (and optionally Threads); always
+  prints LinkedIn-formatted text for copy/paste. Dry run unless --post.
+
+Usage:
+  python3 launch_threads.py <textfile>                    # dry run: bsky +
+      masto + LinkedIn text
+  python3 launch_threads.py <textfile> --post             # post bsky + masto;
+      show LinkedIn text
+  python3 launch_threads.py <textfile> --threads manual   # also show Threads
+      text for copy-paste
+  python3 launch_threads.py <textfile> --threads auto     # also post to
+      Threads via API
+  python3 launch_threads.py <textfile> --post --threads auto  # post everything
+      + Threads API
+  python3 launch_threads.py <textfile> --skip masto       # skip a platform
+  python3 launch_threads.py <textfile> --only bsky        # only one platform
+
+Notes:
+  Symlink to launch_threads.py (same program). Uses ~/.bsky_config,
+  ~/.masto_config, ~/.threads_config. Log: ~/logs/launch_threads.log
+--------------------------------------------------------------------------------
+
+
+File:	launch_threads.py
+
+Description:
+  Posts a text file to Bluesky and Mastodon (and optionally Threads); always
+  prints LinkedIn-formatted text for copy/paste. Dry run unless --post.
+
+Usage:
+  python3 launch_threads.py <textfile>                    # dry run: bsky +
+      masto + LinkedIn text
+  python3 launch_threads.py <textfile> --post             # post bsky + masto;
+      show LinkedIn text
+  python3 launch_threads.py <textfile> --threads manual   # also show Threads
+      text for copy-paste
+  python3 launch_threads.py <textfile> --threads auto     # also post to
+      Threads via API
+  python3 launch_threads.py <textfile> --post --threads auto  # post everything
+      + Threads API
+  python3 launch_threads.py <textfile> --skip masto       # skip a platform
+  python3 launch_threads.py <textfile> --only bsky        # only one platform
+
+Notes:
+  Uses ~/.bsky_config, ~/.masto_config, ~/.threads_config. Log:
+  ~/logs/launch_threads.log
+--------------------------------------------------------------------------------
+
+
+File:	linkedin_thread.py
+
+Description:
+  Posts a text file as one LinkedIn post (max 3,000 chars), moving URLs to the
+  end. Dry run unless --post.
+
+Usage:
+  python3 linkedin_thread.py <textfile>           # dry run (preview only)
+  python3 linkedin_thread.py <textfile> --post    # actually post
+
+Notes:
+  Token in ~/.linkedin_config (expires every 60 days).
+--------------------------------------------------------------------------------
+
+
+File:	list-brew-mods
+
+Description:
+  Lists installed Perl modules (ExtUtils::Installed) for the current perl into
+  ~/Documents/brew-mods.log.<timestamp>.
+
+Usage:
+  list-brew-mods.ksh
+
+Notes:
+  Symlink to list-brew-mods.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	list-brew-mods.ksh
+
+Description:
+  Lists installed Perl modules (ExtUtils::Installed) for the current perl into
+  ~/Documents/brew-mods.log.<timestamp>.
+
+Usage:
+  list-brew-mods.ksh
+--------------------------------------------------------------------------------
+
+
+File:	make_bookmarklet_icons.py
+
+Description:
+  Builds a bookmarks.html that gives the BS (Bluesky) and FB (Facebook)
+  bookmarklets custom icons, for import into Chrome/Edge/Opera.
+
+Usage:
+  python3 make_bookmarklet_icons.py bluesky_icon.png facebook_icon.png
+  (writes bookmarklet_icons.html next to this script, or pass --out)
+
+Notes:
+  Chromium only; Safari can't do this.
+--------------------------------------------------------------------------------
+
+
+File:	Makefile
+
+Description:
+  Makefile for the leap-year C examples: builds test_year and test_a_year from
+  the .c files.
+
+Usage:
+  make        build
+  make clean  remove binaries and .o files
+--------------------------------------------------------------------------------
+
+
+File:	masto
+
+Description:
+  Posts a long text file to Mastodon as a reply-chained thread; supports inline
+  images via ![alt](/path.jpg). Dry run unless --post.
+
+Usage:
+  python3 masto_thread.py <textfile>           # dry run (preview only)
+  python3 masto_thread.py <textfile> --post    # actually post the thread
+
+Notes:
+  Symlink to masto_thread.py (same program). Credentials in ~/.masto_config
+  (MASTO_INSTANCE, MASTO_ACCESS_TOKEN).
+--------------------------------------------------------------------------------
+
+
+File:	masto_thread.py
+
+Description:
+  Posts a long text file to Mastodon as a reply-chained thread; supports inline
+  images via ![alt](/path.jpg). Dry run unless --post.
+
+Usage:
+  python3 masto_thread.py <textfile>           # dry run (preview only)
+  python3 masto_thread.py <textfile> --post    # actually post the thread
+
+Notes:
+  Credentials in ~/.masto_config (MASTO_INSTANCE, MASTO_ACCESS_TOKEN).
+--------------------------------------------------------------------------------
+
+
+File:	match_loudness
+
+Description:
+  Normalizes an MP3 to match the perceived loudness (EBU R128, ffmpeg two-pass
+  loudnorm) of a reference MP3. Writes a new file, keeps tags.
+
+Usage:
+    match_loudness.ksh -r REFERENCE.mp3 -i INPUT.mp3 [-o OUTPUT.mp3] [-p] [-s]
+
+  Options:
+    -r FILE   Reference mp3 whose loudness you want to match (required)
+    -i FILE   Input mp3 to adjust, e.g. your own recording (required)
+    -o FILE   Output mp3 path (default: INPUT with "_matched" before .mp3)
+    -p        Play the result with afplay once it's done
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Symlink to match_loudness.ksh (same program). Default output:
+  INPUT_matched.mp3
+--------------------------------------------------------------------------------
+
+
+File:	match_loudness.ksh
+
+Description:
+  Normalizes an MP3 to match the perceived loudness (EBU R128, ffmpeg two-pass
+  loudnorm) of a reference MP3. Writes a new file, keeps tags.
+
+Usage:
+    match_loudness.ksh -r REFERENCE.mp3 -i INPUT.mp3 [-o OUTPUT.mp3] [-p] [-s]
+
+  Options:
+    -r FILE   Reference mp3 whose loudness you want to match (required)
+    -i FILE   Input mp3 to adjust, e.g. your own recording (required)
+    -o FILE   Output mp3 path (default: INPUT with "_matched" before .mp3)
+    -p        Play the result with afplay once it's done
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Default output: INPUT_matched.mp3
+--------------------------------------------------------------------------------
+
+
+File:	match_loudness_auto
+
+Description:
+  Wrapper for match_loudness.ksh that finds files by name pattern: the
+  reference in Apple Music's folder (default 'Ozymandias'), the target as the
+  newest match in SFP_backup_* or ~/Downloads.
+
+Usage:
+    match_loudness_auto.ksh -t TARGET_PATTERN [-r REF_PATTERN] [-p] [-s]
+
+  Options:
+    -t PATTERN  Name pattern to find the target mp3 (e.g. "Sheridan")
+                (required)
+    -r PATTERN  Name pattern to find the reference mp3 (default: "Ozymandias")
+    -p          Play the result with afplay once it's done
+    -s          Spanish status messages instead of English
+    -h          Help
+
+Notes:
+  Symlink to match_loudness_auto.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	match_loudness_auto.ksh
+
+Description:
+  Wrapper for match_loudness.ksh that finds files by name pattern: the
+  reference in Apple Music's folder (default 'Ozymandias'), the target as the
+  newest match in SFP_backup_* or ~/Downloads.
+
+Usage:
+    match_loudness_auto.ksh -t TARGET_PATTERN [-r REF_PATTERN] [-p] [-s]
+
+  Options:
+    -t PATTERN  Name pattern to find the target mp3 (e.g. "Sheridan")
+                (required)
+    -r PATTERN  Name pattern to find the reference mp3 (default: "Ozymandias")
+    -p          Play the result with afplay once it's done
+    -s          Spanish status messages instead of English
+    -h          Help
+--------------------------------------------------------------------------------
+
+
+File:	mixdown_stems
+
+Description:
+  Mixes a Demucs stems folder (vocals/drums/bass/other.wav) into a pseudo-
+  stereo WAV (+MP3) with ffmpeg to compare with the original.
+
+Usage:
+  mixdown_stems.ksh [-s] [-r] [-w] [-o OUTFILE] STEMS_DIR
+
+  -s          Spanish status messages
+  -r          add a touch of reverb (room ambience) to the mix
+  -w          WAV only -- skip creating the MP3 copy
+  -o OUTFILE  output WAV file (default: STEMS_DIR/<track name>.wav,
+              using the stems folder's own name as the track name);
+              the MP3 copy gets the same name with a .mp3 extension
+  -h          show this help
+
+Notes:
+  Symlink to mixdown_stems.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	mixdown_stems.ksh
+
+Description:
+  Mixes a Demucs stems folder (vocals/drums/bass/other.wav) into a pseudo-
+  stereo WAV (+MP3) with ffmpeg to compare with the original.
+
+Usage:
+  mixdown_stems.ksh [-s] [-r] [-w] [-o OUTFILE] STEMS_DIR
+
+  -s          Spanish status messages
+  -r          add a touch of reverb (room ambience) to the mix
+  -w          WAV only -- skip creating the MP3 copy
+  -o OUTFILE  output WAV file (default: STEMS_DIR/<track name>.wav,
+              using the stems folder's own name as the track name);
+              the MP3 copy gets the same name with a .mp3 extension
+  -h          show this help
+--------------------------------------------------------------------------------
+
+
+File:	morning_sleep
+
+Description:
+  Morning sleep-study routine: confirms nightly meds and as-needed items, takes
+  notes, logs them, runs health_sleep on the Watch export, then shows the
+  combined database report (sleep + drugs + nocturia).
+
+Usage:
+  morning_sleep.ksh [-f export.zip|export.xml]
+    -f FILE   path to the Health export (default: looks for export.zip
+              in the current directory, then ~/Downloads/export.zip)
+
+Notes:
+  Symlink to morning_sleep.ksh (same program). Default export: ./export.zip,
+  then ~/Downloads/export.zip
+--------------------------------------------------------------------------------
+
+
+File:	morning_sleep.ksh
+
+Description:
+  Morning sleep-study routine: confirms nightly meds and as-needed items, takes
+  notes, logs them, runs health_sleep on the Watch export, then shows the
+  combined database report (sleep + drugs + nocturia).
+
+Usage:
+  morning_sleep.ksh [-f export.zip|export.xml]
+    -f FILE   path to the Health export (default: looks for export.zip
+              in the current directory, then ~/Downloads/export.zip)
+
+Notes:
+  Default export: ./export.zip, then ~/Downloads/export.zip
+--------------------------------------------------------------------------------
+
+
+File:	my_machine
+
+Description:
+  Prints the machine's hostname.
+
+Usage:
+  my_machine.ksh
+
+Notes:
+  Symlink to my_machine.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	my_machine.ksh
+
+Description:
+  Prints the machine's hostname.
+
+Usage:
+  my_machine.ksh
+--------------------------------------------------------------------------------
+
+
+File:	myair_stats_report
+
+Description:
+  Wrapper for myair_stats_report.py. Renames ResMed's 'myAir-Steve Price.pdf'
+  download to a space-free name, then builds a numbers-only stats PDF.
+
+Usage:
+  myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf]]
+    -s          print status messages in Spanish instead of English
+    INPUT.pdf   the myAir PDF you downloaded from myair.resmed.com
+                (default: ~/Downloads/myAir-Steve-Price.pdf, after
+                the rename above)
+    OUTPUT.pdf  where to write the numbers-only report
+                (default: ~/Desktop/<INPUT base name>_stats.pdf --
+                same place the rest of the Sleep Study Suite lands
+                its PDFs)
+
+Notes:
+  Symlink to myair_stats_report.ksh (same program). Default output:
+  ~/Desktop/<input>_stats.pdf
+--------------------------------------------------------------------------------
+
+
+File:	myair_stats_report.ksh
+
+Description:
+  Wrapper for myair_stats_report.py. Renames ResMed's 'myAir-Steve Price.pdf'
+  download to a space-free name, then builds a numbers-only stats PDF.
+
+Usage:
+  myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf]]
+    -s          print status messages in Spanish instead of English
+    INPUT.pdf   the myAir PDF you downloaded from myair.resmed.com
+                (default: ~/Downloads/myAir-Steve-Price.pdf, after
+                the rename above)
+    OUTPUT.pdf  where to write the numbers-only report
+                (default: ~/Desktop/<INPUT base name>_stats.pdf --
+                same place the rest of the Sleep Study Suite lands
+                its PDFs)
+
+Notes:
+  Default output: ~/Desktop/<input>_stats.pdf
+--------------------------------------------------------------------------------
+
+
+File:	myair_stats_report.py
+
+Description:
+  Turns a ResMed myAir 'Sleep therapy report' PDF into a plain tables-only PDF
+  (usage, AHI, leak, days-used per date window). No charts, no recomputation.
+
+Usage:
+  myair_stats_report.py INPUT.pdf [OUTPUT.pdf]
+
+  INPUT.pdf   the myAir PDF you downloaded
+  OUTPUT.pdf  where to write the numbers-only report
+              (default: same name as INPUT with _stats before .pdf)
+
+Notes:
+  Requires pdfplumber, reportlab.
+--------------------------------------------------------------------------------
+
+
+File:	names
+
+Description:
+  Demo of basename/dirname on a hard-coded path.
+
+Usage:
+  names.ksh
+
+Notes:
+  Symlink to names.ksh (same program). Example snippet; no header.
+--------------------------------------------------------------------------------
+
+
+File:	names.ksh
+
+Description:
+  Demo of basename/dirname on a hard-coded path.
+
+Usage:
+  names.ksh
+
+Notes:
+  Example snippet; no header.
+--------------------------------------------------------------------------------
+
+
+File:	nocturia_log
+
+Description:
+  'Pissy Night' log wrapper for nocturia_log.py: records nighttime urination
+  time and amount (oz) for the sleep study.
+
+Usage:
+  nocturia_log.ksh HH:MM [AMOUNT_OZ] ["notes"] [-d YYYY-MM-DD]
+  nocturia_log.ksh -l [-n N] [--night YYYY-MM-DD]     list
+
+Notes:
+  Symlink to nocturia_log.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	nocturia_log.ksh
+
+Description:
+  'Pissy Night' log wrapper for nocturia_log.py: records nighttime urination
+  time and amount (oz) for the sleep study.
+
+Usage:
+  nocturia_log.ksh HH:MM [AMOUNT_OZ] ["notes"] [-d YYYY-MM-DD]
+  nocturia_log.ksh -l [-n N] [--night YYYY-MM-DD]     list
+--------------------------------------------------------------------------------
+
+
+File:	nocturia_log.py
+
+Description:
+  Back end for nocturia_log.ksh; stores entries in ~/.nocturia_log.csv grouped
+  by night.
+
+Usage:
+  see nocturia_log.ksh
+--------------------------------------------------------------------------------
+
+
+File:	nopasswd-apt-update
+
+Description:
+  Run once per Linux host: adds a sudoers rule allowing passwordless apt update
+  / full-upgrade / --fix-broken / autoremove only.
+
+Usage:
+  (normally pushed and run by deploy-nopasswd.ksh)
+
+Notes:
+  Symlink to nopasswd-apt-update.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	nopasswd-apt-update.ksh
+
+Description:
+  Run once per Linux host: adds a sudoers rule allowing passwordless apt update
+  / full-upgrade / --fix-broken / autoremove only.
+
+Usage:
+  (normally pushed and run by deploy-nopasswd.ksh)
+--------------------------------------------------------------------------------
+
+
+File:	NumText
+
+Description:
+  Bash compiled from NumText.am (Amber): demonstrates converting text to a
+  number with parse().
+
+Usage:
+  NumText.sh
+
+Notes:
+  Symlink to NumText.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	NumText.am
+
+Description:
+  Amber language source showing Text-to-Num conversion.
+
+Usage:
+  amber NumText.am
+
+Notes:
+  Source for NumText.sh.
+--------------------------------------------------------------------------------
+
+
+File:	NumText.sh
+
+Description:
+  Bash compiled from NumText.am (Amber): demonstrates converting text to a
+  number with parse().
+
+Usage:
+  NumText.sh
+--------------------------------------------------------------------------------
+
+
+File:	os
+
+Description:
+  Prints the operating system name and version.
+
+Usage:
+  os.ksh
+
+Notes:
+  Symlink to os.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	os.ksh
+
+Description:
+  Prints the operating system name and version.
+
+Usage:
+  os.ksh
+--------------------------------------------------------------------------------
+
+
+File:	p
+
+Description:
+  Sources ~/.profile.
+
+Usage:
+  p.ksh
+
+Notes:
+  Symlink to p.ksh (same program). Running it as a subprocess has no effect on
+  your shell; source it.
+--------------------------------------------------------------------------------
+
+
+File:	p.ksh
+
+Description:
+  Sources ~/.profile.
+
+Usage:
+  p.ksh
+
+Notes:
+  Running it as a subprocess has no effect on your shell; source it.
+--------------------------------------------------------------------------------
+
+
+File:	pack_for_dwight
+
+Description:
+  Zips the enhanced 'Your Kingdom Come: Songs of Worship' album plus the 'If It
+  Be Your Will' single to send to Dwight, skipping '(original backup)' files.
+
+Usage:
+  pack_for_dwight.ksh [-s] [-o OUTDIR] ALBUM_DIR SINGLE_FILE
+
+  -s          Spanish status messages
+  -o OUTDIR   where to write the zip (default: ~/Desktop)
+  -h          show this help
+
+Notes:
+  Symlink to pack_for_dwight.ksh (same program). Output:
+  OUTDIR/Hymns_of_Worship_for_Dwight_<timestamp>.zip
+--------------------------------------------------------------------------------
+
+
+File:	pack_for_dwight.ksh
+
+Description:
+  Zips the enhanced 'Your Kingdom Come: Songs of Worship' album plus the 'If It
+  Be Your Will' single to send to Dwight, skipping '(original backup)' files.
+
+Usage:
+  pack_for_dwight.ksh [-s] [-o OUTDIR] ALBUM_DIR SINGLE_FILE
+
+  -s          Spanish status messages
+  -o OUTDIR   where to write the zip (default: ~/Desktop)
+  -h          show this help
+
+Notes:
+  Output: OUTDIR/Hymns_of_Worship_for_Dwight_<timestamp>.zip
+--------------------------------------------------------------------------------
+
+
+File:	parse_args
+
+Description:
+  Library: provides parse_args() and show_usage() and sets $debug (-d/--debug).
+
+Usage:
+  In ksh scripts that wish to use this script:
+      source ~/bin/parse_args.ksh
+      Thereafter, check $debug.
+
+Notes:
+  Symlink to parse_args.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	parse_args.ksh
+
+Description:
+  Library: provides parse_args() and show_usage() and sets $debug (-d/--debug).
+
+Usage:
+  In ksh scripts that wish to use this script:
+      source ~/bin/parse_args.ksh
+      Thereafter, check $debug.
+--------------------------------------------------------------------------------
+
+
+File:	password_gen.py
+
+Description:
+  Generates passwords from German, French, Spanish, English, Swedish and
+  Yiddish words joined by special characters, ending in a date stamp.
+
+Usage:
+  password_gen.py
+--------------------------------------------------------------------------------
+
+
+File:	paths
+
+Description:
+  Prints the full paths of cc, gcc, bash, sh, ksh, java, perl, python and
+  xterm.
+
+Usage:
+  paths.ksh
+
+Notes:
+  Symlink to paths.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	paths.ksh
+
+Description:
+  Prints the full paths of cc, gcc, bash, sh, ksh, java, perl, python and
+  xterm.
+
+Usage:
+  paths.ksh
+--------------------------------------------------------------------------------
+
+
+File:	paths.pl
+
+Description:
+  Perl version of paths.ksh: prints paths of ksh, perl, python, xterm.
+
+Usage:
+  paths.pl
+--------------------------------------------------------------------------------
+
+
+File:	pbc
+
+Description:
+  Copies a file's contents (or stdin) to the clipboard; wrapper around pbcopy.
+
+Usage:
+  pbc.ksh file          copy contents of 'file' to the clipboard
+  pbc.ksh               read from stdin (so 'pbc.ksh < file' still works)
+  pbc.ksh -s [file]     show messages in Spanish
+  pbc.ksh -h            show this help
+
+Notes:
+  Symlink to pbc.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	pbc.ksh
+
+Description:
+  Copies a file's contents (or stdin) to the clipboard; wrapper around pbcopy.
+
+Usage:
+  pbc.ksh file          copy contents of 'file' to the clipboard
+  pbc.ksh               read from stdin (so 'pbc.ksh < file' still works)
+  pbc.ksh -s [file]     show messages in Spanish
+  pbc.ksh -h            show this help
+--------------------------------------------------------------------------------
+
+
+File:	pbcopy
+
+Description:
+  Not a program: a saved 'ls -l' listing of some ~/bin files.
+
+Notes:
+  Likely created by accident (output redirected to 'pbcopy'). It shadows
+  /usr/bin/pbcopy if ~/bin is first in PATH - consider deleting.
+--------------------------------------------------------------------------------
+
+
+File:	pbcopy_files
+
+Description:
+  Copies one or more files, each preceded by its name, to the clipboard (pbcopy
+  / xclip / xsel) for pasting into a Claude chat. Skips missing or binary files
+  unless -f.
+
+Usage:
+  ksh pbcopy_files.ksh [-f|--force] file1 [file2 ...]
+  ksh pbcopy_files.ksh speak* play*        (your shell expands the globs)
+
+Notes:
+  Symlink to pbcopy_files.ksh (same program). Log:
+  ~/logs/pbpaste_files.<timestamp>
+--------------------------------------------------------------------------------
+
+
+File:	pbcopy_files.ksh
+
+Description:
+  Copies one or more files, each preceded by its name, to the clipboard (pbcopy
+  / xclip / xsel) for pasting into a Claude chat. Skips missing or binary files
+  unless -f.
+
+Usage:
+  ksh pbcopy_files.ksh [-f|--force] file1 [file2 ...]
+  ksh pbcopy_files.ksh speak* play*        (your shell expands the globs)
+
+Notes:
+  Log: ~/logs/pbpaste_files.<timestamp>
+--------------------------------------------------------------------------------
+
+
+File:	pbp
+
+Description:
+  Writes the clipboard to stdout or to a file; wrapper around pbpaste.
+
+Usage:
+  pbp.ksh               print clipboard contents to stdout
+                         (so 'pbp.ksh > file' still works unchanged)
+  pbp.ksh file           write clipboard contents directly to 'file'
+  pbp.ksh -s [file]      show messages in Spanish
+  pbp.ksh -h             show this help
+
+Notes:
+  Symlink to pbp.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	pbp.ksh
+
+Description:
+  Writes the clipboard to stdout or to a file; wrapper around pbpaste.
+
+Usage:
+  pbp.ksh               print clipboard contents to stdout
+                         (so 'pbp.ksh > file' still works unchanged)
+  pbp.ksh file           write clipboard contents directly to 'file'
+  pbp.ksh -s [file]      show messages in Spanish
+  pbp.ksh -h             show this help
+--------------------------------------------------------------------------------
+
+
+File:	pbpaste_script
+
+Description:
+  Pastes the clipboard to stdout (/usr/bin/pbpaste).
+
+Usage:
+  pbpaste_script.ksh
+
+Notes:
+  Symlink to pbpaste_script.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	pbpaste_script.ksh
+
+Description:
+  Pastes the clipboard to stdout (/usr/bin/pbpaste).
+
+Usage:
+  pbpaste_script.ksh
+--------------------------------------------------------------------------------
+
+
+File:	per
+
+Description:
+  Ran macOS 'periodic' maintenance.
+
+Usage:
+  per
+
+Notes:
+  DEPRECATED 2026-04-14: Apple removed 'periodic'. Use mdfind instead of
+  locate.
+--------------------------------------------------------------------------------
+
+
+File:	playpause
+
+Description:
+  Plays an audio file with interactive controls: SPACE pause/resume, q quit.
+  Uses afplay (macOS) or paplay/aplay (Linux).
+
+Usage:
+  ./playpause.ksh file.m4a
+
+Notes:
+  Symlink to playpause.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	playpause.ksh
+
+Description:
+  Plays an audio file with interactive controls: SPACE pause/resume, q quit.
+  Uses afplay (macOS) or paplay/aplay (Linux).
+
+Usage:
+  ./playpause.ksh file.m4a
+--------------------------------------------------------------------------------
+
+
+File:	playpause.ps1
+
+Description:
+  Windows PowerShell version of playpause (SPACE pause/resume, q quit), using
+  Windows Media Player.
+
+Usage:
+  .\playpause.ps1 file.wav
+--------------------------------------------------------------------------------
+
+
+File:	playpause.sh
+
+Description:
+  Bash version of playpause.ksh, for Linux without ksh.
+
+Usage:
+  ./playpause.sh file.m4a
+--------------------------------------------------------------------------------
+
+
+File:	pray.py
+
+Description:
+  Speaks prayers in many languages and voices (macOS 'say', Linux espeak-ng).
+  Prayer texts live in prayers/ beside the script.
+
+Usage:
+  pray.py                                      # show help
+  pray.py --list                               # list prayers, languages, voices
+  pray.py --prayer PRAYER --language LANGUAGE [--voice VOICE] [--rate RATE]
+  pray.py --all [--prayer PRAYER] [--language LANGUAGE] [--voice VOICE]
+  pray.py --help
+--------------------------------------------------------------------------------
+
+
+File:	pre-syncall-check
+
+Description:
+  Read-only check that the SS repo has nothing uncommitted, untracked or
+  unpushed before you run syncAll.
+
+Usage:
+  pre-syncall-check.ksh
+
+Notes:
+  Symlink to pre-syncall-check.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	pre-syncall-check.ksh
+
+Description:
+  Read-only check that the SS repo has nothing uncommitted, untracked or
+  unpushed before you run syncAll.
+
+Usage:
+  pre-syncall-check.ksh
+--------------------------------------------------------------------------------
+
+
+File:	process_album
+
+Description:
+  Runs a whole album folder through demucs_batch, then mixdown_stems on each
+  track, giving a mixdown per song.
+
+Usage:
+  process_album.ksh [-s] [-2] [-r] [-o OUTDIR] ALBUM_DIR
+
+  -s          Spanish status messages
+  -2          2-stem split (vocals + instrumental) instead of the
+              default 4-stem split -- better fit for solo voice+guitar
+  -r          add a touch of reverb in the mixdown step
+  -o OUTDIR   where demucs writes stems (default: ~/Desktop/stems)
+  -h          show this help
+
+Notes:
+  Symlink to process_album.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	process_album.ksh
+
+Description:
+  Runs a whole album folder through demucs_batch, then mixdown_stems on each
+  track, giving a mixdown per song.
+
+Usage:
+  process_album.ksh [-s] [-2] [-r] [-o OUTDIR] ALBUM_DIR
+
+  -s          Spanish status messages
+  -2          2-stem split (vocals + instrumental) instead of the
+              default 4-stem split -- better fit for solo voice+guitar
+  -r          add a touch of reverb in the mixdown step
+  -o OUTDIR   where demucs writes stems (default: ~/Desktop/stems)
+  -h          show this help
+--------------------------------------------------------------------------------
+
+
+File:	process_new_poem
+
+Description:
+  One step for a new poem recording: trims trailing silence, then loudness-
+  matches to a reference (default Ozymandias), producing a finished MP3 in
+  FavoritePoems/Recordings/Final.
+
+Usage:
+    process_new_poem.ksh -i RAW_INPUT [-r REFERENCE.mp3] [-o OUTPUT.mp3] \
+                          [-t THRESHOLD_DB] [-p] [-s]
+
+  Options:
+    -i FILE   Raw recording to process (any format ffmpeg reads -- m4a, wav,
+              mp3, etc.)
+    -r FILE   Reference track to match loudness against (default:
+              ~/Documents/FavoritePoems/Recordings/Final/Ozymandias.mp3)
+    -o FILE   Final output MP3 (default: same base name as -i, .mp3, placed
+              in ~/Documents/FavoritePoems/Recordings/Final/)
+    -t DB     Silence threshold in dB for trimming (default: -35)
+    -p        Play the finished result afterward (afplay)
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Symlink to process_new_poem.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	process_new_poem.ksh
+
+Description:
+  One step for a new poem recording: trims trailing silence, then loudness-
+  matches to a reference (default Ozymandias), producing a finished MP3 in
+  FavoritePoems/Recordings/Final.
+
+Usage:
+    process_new_poem.ksh -i RAW_INPUT [-r REFERENCE.mp3] [-o OUTPUT.mp3] \
+                          [-t THRESHOLD_DB] [-p] [-s]
+
+  Options:
+    -i FILE   Raw recording to process (any format ffmpeg reads -- m4a, wav,
+              mp3, etc.)
+    -r FILE   Reference track to match loudness against (default:
+              ~/Documents/FavoritePoems/Recordings/Final/Ozymandias.mp3)
+    -o FILE   Final output MP3 (default: same base name as -i, .mp3, placed
+              in ~/Documents/FavoritePoems/Recordings/Final/)
+    -t DB     Silence threshold in dB for trimming (default: -35)
+    -p        Play the finished result afterward (afplay)
+    -s        Spanish status messages instead of English
+    -h        Help
+--------------------------------------------------------------------------------
+
+
+File:	PS1
+
+Description:
+  Sets the ksh prompt ($PS1) to show host, $PWD and history number.
+
+Usage:
+  source ~/bin/PS1.ksh
+
+Notes:
+  Symlink to PS1.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	PS1.ksh
+
+Description:
+  Sets the ksh prompt ($PS1) to show host, $PWD and history number.
+
+Usage:
+  source ~/bin/PS1.ksh
+--------------------------------------------------------------------------------
+
+
+File:	push_file
+
+Description:
+  Interactive: asks for local and remote folder/filename, then scp's the file
+  to every machine in ALL_HOSTS except the current one.
+
+Usage:
+  push_file.ksh
+
+Notes:
+  Symlink to push_file.ksh (same program). Edit ALL_HOSTS when your machines
+  change.
+--------------------------------------------------------------------------------
+
+
+File:	push_file.ksh
+
+Description:
+  Interactive: asks for local and remote folder/filename, then scp's the file
+  to every machine in ALL_HOSTS except the current one.
+
+Usage:
+  push_file.ksh
+
+Notes:
+  Edit ALL_HOSTS when your machines change.
+--------------------------------------------------------------------------------
+
+
+File:	push_opera_favorites
+
+Description:
+  Copies ~/Documents/opera_good_favorites_7_10_26.html to the three other
+  machines' ~/Documents.
+
+Usage:
+  push_opera_favorites.ksh
+
+Notes:
+  Symlink to push_opera_favorites.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	push_opera_favorites.ksh
+
+Description:
+  Copies ~/Documents/opera_good_favorites_7_10_26.html to the three other
+  machines' ~/Documents.
+
+Usage:
+  push_opera_favorites.ksh
+--------------------------------------------------------------------------------
+
+
+File:	pushInstall
+
+Description:
+  On each remote host: git pull ShellSetup and install the named bin/ scripts
+  into ~/bin with a 'Last installed' stamp.
+
+Usage:
+  pushInstall.ksh [script ...]      (default: syncAll)
+
+Notes:
+  Symlink to pushInstall.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	pushInstall.ksh
+
+Description:
+  On each remote host: git pull ShellSetup and install the named bin/ scripts
+  into ~/bin with a 'Last installed' stamp.
+
+Usage:
+  pushInstall.ksh [script ...]      (default: syncAll)
+--------------------------------------------------------------------------------
+
+
+File:	readit
+
+Description:
+  Prompts for a macOS voice and a text file, then reads the file aloud line by
+  line with 'say'.
+
+Usage:
+  readit.sh
+
+Notes:
+  Symlink to readit.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	readit.sh
+
+Description:
+  Prompts for a macOS voice and a text file, then reads the file aloud line by
+  line with 'say'.
+
+Usage:
+  readit.sh
+--------------------------------------------------------------------------------
+
+
+File:	remote_tar
+
+Description:
+  Creates (-c) or extracts (-x) a .tar.gz and scp's the tarball to the other
+  servers (never the local one).
+
+Usage:
+  remote_tar.ksh -c|-x <tarball_fullpath>
+
+Notes:
+  Symlink to remote_tar.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	remote_tar.ksh
+
+Description:
+  Creates (-c) or extracts (-x) a .tar.gz and scp's the tarball to the other
+  servers (never the local one).
+
+Usage:
+  remote_tar.ksh -c|-x <tarball_fullpath>
+--------------------------------------------------------------------------------
+
+
+File:	remove-bin-files
+
+Description:
+  Removes named files from the SS repo's bin/, from ~/bin, and their extension-
+  less symlinks, then commits and pushes.
+
+Usage:
+  ksh remove-bin-files.ksh file1 [file2 ...]
+
+Notes:
+  Symlink to remove-bin-files.ksh (same program). syncAll won't delete
+  installed copies on other machines; repeat the rm's there.
+--------------------------------------------------------------------------------
+
+
+File:	remove-bin-files.ksh
+
+Description:
+  Removes named files from the SS repo's bin/, from ~/bin, and their extension-
+  less symlinks, then commits and pushes.
+
+Usage:
+  ksh remove-bin-files.ksh file1 [file2 ...]
+
+Notes:
+  syncAll won't delete installed copies on other machines; repeat the rm's
+  there.
+--------------------------------------------------------------------------------
+
+
+File:	run_kingdom_come
+
+Description:
+  One-off: installs process_album.ksh into SS bin and runs it (2-stem) on the
+  'Your Kingdom Come' album.
+
+Usage:
+  run_kingdom_come.ksh [-s]
+
+  -s   Spanish status messages
+  -h   show this help
+
+Notes:
+  Symlink to run_kingdom_come.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	run_kingdom_come.ksh
+
+Description:
+  One-off: installs process_album.ksh into SS bin and runs it (2-stem) on the
+  'Your Kingdom Come' album.
+
+Usage:
+  run_kingdom_come.ksh [-s]
+
+  -s   Spanish status messages
+  -h   show this help
+--------------------------------------------------------------------------------
+
+
+File:	run_voice_batch
+
+Description:
+  Sorts .txt files into english/ and german/, then runs eleven_tts_batch.ksh
+  once per language with the given voice IDs.
+
+Usage:
+  run_voice_batch.ksh [-e ENGLISH_VOICE_ID] [-g GERMAN_VOICE_ID] \
+                       [-i IN_DIR] [-o OUT_DIR] [-s] [-y]
+    -e  Voice ID for English files (default: Henry - American poetry)
+    -g  Voice ID for German files (default: Brian)
+    -i  Source directory holding your mixed .txt files
+        (default: ~/Documents/elevenLabsUploads)
+    -o  Output directory for .mp3 files (default: ~/Downloads)
+    -s  Spanish status messages
+    -y  Skip the dry-run confirmation (for scripted/non-interactive runs)
+
+Notes:
+  Symlink to run_voice_batch.ksh (same program). Needs ELEVENLABS_API_KEY. Copy
+  voice IDs from the ElevenLabs web UI.
+--------------------------------------------------------------------------------
+
+
+File:	run_voice_batch.ksh
+
+Description:
+  Sorts .txt files into english/ and german/, then runs eleven_tts_batch.ksh
+  once per language with the given voice IDs.
+
+Usage:
+  run_voice_batch.ksh [-e ENGLISH_VOICE_ID] [-g GERMAN_VOICE_ID] \
+                       [-i IN_DIR] [-o OUT_DIR] [-s] [-y]
+    -e  Voice ID for English files (default: Henry - American poetry)
+    -g  Voice ID for German files (default: Brian)
+    -i  Source directory holding your mixed .txt files
+        (default: ~/Documents/elevenLabsUploads)
+    -o  Output directory for .mp3 files (default: ~/Downloads)
+    -s  Spanish status messages
+    -y  Skip the dry-run confirmation (for scripted/non-interactive runs)
+
+Notes:
+  Needs ELEVENLABS_API_KEY. Copy voice IDs from the ElevenLabs web UI.
+--------------------------------------------------------------------------------
+
+
+File:	safari_backup
+
+Description:
+  Snapshots Safari settings (~/Library/Safari + plist) to iCloud Drive
+  safari/Safari-backup-<date>, optionally with an APFS local snapshot.
+
+Usage:
+  safari_backup.ksh [dest_dir]
+
+  dest_dir  Optional override for the backup destination.
+            Defaults to iCloud Drive safari/ folder if not specified.
+
+Notes:
+  Symlink to safari_backup.ksh (same program). Quit Safari first. Log:
+  ~/logs/safari_backup_<date>.log
+--------------------------------------------------------------------------------
+
+
+File:	safari_backup.ksh
+
+Description:
+  Snapshots Safari settings (~/Library/Safari + plist) to iCloud Drive
+  safari/Safari-backup-<date>, optionally with an APFS local snapshot.
+
+Usage:
+  safari_backup.ksh [dest_dir]
+
+  dest_dir  Optional override for the backup destination.
+            Defaults to iCloud Drive safari/ folder if not specified.
+
+Notes:
+  Quit Safari first. Log: ~/logs/safari_backup_<date>.log
+--------------------------------------------------------------------------------
+
+
+File:	safari_bookmarks_export.py
+
+Description:
+  Exports Safari bookmarks to an editable JSON file.
+
+Usage:
+  python3 safari_bookmarks_export.py [output.json]
+
+  Default output: ~/Safari-bookmarks-YYYYMMDD-HHMMSS.json
+  Safari must be CLOSED before running.
+
+Notes:
+  Default: ~/Safari-bookmarks-YYYYMMDD-HHMMSS.json
+--------------------------------------------------------------------------------
+
+
+File:	safari_bookmarks_import.py
+
+Description:
+  Imports an edited bookmarks JSON back into Safari.
+
+Usage:
+  python3 safari_bookmarks_import.py bookmarks.json
+
+  Run safari_backup.ksh before this script. A preflight check will
+  confirm you have done so before anything is overwritten.
+  Safari must be CLOSED before running.
+
+Notes:
+  Run safari_backup.ksh first.
+--------------------------------------------------------------------------------
+
+
+File:	safari_bookmarks_to_html.py
+
+Description:
+  Converts edited Safari bookmarks JSON to Netscape bookmark HTML for Safari's
+  import.
+
+Usage:
+  python3 safari_bookmarks_to_html.py <bookmarks.json> [output.html]
+
+  Default output: ~/Safari-bookmarks-YYYYMMDD-HHMMSS.html
+--------------------------------------------------------------------------------
+
+
+File:	safari_prefs
+
+Description:
+  Older variant of safari_backup.ksh: snapshots Safari settings to the iCloud
+  Drive root.
+
+Usage:
+  safari_prefs.ksh [dest_dir]
+
+  dest_dir  Optional override for the backup destination.
+            Defaults to iCloud Drive root if not specified.
+
+Notes:
+  Symlink to safari_prefs.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	safari_prefs.ksh
+
+Description:
+  Older variant of safari_backup.ksh: snapshots Safari settings to the iCloud
+  Drive root.
+
+Usage:
+  safari_prefs.ksh [dest_dir]
+
+  dest_dir  Optional override for the backup destination.
+            Defaults to iCloud Drive root if not specified.
+--------------------------------------------------------------------------------
+
+
+File:	safari_restore
+
+Description:
+  Restores Safari settings from a safari_backup.ksh snapshot; lists backups and
+  lets you pick one if none given.
+
+Usage:
+  safari_restore.ksh [backup_dir]
+
+  backup_dir  Full path to a specific Safari-backup-<datestamp> directory.
+              If omitted, the script lists available backups from iCloud
+              Drive and prompts you to choose one.
+
+Notes:
+  Symlink to safari_restore.ksh (same program). Quit Safari first.
+--------------------------------------------------------------------------------
+
+
+File:	safari_restore.ksh
+
+Description:
+  Restores Safari settings from a safari_backup.ksh snapshot; lists backups and
+  lets you pick one if none given.
+
+Usage:
+  safari_restore.ksh [backup_dir]
+
+  backup_dir  Full path to a specific Safari-backup-<datestamp> directory.
+              If omitted, the script lists available backups from iCloud
+              Drive and prompts you to choose one.
+
+Notes:
+  Quit Safari first.
+--------------------------------------------------------------------------------
+
+
+File:	safari_start
+
+Description:
+  Starts Safari showing the nature slideshow
+  (~/Pictures/ChangingImages/start.html).
+
+Usage:
+  safari_start.ksh
+
+Notes:
+  Symlink to safari_start.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	safari_start.ksh
+
+Description:
+  Starts Safari showing the nature slideshow
+  (~/Pictures/ChangingImages/start.html).
+
+Usage:
+  safari_start.ksh
+--------------------------------------------------------------------------------
+
+
+File:	scp_file
+
+Description:
+  Copies a file to the four Tailscale machines.
+
+Usage:
+  scp_file.ksh file_to_copy
+
+Notes:
+  Symlink to scp_file.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	scp_file.ksh
+
+Description:
+  Copies a file to the four Tailscale machines.
+
+Usage:
+  scp_file.ksh file_to_copy
+--------------------------------------------------------------------------------
+
+
+File:	scp_this
+
+Description:
+  scp's a file or directory to the same (or a given) path on every other
+  Tailscale machine (via tss).
+
+Usage:
+  scp_this.ksh source target
+
+  target is the destination path on each remote machine. Use a bare
+  relative filename (e.g. "notes.txt") to land in the remote user's
+  home directory regardless of OS — this matters because your Mac and
+  Linux home directories live at different absolute paths
+  (/Users/steve vs /home/steve), so an absolute source path won't
+  necessarily exist as a valid destination on every machine.
+
+Notes:
+  Symlink to scp_this.ksh (same program). Use a bare relative target to land in
+  each remote home directory.
+--------------------------------------------------------------------------------
+
+
+File:	scp_this.ksh
+
+Description:
+  scp's a file or directory to the same (or a given) path on every other
+  Tailscale machine (via tss).
+
+Usage:
+  scp_this.ksh source target
+
+  target is the destination path on each remote machine. Use a bare
+  relative filename (e.g. "notes.txt") to land in the remote user's
+  home directory regardless of OS — this matters because your Mac and
+  Linux home directories live at different absolute paths
+  (/Users/steve vs /home/steve), so an absolute source path won't
+  necessarily exist as a valid destination on every machine.
+
+Notes:
+  Use a bare relative target to land in each remote home directory.
+--------------------------------------------------------------------------------
+
+
+File:	set-perl
+
+Description:
+  Lists installed perl versions and sets a symlink to the one you pick.
+
+Usage:
+  set-perl.ksh
+
+Notes:
+  Symlink to set-perl.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	set-perl.ksh
+
+Description:
+  Lists installed perl versions and sets a symlink to the one you pick.
+
+Usage:
+  set-perl.ksh
+--------------------------------------------------------------------------------
+
+
+File:	set-vm-16in-res
+
+Description:
+  Via ssh, adds xrandr commands to the VM's .xprofile for 2560x1600 (16"
+  MacBook Pro) at next login.
+
+Usage:
+  set-vm-16in-res.sh
+
+Notes:
+  Symlink to set-vm-16in-res.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	set-vm-16in-res.sh
+
+Description:
+  Via ssh, adds xrandr commands to the VM's .xprofile for 2560x1600 (16"
+  MacBook Pro) at next login.
+
+Usage:
+  set-vm-16in-res.sh
+--------------------------------------------------------------------------------
+
+
+File:	set-vm-resolution
+
+Description:
+  Via ssh, sets the VM display to a high resolution with cvt/xrandr now and
+  saves it to .xprofile.
+
+Usage:
+  set-vm-resolution.sh
+
+Notes:
+  Symlink to set-vm-resolution.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	set-vm-resolution.sh
+
+Description:
+  Via ssh, sets the VM display to a high resolution with cvt/xrandr now and
+  saves it to .xprofile.
+
+Usage:
+  set-vm-resolution.sh
+--------------------------------------------------------------------------------
+
+
+File:	set_api_key
+
+Description:
+  Stores an API key (hidden input, not in history) in ~/.secrets/api_keys.ksh
+  and makes .kshrc source it.
+
+Usage:
+  set_api_key [VARNAME]        (default: OPENAI_API_KEY)
+
+Notes:
+  Symlink to set_api_key.ksh (same program). Secrets file is not synced; run on
+  each machine.
+--------------------------------------------------------------------------------
+
+
+File:	set_api_key.ksh
+
+Description:
+  Stores an API key (hidden input, not in history) in ~/.secrets/api_keys.ksh
+  and makes .kshrc source it.
+
+Usage:
+  set_api_key [VARNAME]        (default: OPENAI_API_KEY)
+
+Notes:
+  Secrets file is not synced; run on each machine.
+--------------------------------------------------------------------------------
+
+
+File:	set_locale.py
+
+Description:
+  Sets the locale; usable standalone or imported by other scripts.
+
+Usage:
+  set_locale.py       As a stand alone Python script.
+
+  As an imported method in another Python script.
+  Import the set_locale function into other Python scripts by placing
+  set_locale.py in the same directory as your other scripts and using
+  the following import statement:
+
+  from set_locale import set_locale
+
+  Call the set_locale function with your desired locale
+  set_locale("en_US.UTF-8")
+--------------------------------------------------------------------------------
+
+
+File:	setup-shared-folder
+
+Description:
+  Inside the VM: mounts the VirtualBox shared folder VMShared at ~/Shared and
+  adds it to /etc/fstab.
+
+Usage:
+  setup-shared-folder.sh
+
+Notes:
+  Symlink to setup-shared-folder.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	setup-shared-folder.sh
+
+Description:
+  Inside the VM: mounts the VirtualBox shared folder VMShared at ~/Shared and
+  adds it to /etc/fstab.
+
+Usage:
+  setup-shared-folder.sh
+--------------------------------------------------------------------------------
+
+
+File:	setup-vm
+
+Description:
+  Via ssh, fully configures the Elementary/Ubuntu VM: safe .xprofile, .bashrc,
+  VBoxClient startup script.
+
+Usage:
+  setup-vm.sh
+
+Notes:
+  Symlink to setup-vm.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	setup-vm-display
+
+Description:
+  Via ssh, appends high-res display, terminal font and VBoxClient settings to
+  the VM's .xprofile.
+
+Usage:
+  setup-vm-display.sh
+
+Notes:
+  Symlink to setup-vm-display.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	setup-vm-display.sh
+
+Description:
+  Via ssh, appends high-res display, terminal font and VBoxClient settings to
+  the VM's .xprofile.
+
+Usage:
+  setup-vm-display.sh
+--------------------------------------------------------------------------------
+
+
+File:	setup-vm-full
+
+Description:
+  Via ssh, configures VM display, terminal font and VBoxClient (.xprofile +
+  .bashrc).
+
+Usage:
+  setup-vm-full.sh
+
+Notes:
+  Symlink to setup-vm-full.sh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	setup-vm-full.sh
+
+Description:
+  Via ssh, configures VM display, terminal font and VBoxClient (.xprofile +
+  .bashrc).
+
+Usage:
+  setup-vm-full.sh
+--------------------------------------------------------------------------------
+
+
+File:	setup-vm.sh
+
+Description:
+  Via ssh, fully configures the Elementary/Ubuntu VM: safe .xprofile, .bashrc,
+  VBoxClient startup script.
+
+Usage:
+  setup-vm.sh
+--------------------------------------------------------------------------------
+
+
+File:	setup_sleep_db
+
+Description:
+  Wrapper for setup_sleep_db.py: creates/updates the sleep-study SQLite
+  database and imports logs.
+
+Usage:
+  setup_sleep_db.ksh --import-prescriptions-sql FILE.sql
+  setup_sleep_db.ksh --import-drug-log FILE
+  setup_sleep_db.ksh --report [-n N]
+
+Notes:
+  Symlink to setup_sleep_db.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	setup_sleep_db.ksh
+
+Description:
+  Wrapper for setup_sleep_db.py: creates/updates the sleep-study SQLite
+  database and imports logs.
+
+Usage:
+  setup_sleep_db.ksh --import-prescriptions-sql FILE.sql
+  setup_sleep_db.ksh --import-drug-log FILE
+  setup_sleep_db.ksh --report [-n N]
+--------------------------------------------------------------------------------
+
+
+File:	setup_sleep_db.py
+
+Description:
+  Creates/updates ~/sleep_study.db (prescriptions, drug log, nocturia, sleep),
+  imports logs, prints the nightly report and exports xlsx/pdf.
+
+Usage:
+  setup_sleep_db.py [--db F] [--import-nocturia CSV]
+      [--import-drug-log CSV] [--import-prescriptions-sql SQL]
+      [--report [-n 14]] [--export-xlsx [P]] [--export-pdf [P]]
+      [--no-export] [--rolling-window N]
+
+Notes:
+  Reports start 2026-11-01 by default.
+--------------------------------------------------------------------------------
+
+
+File:	sleep_drug_log
+
+Description:
+  Appends or lists sleep-drug experiment entries in ~/logs/sleep_drug_log.csv
+  (date, drug, melatonin Y/N, notes).
+
+Usage:
+  sleep_drug_log.ksh 2026-11-01 Lunesta Y
+  sleep_drug_log.ksh 2026-11-01 Lunesta N "no melatonin, pure Lunesta test"
+  sleep_drug_log.ksh -l              # list all entries
+  sleep_drug_log.ksh -l -n 7         # list last 7 entries
+  sleep_drug_log.ksh -s ...          # Spanish messages
+
+Notes:
+  Symlink to sleep_drug_log.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	sleep_drug_log.ksh
+
+Description:
+  Appends or lists sleep-drug experiment entries in ~/logs/sleep_drug_log.csv
+  (date, drug, melatonin Y/N, notes).
+
+Usage:
+  sleep_drug_log.ksh 2026-11-01 Lunesta Y
+  sleep_drug_log.ksh 2026-11-01 Lunesta N "no melatonin, pure Lunesta test"
+  sleep_drug_log.ksh -l              # list all entries
+  sleep_drug_log.ksh -l -n 7         # list last 7 entries
+  sleep_drug_log.ksh -s ...          # Spanish messages
+--------------------------------------------------------------------------------
+
+
+File:	sort_voice_files
+
+Description:
+  Sorts .txt files into german/ and english/ subfolders using a known list of
+  German filenames. Safe to re-run.
+
+Usage:
+  sort_voice_files.ksh [-i IN_DIR] [-s]
+    -i  Source directory holding your mixed .txt files
+        (default: ~/Documents/elevenLabsUploads)
+    -s  Spanish status messages
+
+Notes:
+  Symlink to sort_voice_files.ksh (same program). Default IN_DIR:
+  ~/Documents/elevenLabsUploads
+--------------------------------------------------------------------------------
+
+
+File:	sort_voice_files.ksh
+
+Description:
+  Sorts .txt files into german/ and english/ subfolders using a known list of
+  German filenames. Safe to re-run.
+
+Usage:
+  sort_voice_files.ksh [-i IN_DIR] [-s]
+    -i  Source directory holding your mixed .txt files
+        (default: ~/Documents/elevenLabsUploads)
+    -s  Spanish status messages
+
+Notes:
+  Default IN_DIR: ~/Documents/elevenLabsUploads
+--------------------------------------------------------------------------------
+
+
+File:	speak
+
+Description:
+  Reads text aloud (macOS 'say' / Linux espeak-ng) or saves it to audio. Thin
+  ksh wrapper around _speak_impl.sh.
+
+Usage:
+  speak <textfile|-> [-v voice] [-g|-e|-s|-f [voice]] [-r rate]
+        [-o outfile] [-p] [-n] [-c] [-x lang] [-b]
+  speak -l | -xl | -t | -h
+    -g/-e/-s/-f German/English/Spanish/French  -r words/min
+    -o save audio  -p print in sync  -x translate  -l list voices
+
+Notes:
+  Symlink to speak.ksh (same program). Bare filenames are looked for in . then
+  ~/Documents. Lines starting with # are not spoken.
+--------------------------------------------------------------------------------
+
+
+File:	speak-loop
+
+Description:
+  Runs speak repeatedly on a text file until you quit; passes options through
+  to speak.
+
+Usage:
+    speak-loop.ksh [-L] [-o output-file] [-s] [speak-options...] textfile.txt
+
+  speak-loop's own options:
+    -L            Loop forever on the current (or picked, if multiple
+                  matches) file. While looping: SPACE pauses/resumes
+                  the current speak playback, 'q' quits. (Without -L,
+                  the old behavior applies: prompted after each
+                  playback to repeat, switch files, or quit.)
+    -o outfile    Save the translated text to outfile. Only valid when
+                  -x (translation) is also among the speak options --
+                  without translation the saved text would just
+                  duplicate the input file, so speak-loop refuses and
+                  exits rather than passing it through. Forwarded to
+                  speak as `-o outfile`.
+    -s            Spanish prompts/messages from speak-loop itself
+                  (match lists, picker prompts, pause/quit messages,
+                  error text). Does not affect speak's own output
+                  language -- pass speak's own language flags
+                  separately, as always.
+
+Notes:
+  Symlink to speak-loop.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	speak-loop.ksh
+
+Description:
+  Runs speak repeatedly on a text file until you quit; passes options through
+  to speak.
+
+Usage:
+    speak-loop.ksh [-L] [-o output-file] [-s] [speak-options...] textfile.txt
+
+  speak-loop's own options:
+    -L            Loop forever on the current (or picked, if multiple
+                  matches) file. While looping: SPACE pauses/resumes
+                  the current speak playback, 'q' quits. (Without -L,
+                  the old behavior applies: prompted after each
+                  playback to repeat, switch files, or quit.)
+    -o outfile    Save the translated text to outfile. Only valid when
+                  -x (translation) is also among the speak options --
+                  without translation the saved text would just
+                  duplicate the input file, so speak-loop refuses and
+                  exits rather than passing it through. Forwarded to
+                  speak as `-o outfile`.
+    -s            Spanish prompts/messages from speak-loop itself
+                  (match lists, picker prompts, pause/quit messages,
+                  error text). Does not affect speak's own output
+                  language -- pass speak's own language flags
+                  separately, as always.
+--------------------------------------------------------------------------------
+
+
+File:	speak.ksh
+
+Description:
+  Reads text aloud (macOS 'say' / Linux espeak-ng) or saves it to audio. Thin
+  ksh wrapper around _speak_impl.sh.
+
+Usage:
+  speak <textfile|-> [-v voice] [-g|-e|-s|-f [voice]] [-r rate]
+        [-o outfile] [-p] [-n] [-c] [-x lang] [-b]
+  speak -l | -xl | -t | -h
+    -g/-e/-s/-f German/English/Spanish/French  -r words/min
+    -o save audio  -p print in sync  -x translate  -l list voices
+
+Notes:
+  Bare filenames are looked for in . then ~/Documents. Lines starting with #
+  are not spoken.
+--------------------------------------------------------------------------------
+
+
+File:	speak.ps1
+
+Description:
+  Windows PowerShell port of speak (System.Speech): reads text aloud or saves
+  .wav, same flags.
+
+Usage:
+  powershell -ExecutionPolicy Bypass -File speak.ps1 <args>
+
+Notes:
+  Rate uses Windows' -10..10 scale.
+--------------------------------------------------------------------------------
+
+
+File:	speak.sh
+
+Description:
+  Bash wrapper for speak (same as speak.ksh), via _speak_impl.sh.
+
+Usage:
+  speak.sh <textfile> [options]   (see speak.ksh)
+--------------------------------------------------------------------------------
+
+
+File:	ssh-copy-id.ksh
+
+Description:
+  Copies ~/.ssh/id_rsa.pub to every 10.0.0.x machine in /etc/hosts.
+
+Usage:
+  ssh-copy-id.ksh
+--------------------------------------------------------------------------------
+
+
+File:	ssh_tss
+
+Description:
+  Shows Tailscale status as seen from 100.73.104.80 (macbookprolinux).
+
+Usage:
+  ssh_tss.ksh
+
+Notes:
+  Symlink to ssh_tss.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	ssh_tss.ksh
+
+Description:
+  Shows Tailscale status as seen from 100.73.104.80 (macbookprolinux).
+
+Usage:
+  ssh_tss.ksh
+--------------------------------------------------------------------------------
+
+
+File:	syncAll
+
+Description:
+  Syncs ~/Projects git repos across all machines: pulls existing repos, clones
+  missing ones, skips symlinks and *.backup.
+
+Usage:
+  syncAll
+  syncAll -p PROJECT [PROJECT ...]
+
+Notes:
+  Symlink to syncAllProjects.py (same program).
+--------------------------------------------------------------------------------
+
+
+File:	syncAllProjects.py
+
+Description:
+  Syncs ~/Projects git repos across all machines: pulls existing repos, clones
+  missing ones, skips symlinks and *.backup.
+
+Usage:
+  syncAll
+  syncAll -p PROJECT [PROJECT ...]
+--------------------------------------------------------------------------------
+
+
+File:	tcc_who
+
+Description:
+  Shows which program macOS holds responsible for Full Disk Access in the
+  current terminal (the path to add in Privacy & Security).
+
+Usage:
+  ~/bin/tcc_who.ksh
+  Run it in the terminal window you want to diagnose (e.g. an xterm).
+
+Notes:
+  Symlink to tcc_who.ksh (same program). macOS only.
+--------------------------------------------------------------------------------
+
+
+File:	tcc_who.ksh
+
+Description:
+  Shows which program macOS holds responsible for Full Disk Access in the
+  current terminal (the path to add in Privacy & Security).
+
+Usage:
+  ~/bin/tcc_who.ksh
+  Run it in the terminal window you want to diagnose (e.g. an xterm).
+
+Notes:
+  macOS only.
+--------------------------------------------------------------------------------
+
+
+File:	test.pl
+
+Description:
+  Tiny Perl/Tk test window ('Hello, Tk!' + Quit).
+
+Usage:
+  test.pl
+--------------------------------------------------------------------------------
+
+
+File:	test_a_year
+
+Description:
+  Asks for a year and says whether it's a leap year.
+
+Usage:
+  test_a_year
+
+Notes:
+  Compiled binary (from test_a_year.c + is_leap_year.c).
+--------------------------------------------------------------------------------
+
+
+File:	test_a_year.c
+
+Description:
+  C source for test_a_year.
+
+Usage:
+  Compile and link with is_leap_year.o
+
+Notes:
+  Build with Makefile.
+--------------------------------------------------------------------------------
+
+
+File:	test_a_year.o
+
+Description:
+  Compiled object of test_a_year.c.
+
+Notes:
+  Build artifact.
+--------------------------------------------------------------------------------
+
+
+File:	test_leap_year
+
+Description:
+  Binary: tests whether 2024 is a leap year.
+
+Usage:
+  test_leap_year
+
+Notes:
+  Old build; the Makefile now builds this as test_year.
+--------------------------------------------------------------------------------
+
+
+File:	test_leap_year.c
+
+Description:
+  C source: tests 2024 with is_leap_year().
+
+Usage:
+  Link with is_leap_year.o.
+
+Notes:
+  Build with Makefile.
+--------------------------------------------------------------------------------
+
+
+File:	test_leap_year.o
+
+Description:
+  Compiled object of test_leap_year.c.
+
+Notes:
+  Build artifact.
+--------------------------------------------------------------------------------
+
+
+File:	test_year
+
+Description:
+  Binary built from test_leap_year.c: reports whether 2024 is a leap year.
+
+Usage:
+  test_year
+--------------------------------------------------------------------------------
+
+
+File:	threads_manual.py
+
+Description:
+  Formats a text file as a Threads thread (500-char posts, N/T numbering, URLs
+  moved) for manual copy/paste. No credentials needed.
+
+Usage:
+  python3 threads_manual.py <textfile>
+--------------------------------------------------------------------------------
+
+
+File:	threads_thread.py
+
+Description:
+  Posts a long text file to Threads as a reply-chained thread via the Threads
+  API. Dry run unless --post.
+
+Usage:
+  python3 threads_thread.py <textfile>           # dry run (preview only)
+  python3 threads_thread.py <textfile> --post    # actually post the thread
+
+Notes:
+  Credentials in ~/.threads_config; tokens last 60 days.
+--------------------------------------------------------------------------------
+
+
+File:	tk
+
+Description:
+  Tests a list of perl executables and prints a working shebang line for those
+  that support Tk.
+
+Usage:
+  Options:
+    -d, --debug     Enable debug mode
+    -f perls_list   Use a custom Perl list file
+    -h, --help      Print this usage message
+
+Notes:
+  Symlink to tk.ksh (same program). Default list: ~/Documents/perls.txt
+--------------------------------------------------------------------------------
+
+
+File:	tk.ksh
+
+Description:
+  Tests a list of perl executables and prints a working shebang line for those
+  that support Tk.
+
+Usage:
+  Options:
+    -d, --debug     Enable debug mode
+    -f perls_list   Use a custom Perl list file
+    -h, --help      Print this usage message
+
+Notes:
+  Default list: ~/Documents/perls.txt
+--------------------------------------------------------------------------------
+
+
+File:	tk_perl_tester
+
+Description:
+  Tests various perl executables for Tk support (used by xt.pl).
+
+Usage:
+  tk_perl_tester.ksh
+
+Notes:
+  Symlink to tk_perl_tester.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	tk_perl_tester.ksh
+
+Description:
+  Tests various perl executables for Tk support (used by xt.pl).
+
+Usage:
+  tk_perl_tester.ksh
+--------------------------------------------------------------------------------
+
+
+File:	tmreport
+
+Description:
+  Runs a set of Time Machine (tmutil) commands, shows results, logs them to
+  ~/logs/<HD Name> and copies to the clipboard.
+
+Usage:
+  ~/bin/tmreport.ksh [HD Name]
+  If no HD Name is given, the first Time Machine destination reported by
+  "tmutil destinationinfo" is used (e.g. UnionSine on the MacBook Pro,
+  easystore on the iMac).
+
+Notes:
+  Symlink to tmreport.ksh (same program). Terminal needs Full Disk Access.
+--------------------------------------------------------------------------------
+
+
+File:	tmreport.ksh
+
+Description:
+  Runs a set of Time Machine (tmutil) commands, shows results, logs them to
+  ~/logs/<HD Name> and copies to the clipboard.
+
+Usage:
+  ~/bin/tmreport.ksh [HD Name]
+  If no HD Name is given, the first Time Machine destination reported by
+  "tmutil destinationinfo" is used (e.g. UnionSine on the MacBook Pro,
+  easystore on the iMac).
+
+Notes:
+  Terminal needs Full Disk Access.
+--------------------------------------------------------------------------------
+
+
+File:	trim_trailing_silence
+
+Description:
+  Trims silence from the END of an audio file only (ffmpeg silenceremove).
+
+Usage:
+    trim_trailing_silence.ksh -i INPUT.m4a [-o OUTPUT.mp3] [-t THRESHOLD_DB]
+        [-p] [-s]
+
+  Options:
+    -i FILE   Input audio file (any format ffmpeg reads -- m4a, mp3, wav, etc.)
+    -o FILE   Output file (default: INPUT with _trimmed inserted before the
+              extension, converted to .mp3 unless you give a different
+              extension explicitly)
+    -t DB     Silence threshold in dB (default: -35). More negative = only
+              treats quieter sound as "silence"; less negative = more
+              aggressive trimming.
+    -p        Play the trimmed result afterward (afplay)
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Symlink to trim_trailing_silence.ksh (same program). Default threshold -35
+  dB; output INPUT_trimmed.mp3
+--------------------------------------------------------------------------------
+
+
+File:	trim_trailing_silence.ksh
+
+Description:
+  Trims silence from the END of an audio file only (ffmpeg silenceremove).
+
+Usage:
+    trim_trailing_silence.ksh -i INPUT.m4a [-o OUTPUT.mp3] [-t THRESHOLD_DB]
+        [-p] [-s]
+
+  Options:
+    -i FILE   Input audio file (any format ffmpeg reads -- m4a, mp3, wav, etc.)
+    -o FILE   Output file (default: INPUT with _trimmed inserted before the
+              extension, converted to .mp3 unless you give a different
+              extension explicitly)
+    -t DB     Silence threshold in dB (default: -35). More negative = only
+              treats quieter sound as "silence"; less negative = more
+              aggressive trimming.
+    -p        Play the trimmed result afterward (afplay)
+    -s        Spanish status messages instead of English
+    -h        Help
+
+Notes:
+  Default threshold -35 dB; output INPUT_trimmed.mp3
+--------------------------------------------------------------------------------
+
+
+File:	ts-loop
+
+Description:
+  Runs a command (default: tailscale status) locally, then on every Tailscale
+  peer via ssh.
+
+Usage:
+  ts-loop.ksh
+  ts-loop.ksh 'command ...'
+
+Notes:
+  Symlink to ts-loop.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	ts-loop.ksh
+
+Description:
+  Runs a command (default: tailscale status) locally, then on every Tailscale
+  peer via ssh.
+
+Usage:
+  ts-loop.ksh
+  ts-loop.ksh 'command ...'
+--------------------------------------------------------------------------------
+
+
+File:	tss
+
+Description:
+  Shows Tailscale status (handles macOS app path vs Linux CLI).
+
+Usage:
+  tss
+
+Notes:
+  Symlink to tss.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	tss.ksh
+
+Description:
+  Shows Tailscale status (handles macOS app path vs Linux CLI).
+
+Usage:
+  tss
+--------------------------------------------------------------------------------
+
+
+File:	txt2epub
+
+Description:
+  Converts a plain-text poem/document to a minimal EPUB preserving every line
+  break (bypasses Calibre's TXT importer). First line = title.
+
+Usage:
+  ./txt2epub.ksh input.txt [output.epub]
+
+Notes:
+  Symlink to txt2epub.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	txt2epub.ksh
+
+Description:
+  Converts a plain-text poem/document to a minimal EPUB preserving every line
+  break (bypasses Calibre's TXT importer). First line = title.
+
+Usage:
+  ./txt2epub.ksh input.txt [output.epub]
+--------------------------------------------------------------------------------
+
+
+File:	txt2epub_batch
+
+Description:
+  Runs txt2epub.ksh over many files or a list file.
+
+Usage:
+  ./txt2epub_batch.ksh file1.txt file2.txt ...
+  ./txt2epub_batch.ksh *voll*.txt *full*.txt
+  ./txt2epub_batch.ksh -l list.txt                # filenames read from
+      ~/Documents by default
+  ./txt2epub_batch.ksh -l list.txt extra_one.txt   # list file plus extra
+      names, mixed is fine
+  ./txt2epub_batch.ksh -d ~/Desktop/drafts -l list.txt  # override the default
+      directory
+  ./txt2epub_batch.ksh -y file1.txt file2.txt     # overwrite existing EPUBs,
+      no prompt
+  ./txt2epub_batch.ksh -n file1.txt file2.txt     # skip existing EPUBs, no
+      prompt
+
+Notes:
+  Symlink to txt2epub_batch.ksh (same program). Default dir ~/Documents.
+--------------------------------------------------------------------------------
+
+
+File:	txt2epub_batch.ksh
+
+Description:
+  Runs txt2epub.ksh over many files or a list file.
+
+Usage:
+  ./txt2epub_batch.ksh file1.txt file2.txt ...
+  ./txt2epub_batch.ksh *voll*.txt *full*.txt
+  ./txt2epub_batch.ksh -l list.txt                # filenames read from
+      ~/Documents by default
+  ./txt2epub_batch.ksh -l list.txt extra_one.txt   # list file plus extra
+      names, mixed is fine
+  ./txt2epub_batch.ksh -d ~/Desktop/drafts -l list.txt  # override the default
+      directory
+  ./txt2epub_batch.ksh -y file1.txt file2.txt     # overwrite existing EPUBs,
+      no prompt
+  ./txt2epub_batch.ksh -n file1.txt file2.txt     # skip existing EPUBs, no
+      prompt
+
+Notes:
+  Default dir ~/Documents.
+--------------------------------------------------------------------------------
+
+
+File:	update-linux-hosts
+
+Description:
+  Runs apt update, full-upgrade and autoremove on every Linux host found via
+  tss, retrying with --fix-broken if needed.
+
+Usage:
+  update-linux-hosts.ksh
+
+Notes:
+  Symlink to update-linux-hosts.ksh (same program). Needs the NOPASSWD rule
+  from deploy-nopasswd.ksh.
+--------------------------------------------------------------------------------
+
+
+File:	update-linux-hosts.ksh
+
+Description:
+  Runs apt update, full-upgrade and autoremove on every Linux host found via
+  tss, retrying with --fix-broken if needed.
+
+Usage:
+  update-linux-hosts.ksh
+
+Notes:
+  Needs the NOPASSWD rule from deploy-nopasswd.ksh.
+--------------------------------------------------------------------------------
+
+
+File:	update_myair_stats_report
+
+Description:
+  One-off: copies myair_stats_report.ksh from ~/Downloads into ~/bin and the SS
+  repo, commits and pushes it (Desktop output + open-PDF prompt), then runs
+  setup.ksh.
+
+Usage:
+  update_myair_stats_report.ksh
+
+Notes:
+  Symlink to update_myair_stats_report.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	update_myair_stats_report.ksh
+
+Description:
+  One-off: copies myair_stats_report.ksh from ~/Downloads into ~/bin and the SS
+  repo, commits and pushes it (Desktop output + open-PDF prompt), then runs
+  setup.ksh.
+
+Usage:
+  update_myair_stats_report.ksh
+--------------------------------------------------------------------------------
+
+
+File:	WellsFargoFormat
+
+Description:
+  Converts a Wells Fargo statement PDF into a redacted 80-column text file and
+  a CSV (Date, Description, Credits, Debits, Balance).
+
+Usage:
+  WellsFargoFormat.ksh [input.pdf]
+
+Notes:
+  Symlink to WellsFargoFormat.ksh (same program). Requires pdftotext (poppler).
+--------------------------------------------------------------------------------
+
+
+File:	WellsFargoFormat.ksh
+
+Description:
+  Converts a Wells Fargo statement PDF into a redacted 80-column text file and
+  a CSV (Date, Description, Credits, Debits, Balance).
+
+Usage:
+  WellsFargoFormat.ksh [input.pdf]
+
+Notes:
+  Requires pdftotext (poppler).
+--------------------------------------------------------------------------------
+
+
+File:	x
+
+Description:
+  Not a program: saved text notes on California mail-in ballot rules (2026).
+
+Notes:
+  Data file with execute bit set.
+--------------------------------------------------------------------------------
+
+
+File:	xt
+
+Description:
+  Finds a Tk-capable perl and launches the xt.pl xterm GUI in the background.
+
+Usage:
+  xt
+
+Notes:
+  Symlink to xt.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	xt.ksh
+
+Description:
+  Finds a Tk-capable perl and launches the xt.pl xterm GUI in the background.
+
+Usage:
+  xt
+--------------------------------------------------------------------------------
+
+
+File:	xt.pl
+
+Description:
+  Perl/Tk GUI panel of buttons, fields and checkboxes to create xterm windows
+  with chosen attributes.
+
+Usage:
+  xt.pl [--debug]   (usually via xt)
+--------------------------------------------------------------------------------
+
+
+File:	xt.py
+
+Description:
+  Python dashboard for quickly creating xterms; uses xtrc.py.
+
+Usage:
+  xt.py
+--------------------------------------------------------------------------------
+
+
+File:	xterm-examples
+
+Description:
+  Opens sample xterms in three fonts x two color schemes.
+
+Usage:
+  xterm-examples.ksh
+
+Notes:
+  Symlink to xterm-examples.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	xterm-examples.ksh
+
+Description:
+  Opens sample xterms in three fonts x two color schemes.
+
+Usage:
+  xterm-examples.ksh
+--------------------------------------------------------------------------------
+
+
+File:	xterm.pl
+
+Description:
+  Prompts for xterm settings and spawns the window.
+
+Usage:
+  xterm.pl
+--------------------------------------------------------------------------------
+
+
+File:	xterm.py
+
+Description:
+  Python: asks for xterm attributes on the command line and spawns the window
+  (macOS).
+
+Usage:
+  xterm.py
+--------------------------------------------------------------------------------
+
+
+File:	xterm_good_fonts.py
+
+Description:
+  Opens xterms using the fonts in ~/Documents/good_fonts.txt with a range of
+  colors.
+
+Usage:
+  xterm_good_fonts.py
+
+  ~/Documents/good_fonts.txt is hard coded here.  This script takes no args.
+--------------------------------------------------------------------------------
+
+
+File:	xterm_path.py
+
+Description:
+  Finds the full path of xterm (macOS).
+
+Usage:
+  xterm_path.py
+--------------------------------------------------------------------------------
+
+
+File:	xterms
+
+Description:
+  Opens 3 pairs of xterms (each pair shares a font), six unique colors.
+
+Usage:
+  xterms.ksh
+
+Notes:
+  Symlink to xterms.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	xterms.ksh
+
+Description:
+  Opens 3 pairs of xterms (each pair shares a font), six unique colors.
+
+Usage:
+  xterms.ksh
+--------------------------------------------------------------------------------
+
+
+File:	xtermTk
+
+Description:
+  Loads .profile and ~/.locale, then launches xtermTk.py in the background.
+
+Usage:
+  xtermTk[.ksh]
+
+Notes:
+  Symlink to xtermTk.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	xtermTk.ksh
+
+Description:
+  Loads .profile and ~/.locale, then launches xtermTk.py in the background.
+
+Usage:
+  xtermTk[.ksh]
+--------------------------------------------------------------------------------
+
+
+File:	xtermTk.py
+
+Description:
+  Python/Tk widget window for launching xterms (macOS).
+
+Usage:
+  xtermTk.py
+--------------------------------------------------------------------------------
+
+
+File:	xtpy
+
+Description:
+  Launches ~/bin/xt.py in the background.
+
+Usage:
+  xtpy
+--------------------------------------------------------------------------------
+
+
+File:	xtrc
+
+Description:
+  Copy of xtrc.py (helper module for xt.py and .xtrc settings).
+
+Usage:
+  import xtrc
+
+Notes:
+  Identical header to xtrc.py; intended to be imported, not run.
+--------------------------------------------------------------------------------
+
+
+File:	xtrc.py
+
+Description:
+  Helper module for xt.py: handles colors, .xtrc settings and xterm command
+  data.
+
+Usage:
+  import xtrc
+--------------------------------------------------------------------------------
+
+
+File:	xtt
+
+Description:
+  Loads .profile and runs xterm.pl.
+
+Usage:
+  xtt[.ksh]
+
+Notes:
+  Symlink to xtt.ksh (same program).
+--------------------------------------------------------------------------------
+
+
+File:	xtt.ksh
+
+Description:
+  Loads .profile and runs xterm.pl.
+
+Usage:
+  xtt[.ksh]
+--------------------------------------------------------------------------------
+
+
+File:	yt2txt
+
+Description:
+  Downloads a YouTube video's captions as plain text, named after the video
+  title.
+
+Usage:
+  yt2txt [-l lang] [-o name] [-d dir] [-u] URL|VIDEO_ID
+  Accepts watch?v=, youtu.be/, /shorts/, /live/, /embed/ URLs (playlist
+  and timestamp tails are ignored) or a bare 11-character video id.
+  -l lang   caption language (default: en; e.g. de for German)
+  -o name   output base name (default: the video title, filename-safe,
+            trimmed to ~80 chars, e.g. Your_Mind_Isn_t_What_You_Think_...)
+  -d dir    output directory (default: $YT2TXT_DIR, else ~/Documents)
+  -u        upgrade yt-dlp first (brew on macOS, pipx/pip on Linux)
+
+Notes:
+  Symlink to yt2txt.ksh (same program). Never overwrites; adds _2, _3 ...
+--------------------------------------------------------------------------------
+
+
+File:	yt2txt.ksh
+
+Description:
+  Downloads a YouTube video's captions as plain text, named after the video
+  title.
+
+Usage:
+  yt2txt [-l lang] [-o name] [-d dir] [-u] URL|VIDEO_ID
+  Accepts watch?v=, youtu.be/, /shorts/, /live/, /embed/ URLs (playlist
+  and timestamp tails are ignored) or a bare 11-character video id.
+  -l lang   caption language (default: en; e.g. de for German)
+  -o name   output base name (default: the video title, filename-safe,
+            trimmed to ~80 chars, e.g. Your_Mind_Isn_t_What_You_Think_...)
+  -d dir    output directory (default: $YT2TXT_DIR, else ~/Documents)
+  -u        upgrade yt-dlp first (brew on macOS, pipx/pip on Linux)
+
+Notes:
+  Never overwrites; adds _2, _3 ...
+--------------------------------------------------------------------------------
+
+

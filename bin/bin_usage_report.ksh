@@ -1,7 +1,7 @@
 #!/bin/ksh
 #
 # bin_usage_report.ksh - wrapper for bin_usage_report.py. Regenerates
-# ~/Documents/bin usage.txt, the quick reference of every executable in
+# ~/Documents/bin_usage.txt, the quick reference of every executable in
 # ~/bin (Description / Usage / Notes per file).
 #
 # Usage:

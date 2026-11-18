@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-bin_usage_report.py - build ~/Documents/bin usage.txt, a quick reference of
+bin_usage_report.py - build ~/Documents/bin_usage.txt, a quick reference of
 every executable in ~/bin (description, usage, notes per file).
 
 Usage:
@@ -13,7 +13,7 @@ file with no e(...) entry stops the run and is listed, so add one.
 import os, textwrap
 
 BIN = os.path.expanduser("~/bin")
-OUT = os.path.expanduser("~/Documents/bin usage.txt")
+OUT = os.path.expanduser("~/Documents/bin_usage.txt")
 SEP = "-" * 80
 
 # name -> (summary, usage lines, notes)
@@ -100,14 +100,14 @@ e("build_german_vocab.py",
    "VOCAB_OUT_DIR=~/Documents build_german_vocab.py"],
   "Requires python3 + openpyxl. Normally run via german-vocab.ksh.")
 e("bin_usage_report.py",
-  "Builds ~/Documents/bin usage.txt: one block per executable in ~/bin with "
+  "Builds ~/Documents/bin_usage.txt: one block per executable in ~/bin with "
   "Description, Usage (copied from the script's own USAGE header when "
   "present) and Notes.",
   ["bin_usage_report.py   (normally via bin_usage_report.ksh)"],
   "Descriptions are hand-written e(...) entries in this file; a new ~/bin "
   "file without one stops the run and is listed.")
 e("bin_usage_report.ksh",
-  "Wrapper for bin_usage_report.py: regenerates ~/Documents/bin usage.txt.",
+  "Wrapper for bin_usage_report.py: regenerates ~/Documents/bin_usage.txt.",
   ["bin_usage_report"])
 e("bump_volume.ksh",
   "Applies a simple volume multiplier to an MP3 (e.g. 1.03 = +3%), "
@@ -129,6 +129,12 @@ e("check_vnc_remote.ksh",
   "SSHes into the Linux Tailscale hosts and reports VNC processes, "
   "binaries, systemd units and any port-5900 listener.",
   ["check_vnc_remote.ksh [-s]      -s = Spanish output"])
+e("clean_nocturia_pilot_error.ksh",
+  "One-off: removes the two test rows logged with no amount on the night "
+  "of 2026-11-17 (02:08 and 03:23) from ~/.nocturia_log.csv. Backs the "
+  "file up first and writes nothing unless exactly 2 rows match.",
+  ["clean_nocturia_pilot_error.ksh"],
+  "Hardcoded on purpose; other amount-less rows are left alone.")
 e("clean_text.py",
   "Replaces U+2028/U+2029 (line/paragraph separator) characters in a text "
   "file with plain newlines.",
@@ -787,6 +793,11 @@ e("txt2epub_batch.ksh",
    "txt2epub_batch.ksh [-d DIR] -l list.txt [extra.txt]",
    "  -y overwrite existing  -n skip existing"],
   "Default dir ~/Documents.")
+e("update_myair_stats_report.ksh",
+  "One-off: copies myair_stats_report.ksh from ~/Downloads into ~/bin and "
+  "the SS repo, commits and pushes it (Desktop output + open-PDF prompt), "
+  "then runs setup.ksh.",
+  ["update_myair_stats_report.ksh"])
 e("update-linux-hosts.ksh",
   "Runs apt update, full-upgrade and autoremove on every Linux host found "
   "via tss, retrying with --fix-broken if needed.",
@@ -952,6 +963,12 @@ names = sorted(os.listdir(BIN), key=str.lower)
 for n in names:
     p = os.path.join(BIN, n)
     if not os.path.isfile(p) or not os.access(p, os.X_OK):
+        continue
+    # Skip backups: any name containing "bak", or anything that lives
+    # (or whose symlink target lives) inside a folder named backup.
+    real = os.path.realpath(p)
+    if "bak" in n.lower() or "bak" in os.path.basename(real).lower() or \
+       any(d.lower() == "backup" for d in os.path.dirname(real).split(os.sep)):
         continue
     src, notes_pre = n, []
     if os.path.islink(p):
