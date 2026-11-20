@@ -43,3 +43,7 @@ fi
 alias py=python
 alias elee="cd ~/Documents/elevenLabsUploads/english"
 alias eleg="cd ~/Documents/elevenLabsUploads/german"
+alias ms="morning_sleep"            # Apple Health Sleep Report
+alias hs="health_sleep"             # ResMed Health Sleep Report
+alias ns="nocturnal_log"            # Nighttime Log data handler. Requires cmd script.
+alias as="all_sleep"                # Runs the three programs above. Master
