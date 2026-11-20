@@ -1,5 +1,5 @@
 #!/bin/ksh
-# nocturia_log.ksh - "Pissy Night" log wrapper for nocturia_log.py
+# nocturnal_log.ksh - "Pissy Night" log wrapper for nocturnal_log.py
 # Logs nighttime urination time + amount (oz) for the sleep study.
 # English output only.
 
@@ -20,4 +20,4 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-exec python3 "$here/nocturia_log.py" "$@"
+exec python3 "$here/nocturnal_log.py" "$@"
