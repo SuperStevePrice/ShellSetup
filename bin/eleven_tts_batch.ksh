@@ -267,6 +267,3 @@ rm -rf "$WORK_DIR"
 
 msg "Done. $done_count succeeded, $failed failed, out of $total_parts part(s) across $total_files file(s)." \
     "Listo. $done_count exitosos, $failed fallidos, de $total_parts parte(s) en $total_files archivo(s)."
-#-------------------------------------------------------------------------------
-# Last installed: 2026-11-09 09:38:29
-#-- End of File ----------------------------------------------------------------

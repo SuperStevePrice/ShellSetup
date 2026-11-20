@@ -94,6 +94,3 @@ scp_source() {
 print "Transfer Beginning"
 scp_source "$source" "$target"
 print "Transfer Complete"
-#-------------------------------------------------------------------------------
-# Last installed: 2023-07-07 00:12:49
-#-- End of File ----------------------------------------------------------------

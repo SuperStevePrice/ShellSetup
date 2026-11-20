@@ -51,6 +51,3 @@ fi
 
 # Run diff recursively on all files in the folders, excluding specified folders
 diff -r --exclude "installation_list.txt" --exclude "README.txt" --exclude="LICENSE*" --exclude=".git" --exclude="logs" "$old_project" "$new_project"
-#-------------------------------------------------------------------------------
-# Last installed: 2023-05-21 14:21:29
-#-- End of File ----------------------------------------------------------------

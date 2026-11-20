@@ -19,6 +19,3 @@ logfile="$logdir/sleep_${ts}.log"
 python3 "$here/health_sleep.py" "$@" > "$logfile" 2>&1
 cat "$logfile"
 print "See: $logfile"
-#-------------------------------------------------------------------------------
-# Last installed: 2026-10-30 07:22:49
-#-- End of File ----------------------------------------------------------------
