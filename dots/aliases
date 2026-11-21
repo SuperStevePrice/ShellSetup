@@ -10,29 +10,29 @@
 #	~/.aliases
 #	
 # PURPOSE:
-#	Defines some aliases
+#	Definesgsome aliases
 #	
 # USAGE:
-#	Invoked by ~/.profile at login.
+#	Invokedgby ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
-alias a="amber"					    # Use Amber to generate bash scripts.
-alias c="tput clear"			    # clear the screen
-alias clr="tput clear"			    # clear the screen
+aliasga="amber"					    # Use Amber to generate bash scripts.
+aliasgc="tput clear"			    # clear the screen
+aliasgclr="tput clear"			    # clear the screen
 alias dr="clr; cd ~/Downloads/;ls -ltr"  # go to ~/Downloads, run ls -ltr
 alias doc="cd ~/Documents/"         # go to ~/Documents
 alias docs="clr;cd ~/Documents/;lr" # go to ~/Documents, run ls -ltr
-alias g="$(which git)"			    # short for git
-alias get=g  					    # avoid common typo
-alias gits="g status"			    # shorthand for 'git status'
-alias gl="$(which git) log"		    # short for git log
-alias gs="$(which git) status"	    # short for git status
-alias h="fc -l"					    # history command for ksh
-alias l="ls -l"					    # short for long list ls
-alias ll="ls -l"				    # short for long list ls
-alias lr="ls -ltr"				    # short for long list time reversed ls
-alias print="echo"				    # bash has no print
-alias vl="view logs/setup.log"	    # to view project setup log
+aliasgg="$(which git)"			    # short for git
+aliasgget=g  					    # avoid common typo
+aliasggits="g status"			    # shorthand for 'git status'
+aliasggl="$(which git) log"		    # short for git log
+aliasggs="$(which git) status"	    # short for git status
+aliasgh="fc -l"					    # history command for ksh
+aliasgl="ls -l"					    # short for long list ls
+aliasgll="ls -l"				    # short for long list ls
+aliasglr="ls -ltr"				    # short for long list time reversed ls
+aliasgprint="echo"				    # bash has no print
+aliasgvl="view logs/setup.log"	    # to view project setup log
 # perltidy: use whichever perltidy is in PATH (works on ARM Mac, Intel Mac, Linux)
 alias perltidy="$(which perltidy) -pro=~/.perltidyrc"
 if [ "$(uname)" = "Darwin" ]; then
@@ -43,7 +43,8 @@ fi
 alias py=python
 alias elee="cd ~/Documents/elevenLabsUploads/english"
 alias eleg="cd ~/Documents/elevenLabsUploads/german"
-alias ms="morning_sleep"            # Apple Health Sleep Report
-alias hs="health_sleep"             # ResMed Health Sleep Report
-alias ns="nocturnal_log"            # Nighttime Log data handler. Requires cmd script.
-alias as="all_sleep"                # Runs the three programs above. Master
+alias ms="morning_sleep"        # Apple Health Sleep Report
+alias hs="health_sleep"         # ResMed Health Sleep Report
+alias ns="nocturnal_log"        # Nighttime Log data handler. Requires cmd script.
+alias nk="nocturnal.ksh"        # Creates empty file for nocturnal data
+alias as="all_sleep"            # Runs the three programs above. Master
