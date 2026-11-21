@@ -859,6 +859,54 @@ e("yt2txt.ksh",
    "  -l caption language (en)  -d output dir (~/Documents)",
    "  -u upgrade yt-dlp first"],
   "Never overwrites; adds _2, _3 ...")
+e("all_sleep.ksh",
+  "Unified sleep-study wrapper: runs nocturnal.ksh, nocturnal_log, "
+  "morning_sleep and health_sleep in sequence (nocturnal data first, since "
+  "morning_sleep cross-references it). Each component checks for its own "
+  "required Downloads input file and exits with fetch instructions if it's "
+  "missing, rather than prompting interactively.",
+  ["all_sleep.ksh"],
+  "Aliased as 'as' in dots/aliases (SS repo). Run order: nocturnal -> "
+  "nocturnal_log -> morning_sleep -> health_sleep.")
+e("nocturnal.ksh",
+  "Opens vi on a new ~/Downloads/nocturnal_cmds_<timestamp>.ksh file for "
+  "pasting the Nocturnal Log web page's ready-to-paste commands copied from "
+  "the iPhone (universal clipboard); after save/quit runs the saved file "
+  "via ksh to log the entries through nocturnal_log.",
+  ["nocturnal.ksh"],
+  "Run via ksh, not chmod +x, per Steve's Downloads convention. First step "
+  "in the all_sleep.ksh sequence.")
+e("nocturnal_log.ksh",
+  "'Nocturnal Log' wrapper for nocturnal_log.py (renamed Nov 2026 from "
+  "nocturia_log.ksh): records nighttime urination time and amount (oz) for "
+  "the sleep study.",
+  ["nocturnal_log.ksh HH:MM [AMOUNT_OZ] [\"notes\"] [-d YYYY-MM-DD]",
+   "nocturnal_log.ksh -l [-n N] [--night YYYY-MM-DD]     list"],
+  "Second step in the all_sleep.ksh sequence, after nocturnal.ksh.")
+e("nocturnal_log.py",
+  "Back end for nocturnal_log.ksh (renamed Nov 2026 from nocturia_log.py); "
+  "stores entries in ~/.nocturnal_log.csv grouped by night.",
+  ["see nocturnal_log.ksh"])
+e("wispr_dictation_login.ksh",
+  "Launches Wispr Flow and clicks File > Start Dictation via System Events "
+  "UI automation; installable as a login-time LaunchAgent so dictation "
+  "starts automatically at login.",
+  ["wispr_dictation_login.ksh"],
+  "Companion to wispr_stop_dictation.ksh (quits/relaunches Wispr Flow as an "
+  "emergency dictation-off).")
+e("clean_last_installed.ksh",
+  "Enforces that no file in the project tree carries a stray 'Last "
+  "installed:' setup.ksh stamp block (setup.ksh itself excepted): sweeps "
+  "stray backup-predeploy snapshot dirs, strips stamp blocks, offers to "
+  "rerun setup.ksh, then offers to git add/commit/push ShellSetup and Pray "
+  "individually. Also reports (never removes) any unrelated 'Last patched:' "
+  "lines.",
+  ["clean_last_installed.ksh [-d DIR] [-n|--dry-run] [-y|--yes]",
+   "                          [--no-reinstall] [--no-push] [-h|--help]",
+   "clean_last_installed.ksh --fix-permissions"],
+  "--fix-permissions is a separate one-time repair for files an earlier "
+  "version of this script flipped from 755 to 644 via mv instead of cat; "
+  "exits immediately, skipping the normal 4 steps.")
 
 import re
 
@@ -999,3 +1047,6 @@ if missing:
 with open(OUT, "w") as f:
     f.write("".join(entries))
 print(len(entries), "entries;", verbatim, "with usage copied from the script")
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-17 09:48:53
+#-- End of File ----------------------------------------------------------------

@@ -2,13 +2,18 @@
 # all_sleep.ksh
 #
 # Master wrapper for the sleep-study pipeline. Runs in dependency order:
-#   1. nocturnal       - paste/run tonight's iPhone clipboard commands,
-#                         opens vi for Cmd-V, logs entries via nocturnal_log
-#   2. nocturnal_log   - (no args) list/confirm what was just logged
-#   3. morning_sleep   - Apple Health sleep report; cross-references the
-#                         nocturnal data logged in steps 1-2, so it must
-#                         run after them
-#   4. health_sleep    - ResMed myAir report; independent of nocturnal data
+#   1. nocturnal          - paste/run tonight's iPhone clipboard commands,
+#                            opens vi for Cmd-V, logs entries via nocturnal_log
+#   2. nocturnal_log      - (no args) processes tonight's pasted commands,
+#                            then (-l) lists/confirms, then (-r) writes the
+#                            nocturnal.pdf/.xlsx pair to the Desktop
+#   3. morning_sleep      - Apple Health meds log + sleep_report.pdf/.xlsx
+#                            pair; cross-references the nocturnal data logged
+#                            in steps 1-2, so it must run after them
+#   4. health_sleep       - Apple Watch sleep-stage data (export.xml); feeds
+#                            sleep_study.db, which sleep_report draws on
+#   5. myair_stats_report - ResMed myAir report; independent of the above,
+#                            writes its own PDF/xlsx pair to the Desktop
 #
 # Each sub-tool is skipped (not fatal) if not found on PATH. Shows live
 # output on screen AND writes a single combined log file for the run.
@@ -32,6 +37,17 @@ DLDIR="$HOME/Downloads"
 
 mkdir -p "$LOGDIR"
 
+# Looks up the most recently written ~/logs/<name>.*.log file for a given
+# sub-step and prints its own "See: ..." line, if it has one. Reads the
+# file from disk after the step has already finished, rather than piping
+# the step's live output through another tee - nocturnal's vi session in
+# particular needs direct terminal access and must not be re-piped.
+latest_see_line() {
+	typeset f
+	f=$(ls -t "$LOGDIR/$1".*.log 2>/dev/null | head -1)
+	[[ -n "$f" ]] && grep '^See:' "$f" 2>/dev/null
+}
+
 run() {
 	if [[ $DRYRUN -eq 1 ]]; then
 		print "=== all_sleep: DRY RUN $(date) ==="
@@ -50,7 +66,7 @@ run() {
 		fi
 
 		print "\n--- nocturnal_log ---"
-		print "Would run: nocturnal_log -l"
+		print "Would run: nocturnal_log (process pending), then nocturnal_log -l"
 		print "(nothing to check - reads its own internal log)"
 
 		print "\n--- morning_sleep ---"
@@ -65,8 +81,19 @@ run() {
 		fi
 
 		print "\n--- health_sleep ---"
-		print "Would run: health_sleep"
-		if [[ -f "$DLDIR/myAir-Steve Price.pdf" ]]; then
+		print "Would run: health_sleep <export.xml or export.zip>"
+		if [[ -f "$DLDIR/apple_health_export/export.xml" || -f "$DLDIR/export.zip" ]]; then
+			print "Found export.xml or export.zip in $DLDIR - OK."
+		else
+			print "WARNING: no export.xml or export.zip found in $DLDIR."
+			print "  -> On iPhone: Health app -> profile icon -> Export All Health Data ->"
+			print "     AirDrop/save export.zip to this Mac's Downloads folder."
+			WARNINGS=$((WARNINGS + 1))
+		fi
+
+		print "\n--- myair_stats_report ---"
+		print "Would run: myair_stats_report"
+		if [[ -f "$DLDIR/myAir-Steve Price.pdf" || -f "$DLDIR/myAir-Steve-Price.pdf" ]]; then
 			print "Found myAir-Steve Price.pdf in $DLDIR - OK."
 		else
 			print "WARNING: no myAir-Steve Price.pdf found in $DLDIR."
@@ -81,17 +108,44 @@ run() {
 	fi
 
 	print "=== all_sleep: starting $(date) ==="
+	SEE_LINES=""
+
+	print ""
+	print "In order for this script to complete, this script requires the following input:"
+	print "  - Apple Health export: ~/Downloads/export.zip (or an already-unzipped"
+	print "    apple_health_export/ folder). Get it via: iPhone Health app -> profile"
+	print "    icon -> Export All Health Data -> AirDrop to this Mac."
+	print "  - ResMed myAir report: ~/Downloads/myAir-Steve Price.pdf. Get it via:"
+	print "    https://myair.resmed.com -> History -> Report -> save/export the PDF."
+
+	print ""
+	read ans?"Proceed? [Y/n]: "
+	case "$ans" in
+		[Nn]*)
+			print ""
+			print "Exiting at your request before starting the sleep-study run."
+			print "=== all_sleep: finished $(date) - user chose to leave ==="
+			print "See: $LOGFILE"
+			return 0
+			;;
+	esac
 
 	print "\n--- nocturnal ---"
 	if command -v nocturnal >/dev/null 2>&1; then
 		nocturnal
+		SEE_LINES="${SEE_LINES}$(latest_see_line nocturnal)
+"
 	else
 		print "nocturnal not found on PATH - skipping"
 	fi
 
 	print "\n--- nocturnal_log ---"
 	if command -v nocturnal_log >/dev/null 2>&1; then
+		nocturnal_log
 		nocturnal_log -l
+		nocturnal_log -r
+		SEE_LINES="${SEE_LINES}$(latest_see_line nocturnal_log)
+"
 	else
 		print "nocturnal_log not found on PATH - skipping"
 	fi
@@ -99,19 +153,50 @@ run() {
 	print "\n--- morning_sleep ---"
 	if command -v morning_sleep >/dev/null 2>&1; then
 		morning_sleep
+		SEE_LINES="${SEE_LINES}$(latest_see_line morning_sleep)
+"
 	else
 		print "morning_sleep not found on PATH - skipping"
 	fi
 
 	print "\n--- health_sleep ---"
 	if command -v health_sleep >/dev/null 2>&1; then
-		health_sleep
+		# health_sleep.py requires a positional path; prefer the
+		# already-unzipped export.xml (same precedence morning_sleep.ksh
+		# uses) and fall back to export.zip if that's all that's there.
+		EXPORT_FILE="$DLDIR/apple_health_export/export.xml"
+		[[ -f "$EXPORT_FILE" ]] || EXPORT_FILE="$DLDIR/export.zip"
+		if [[ -f "$EXPORT_FILE" ]]; then
+			health_sleep "$EXPORT_FILE"
+			SEE_LINES="${SEE_LINES}$(latest_see_line health_sleep)
+"
+		else
+			print "No export.xml or export.zip found in $DLDIR - skipping health_sleep"
+		fi
 	else
 		print "health_sleep not found on PATH - skipping"
 	fi
 
+	print "\n--- myair_stats_report ---"
+	if command -v myair_stats_report >/dev/null 2>&1; then
+		myair_stats_report
+		SEE_LINES="${SEE_LINES}$(latest_see_line myair_stats_report)
+"
+	else
+		print "myair_stats_report not found on PATH - skipping"
+	fi
+
 	print "\n=== all_sleep: finished $(date) ==="
+	SEE_LINES=$(print "$SEE_LINES" | sed '/^[[:space:]]*$/d')
+	if [[ -n "$SEE_LINES" ]]; then
+		print ""
+		print "--- Logs from this run ---"
+		print "$SEE_LINES"
+	fi
 	print "See: $LOGFILE"
 }
 
 run 2>&1 | tee -a "$LOGFILE"
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-20 21:10:08
+#-- End of File ----------------------------------------------------------------

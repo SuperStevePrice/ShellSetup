@@ -2,7 +2,8 @@
 # myair_stats_report.ksh - wrapper around myair_stats_report.py: turns a
 # downloaded myAir "Sleep therapy report" PDF into a numbers-only PDF
 # (same stats myAir already computed -- usage, AHI, leak, days-used
-# thresholds -- for each date window, tabled, no bar charts).
+# thresholds -- for each date window, tabled, no bar charts) and the
+# same numbers as an xlsx spreadsheet.
 #
 # Before anything else, this also fixes ResMed's own download naming:
 # myAir's "Download my report" saves the file as "myAir-Steve Price.pdf"
@@ -12,7 +13,7 @@
 # INPUT.pdf is given.
 #
 # Usage:
-#   myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf]]
+#   myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf [OUTPUT.xlsx]]]
 #     -s          print status messages in Spanish instead of English
 #     INPUT.pdf   the myAir PDF you downloaded from myair.resmed.com
 #                 (default: ~/Downloads/myAir-Steve-Price.pdf, after
@@ -21,15 +22,17 @@
 #                 (default: ~/Desktop/<INPUT base name>_stats.pdf --
 #                 same place the rest of the Sleep Study Suite lands
 #                 its PDFs)
+#     OUTPUT.xlsx where to write the same numbers as a spreadsheet
+#                 (default: OUTPUT.pdf with .xlsx in place of .pdf)
 #
-# After a successful run, offers to open the finished PDF (default no),
-# same as morning_sleep.ksh does for sleep_report.pdf.
+# After a successful run, offers to open each finished file (default
+# no), same as morning_sleep.ksh does for sleep_report.pdf/.xlsx.
 
 SPANISH=0
 while getopts "s" opt; do
     case $opt in
         s) SPANISH=1 ;;
-        *) print -u2 "Usage: ${0##*/} [-s] [INPUT.pdf [OUTPUT.pdf]]"; exit 1 ;;
+        *) print -u2 "Usage: ${0##*/} [-s] [INPUT.pdf [OUTPUT.pdf [OUTPUT.xlsx]]]"; exit 1 ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -56,8 +59,8 @@ if [[ -z "$1" ]]; then
     if [[ -f "$GOOD_NAME" ]]; then
         set -- "$GOOD_NAME"
     else
-        msg "Usage: ${0##*/} [-s] [INPUT.pdf [OUTPUT.pdf]]" \
-            "Uso: ${0##*/} [-s] [ENTRADA.pdf [SALIDA.pdf]]"
+        msg "Usage: ${0##*/} [-s] [INPUT.pdf [OUTPUT.pdf [OUTPUT.xlsx]]]" \
+            "Uso: ${0##*/} [-s] [ENTRADA.pdf [SALIDA.pdf [SALIDA.xlsx]]]"
         exit 1
     fi
 fi
@@ -73,6 +76,13 @@ else
     OUTPUT="$HOME/Desktop/${base}_stats.pdf"
 fi
 
+# --- default OUTPUT.xlsx to OUTPUT.pdf with the extension swapped ---
+if [[ -n "$3" ]]; then
+    OUTPUT_XLSX="$3"
+else
+    OUTPUT_XLSX="${OUTPUT%.pdf}.xlsx"
+fi
+
 mkdir -p ~/logs
 LOGFILE=~/logs/myair_stats_report.$(date +%Y%m%d_%H%M%S).log
 
@@ -81,7 +91,7 @@ LOGFILE=~/logs/myair_stats_report.$(date +%Y%m%d_%H%M%S).log
 msg "Extracting myAir stats from: $INPUT" \
     "Extrayendo estadisticas de myAir desde: $INPUT"
 
-python3 ~/bin/myair_stats_report.py "$INPUT" "$OUTPUT"
+python3 ~/bin/myair_stats_report.py "$INPUT" "$OUTPUT" "$OUTPUT_XLSX"
 rc=$?
 
 if [[ $rc -eq 0 ]]; then
@@ -97,11 +107,25 @@ if [[ $rc -eq 0 ]]; then
         OPEN_PDF=$(print "$OPEN_PDF" | tr '[:lower:]' '[:upper:]')
         [[ "$OPEN_PDF" == "Y" ]] && open "$OUTPUT"
     fi
+
+    if [[ -f "$OUTPUT_XLSX" ]]; then
+        if [[ $SPANISH -eq 1 ]]; then
+            print -n "¿Desea abrir el archivo de numeros (xlsx)? [y/N]: "
+        else
+            print -n "Would you like to open the numbers (xlsx) report? [y/N]: "
+        fi
+        read OPEN_XLSX
+        OPEN_XLSX=$(print "$OPEN_XLSX" | tr '[:lower:]' '[:upper:]')
+        [[ "$OPEN_XLSX" == "Y" ]] && open "$OUTPUT_XLSX"
+    fi
 else
     msg "Failed (see above)." "Fallo (vea arriba)."
 fi
 
-} 2>&1 | tee "$LOGFILE"
-
 print ""
 print "See: $LOGFILE"
+
+} 2>&1 | tee "$LOGFILE"
+#-------------------------------------------------------------------------------
+# Last installed: 2026-11-17 07:34:01
+#-- End of File ----------------------------------------------------------------
