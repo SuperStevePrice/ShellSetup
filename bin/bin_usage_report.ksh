@@ -21,6 +21,8 @@
 here=${0%/*}
 [[ "$here" == "$0" ]] && here=.
 
-exec python3 "$here/bin_usage_report.py" "$@"
+python3 "$here/bin_usage_report.py" "$@"
+rc=$?
 
 print "\nSee: ~/Documents/bin_usage.txt"
+exit $rc
