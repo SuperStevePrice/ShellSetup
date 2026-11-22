@@ -594,6 +594,15 @@ e("remove-bin-files.ksh",
   ["remove-bin-files.ksh file1 [file2 ...]"],
   "syncAll won't delete installed copies on other machines; repeat the "
   "rm's there.")
+e("restore_from_tm.ksh",
+  "Restores files missing from ~/bin (those marked NEEDS TIME MACHINE in "
+  "~/Downloads/missing_bin_files.txt) from Time Machine, searching "
+  "backups newest-first from before the 2026-11-21 15:57 wipe.",
+  ["restore_from_tm.ksh -n   dry run: show what would be restored",
+   "restore_from_tm.ksh      restore (never overwrites existing files)"],
+  "Mounts backups read-only and unmounts them afterwards. Needs Full Disk "
+  "Access. Restored files keep Time Machine's deny-write ACL; clear it "
+  "with chmod -N.")
 e("run_kingdom_come.ksh",
   "One-off: installs process_album.ksh into SS bin and runs it (2-stem) "
   "on the 'Your Kingdom Come' album.",
