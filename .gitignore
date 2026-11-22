@@ -32,3 +32,17 @@ bin/*.bak.*
 !bin/nocturia_log.py
 !bin/setup_sleep_db.py
 backup-predeploy/
+
+# Recovered 2026-11-22 after ~/bin was wiped: hand-written scripts (not from templates)
+!bin/Ave.py
+!bin/bad_chars.py
+!bin/clean_text.py
+!bin/launch_threads.py
+!bin/masto_thread.py
+!bin/password_gen.py
+!bin/pray.py
+!bin/safari_bookmarks_export.py
+!bin/safari_bookmarks_import.py
+!bin/safari_bookmarks_to_html.py
+!bin/threads_manual.py
+!bin/threads_thread.py

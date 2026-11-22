@@ -1,0 +1,56 @@
+// /////////////////////////////////////////////////////////////////////////////
+// File:    
+//      NumText.am
+// Purpose:
+//      Illustrate ways to convert Text to Num in Amber.
+//
+// Invocation:
+//     amber NumText.am
+// 
+// Output:
+// 
+// count is Text by assignment to a value of "1".
+// n is Num based on parse(count) where count is type Text.
+// count converted from Text to Num by parse(count).
+// count is Num by assignment to a value of 1.
+// /////////////////////////////////////////////////////////////////////////////
+import { parse } from "std"
+
+// Explanation: Initial Text Assignment
+// count is initially assigned a Text value "1".
+// The if statement checks if count is "1", confirming it is Text.
+let count = "1"
+if count == "1" {
+    echo("count is Text by assignment to a value of \"1\".")
+}
+
+// Explanation: Conversion to Num Using parse
+// parse(count) converts the Text count to Num and assigns it to n.
+// The n == 1 block confirms that n is now of type Num.
+let n = parse(count) failed {
+    echo("Error: parse(count) failed.")
+}
+
+n == 1 {
+    echo("n is Num based on parse(count) where count is type Text.")
+}
+
+// Explanation: Reassign and Convert
+// The count variable is re-parsed to convert it from Text to Num.
+// The if count == 1 block confirms the conversion.
+let count = parse(count) failed {
+    echo("Error: parse(count) failed.")
+}
+
+if count == 1 {
+    echo("count converted from Text to Num by parse(count).")
+}
+
+// Explanation: Direct Num Assignment
+// Finally, count is directly assigned a Num value 1.
+// The last if block confirms count is Num.
+let count = 1
+if count == 1 {
+    echo("count is Num by assignment to a value of 1.")
+}
+
