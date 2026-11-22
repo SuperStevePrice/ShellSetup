@@ -91,6 +91,13 @@ def add_entry(time_str, amount, notes, on_date):
         dt = datetime(now.year, now.month, now.day, hh, mm)
 
     night = night_key(dt)
+    hhmm = dt.strftime("%H:%M")
+    amt_field = str(amount) if amount is not None else ""
+    with open(LOGFILE) as f:
+        for r in csv.DictReader(f):
+            if r["night"] == night and r["time"] == hhmm and r["amount_oz"] == amt_field:
+                log(f"Skipped duplicate: night {night} -> {hhmm}  {amt_field or '(amount unknown)'} already logged")
+                return
     with open(LOGFILE, "a", newline="") as f:
         csv.writer(f).writerow([night, dt.strftime("%H:%M"), amount if amount is not None else "", notes or ""])
     amt_str = f"{amount} oz" if amount is not None else "(amount unknown)"
