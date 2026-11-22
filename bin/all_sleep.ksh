@@ -9,10 +9,11 @@
 #                            nocturnal.pdf/.xlsx pair to the Desktop
 #   3. morning_sleep      - Apple Health meds log + sleep_report.pdf/.xlsx
 #                            pair; cross-references the nocturnal data logged
-#                            in steps 1-2, so it must run after them
-#   4. health_sleep       - Apple Watch sleep-stage data (export.xml); feeds
-#                            sleep_study.db, which sleep_report draws on
-#   5. myair_stats_report - ResMed myAir report; independent of the above,
+#                            in steps 1-2, so it must run after them. It also
+#                            runs health_sleep (Apple Watch sleep-stage data
+#                            from export.xml) itself, so all_sleep does not
+#                            run health_sleep as a separate step.
+#   4. myair_stats_report - ResMed myAir report; independent of the above,
 #                            writes its own PDF/xlsx pair to the Desktop
 #
 # Each sub-tool is skipped (not fatal) if not found on PATH. Shows live
@@ -22,7 +23,8 @@
 # print the command that WOULD run, and where applicable, check whether
 # the required input data is actually sitting in ~/Downloads, printing a
 # warning with how-to-get-it instructions if it's missing. Ends with a
-# count of warnings (0-3; nocturnal_log has nothing file-based to check).
+# count of warnings (0-2; nocturnal_log has nothing file-based to check,
+# and morning_sleep's check covers health_sleep's export input).
 
 DRYRUN=0
 case "$1" in
@@ -75,17 +77,6 @@ run() {
 			print "Found export.zip or apple_health_export/ in $DLDIR - OK."
 		else
 			print "WARNING: no export.zip or apple_health_export/ found in $DLDIR."
-			print "  -> On iPhone: Health app -> profile icon -> Export All Health Data ->"
-			print "     AirDrop/save export.zip to this Mac's Downloads folder."
-			WARNINGS=$((WARNINGS + 1))
-		fi
-
-		print "\n--- health_sleep ---"
-		print "Would run: health_sleep <export.xml or export.zip>"
-		if [[ -f "$DLDIR/apple_health_export/export.xml" || -f "$DLDIR/export.zip" ]]; then
-			print "Found export.xml or export.zip in $DLDIR - OK."
-		else
-			print "WARNING: no export.xml or export.zip found in $DLDIR."
 			print "  -> On iPhone: Health app -> profile icon -> Export All Health Data ->"
 			print "     AirDrop/save export.zip to this Mac's Downloads folder."
 			WARNINGS=$((WARNINGS + 1))
@@ -157,24 +148,6 @@ run() {
 "
 	else
 		print "morning_sleep not found on PATH - skipping"
-	fi
-
-	print "\n--- health_sleep ---"
-	if command -v health_sleep >/dev/null 2>&1; then
-		# health_sleep.py requires a positional path; prefer the
-		# already-unzipped export.xml (same precedence morning_sleep.ksh
-		# uses) and fall back to export.zip if that's all that's there.
-		EXPORT_FILE="$DLDIR/apple_health_export/export.xml"
-		[[ -f "$EXPORT_FILE" ]] || EXPORT_FILE="$DLDIR/export.zip"
-		if [[ -f "$EXPORT_FILE" ]]; then
-			health_sleep "$EXPORT_FILE"
-			SEE_LINES="${SEE_LINES}$(latest_see_line health_sleep)
-"
-		else
-			print "No export.xml or export.zip found in $DLDIR - skipping health_sleep"
-		fi
-	else
-		print "health_sleep not found on PATH - skipping"
 	fi
 
 	print "\n--- myair_stats_report ---"

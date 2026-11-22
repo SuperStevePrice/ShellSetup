@@ -33,8 +33,10 @@ CMDFILE="nocturnal_cmds_${TIMESTAMP}.ksh"
 
 # vi needs direct terminal access for its screen drawing, so it is run
 # outside the logging pipe - piping it through tee would break its
-# interactive display.
-vi "$CMDFILE"
+# interactive display. When nocturnal is itself run inside a pipe (e.g.
+# all_sleep tees its output to a log), stdout is that pipe, so vi is
+# pointed straight at the terminal to avoid "Output is not to a terminal".
+vi "$CMDFILE" </dev/tty >/dev/tty
 
 {
     print "$CMDFILE saved. nocturnal.ksh takes no further action -"
