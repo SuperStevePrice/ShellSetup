@@ -201,6 +201,14 @@ e("deploy-nopasswd.ksh",
   "(found via tss) and runs it there to grant passwordless sudo for apt.",
   ["deploy-nopasswd.ksh"],
   "Prompts once per host for the sudo password.")
+e("diff_bin_vs_project.ksh",
+  "Compares every file in ~/Projects/SS/bin against its installed "
+  "counterpart in ~/bin, ignoring the last 3 lines of the installed copy "
+  "(the 'Last installed' trailer setup.ksh appends). Reports differences "
+  "per file and a one-line summary at the end.",
+  ["diff_bin_vs_project.ksh"],
+  "Run before install-bin-files.ksh / git_bin.ksh to confirm what's "
+  "installed matches the project source. Logs to ~/logs.")
 e("diff_projects.ksh",
   "Runs diff on all files between two project folders.",
   ["diff_projects.ksh /path/to/old_project /path/to/new_project"])
@@ -445,15 +453,15 @@ e("my_machine.ksh",
 e("myair_stats_report.ksh",
   "Wrapper for myair_stats_report.py. Renames ResMed's 'myAir-Steve "
   "Price.pdf' download to a space-free name, then builds a numbers-only "
-  "stats PDF.",
-  ["myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf]]"],
-  "Default output: ~/Desktop/<input>_stats.pdf")
+  "stats PDF plus an xlsx numbers report, each with its own open prompt.",
+  ["myair_stats_report.ksh [-s] [INPUT.pdf [OUTPUT.pdf [OUTPUT.xlsx]]]"],
+  "Default output: ~/Desktop/myAir-Steve-Price_stats.pdf and .xlsx")
 e("myair_stats_report.py",
   "Turns a ResMed myAir 'Sleep therapy report' PDF into a plain tables-"
-  "only PDF (usage, AHI, leak, days-used per date window). No charts, no "
-  "recomputation.",
-  ["myair_stats_report.py INPUT.pdf [OUTPUT.pdf]"],
-  "Requires pdfplumber, reportlab.")
+  "only PDF (usage, AHI, leak, days-used per date window), plus the same "
+  "data as an xlsx. No charts, no recomputation.",
+  ["myair_stats_report.py INPUT.pdf [OUTPUT.pdf [OUTPUT.xlsx]]"],
+  "Requires pdfplumber, reportlab, openpyxl.")
 e("names.ksh",
   "Demo of basename/dirname on a hard-coded path.", ["names.ksh"],
   "Example snippet; no header.")
@@ -861,13 +869,16 @@ e("yt2txt.ksh",
   "Never overwrites; adds _2, _3 ...")
 e("all_sleep.ksh",
   "Unified sleep-study wrapper: runs nocturnal.ksh, nocturnal_log, "
-  "morning_sleep and health_sleep in sequence (nocturnal data first, since "
-  "morning_sleep cross-references it). Each component checks for its own "
-  "required Downloads input file and exits with fetch instructions if it's "
-  "missing, rather than prompting interactively.",
+  "morning_sleep, health_sleep and myair_stats_report in sequence "
+  "(nocturnal data first, since morning_sleep cross-references it). "
+  "Produces all 3 pairs of reports on the Desktop: sleep_report "
+  "(pdf/xlsx), nocturnal (pdf/xlsx) and myAir-Steve-Price_stats "
+  "(pdf/xlsx). Each component checks for its own required Downloads "
+  "input file and exits with fetch instructions if it's missing, rather "
+  "than prompting interactively.",
   ["all_sleep.ksh"],
   "Aliased as 'as' in dots/aliases (SS repo). Run order: nocturnal -> "
-  "nocturnal_log -> morning_sleep -> health_sleep.")
+  "nocturnal_log -> morning_sleep -> health_sleep -> myair_stats_report.")
 e("nocturnal.ksh",
   "Opens vi on a new ~/Downloads/nocturnal_cmds_<timestamp>.ksh file for "
   "pasting the Nocturnal Log web page's ready-to-paste commands copied from "
@@ -879,13 +890,16 @@ e("nocturnal.ksh",
 e("nocturnal_log.ksh",
   "'Nocturnal Log' wrapper for nocturnal_log.py (renamed Nov 2026 from "
   "nocturia_log.ksh): records nighttime urination time and amount (oz) for "
-  "the sleep study.",
+  "the sleep study, and (with -r) writes the nocturnal.pdf/.xlsx report "
+  "pair to the Desktop.",
   ["nocturnal_log.ksh HH:MM [AMOUNT_OZ] [\"notes\"] [-d YYYY-MM-DD]",
-   "nocturnal_log.ksh -l [-n N] [--night YYYY-MM-DD]     list"],
+   "nocturnal_log.ksh -l [-n N] [--night YYYY-MM-DD]     list",
+   "nocturnal_log.ksh -r                                 write report pair"],
   "Second step in the all_sleep.ksh sequence, after nocturnal.ksh.")
 e("nocturnal_log.py",
   "Back end for nocturnal_log.ksh (renamed Nov 2026 from nocturia_log.py); "
-  "stores entries in ~/.nocturnal_log.csv grouped by night.",
+  "stores entries in ~/.nocturnal_log.csv grouped by night, and (with "
+  "-r/--report) writes nocturnal.pdf/.xlsx to the Desktop.",
   ["see nocturnal_log.ksh"])
 e("wispr_dictation_login.ksh",
   "Launches Wispr Flow and clicks File > Start Dictation via System Events "
