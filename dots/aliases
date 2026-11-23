@@ -7,44 +7,48 @@
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # PROGRAM:
-#	~/.aliases
-#	
+# ~/.aliases
+# 
 # PURPOSE:
-#	Definesgsome aliases
-#	
+# Defines some aliases
+# 
 # USAGE:
-#	Invokedgby ~/.profile at login.
+# Invoked by ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
-alias a="amber"					    # Use Amber to generate bash scripts.
-alias c="tput clear"			    # clear the screen
-alias clr="tput clear"			    # clear the screen
-alias dr="clr; cd ~/Downloads/;ls -ltr"  # go to ~/Downloads, run ls -ltr
-alias doc="cd ~/Documents/"         # go to ~/Documents
-alias docs="clr;cd ~/Documents/;lr" # go to ~/Documents, run ls -ltr
-alias g="$(which git)"			    # short for git
-alias get=g  					    # avoid common typo
-alias gits="g status"			    # shorthand for 'git status'
-alias gl="$(which git) log"		    # short for git log
-alias gs="$(which git) status"	    # short for git status
-alias h="fc -l"					    # history command for ksh
-alias l="ls -l"					    # short for long list ls
-alias ll="ls -l"				    # short for long list ls
-alias lr="ls -ltr"				    # short for long list time reversed ls
-alias print="echo"				    # bash has no print
-alias vl="view logs/setup.log"	    # to view project setup log
-# perltidy: use whichever perltidy is in PATH (works on ARM Mac, Intel Mac, Linux)
+alias a="amber"                    
+alias as="all_sleep.ksh"           
+alias b="cd ~/bin"                 
+alias br="bin_usage_report"        
+alias c="tput clear"               
+alias clr="tput clear"             
+alias doc="cd ~/Documents/"        
+alias docs="clr;cd ~/Documents/;lr"
+alias dr="clr; cd ~/Downloads/;ls -ltr"  
+alias elee="cd ~/Documents/elevenLabsUploads/english"
+alias eleg="cd ~/Documents/elevenLabsUploads/german"
+alias g="$(which git)"      
+alias get=g          
+alias gits="g status"      
+alias gl="$(which git) log"     
+alias gs="$(which git) status"    
+alias h="fc -l"        
+alias hs="health_sleep.ksh"         # ResMed Health Sleep Report
+alias l="ls -l"        
+alias ll="ls -l"       
+alias lr="ls -ltr"       
+alias ms="morning_sleep.ksh"        # Apple Health Sleep Report
+alias nk="nocturnal.ksh"            # Creates empty file for nocturnal data
+alias ns="nocturnal_log.ksh"        # Nighttime Log data handler. Requires cmd script.
 alias perltidy="$(which perltidy) -pro=~/.perltidyrc"
+alias print="echo"       
+alias py=python                    
+alias t="cd ~/tests"               
+alias vl="view logs/setup.log"    
+
+# OS Specific Python paths:
 if [ "$(uname)" = "Darwin" ]; then
     alias python=/Users/steve/anaconda3/bin/python3.11
 else
     alias python="$(which python3)"
 fi
-alias py=python
-alias elee="cd ~/Documents/elevenLabsUploads/english"
-alias eleg="cd ~/Documents/elevenLabsUploads/german"
-alias ms="morning_sleep.ksh"    # Apple Health Sleep Report
-alias hs="health_sleep.ksh"     # ResMed Health Sleep Report
-alias ns="nocturnal_log.ksh"    # Nighttime Log data handler. Requires cmd script.
-alias nk="nocturnal.ksh"        # Creates empty file for nocturnal data
-alias as="all_sleep.ksh"        # Runs the three programs above. Master
