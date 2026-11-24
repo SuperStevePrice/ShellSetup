@@ -76,7 +76,8 @@ read NIGHT_DATE
 
 # --- the four standing nightly meds, default yes --------------------
 typeset -a STANDING_DRUGS
-STANDING_DRUGS=("Lisinopril (blood pressure)" "Trazodone (sleep)" "Prilosec (heartburn)" "Flomax (prostate/bladder)")
+STANDING_DRUGS=("Lisinopril (blood pressure)" "Trazodone (sleep)" "Prilosec (heartburn)" "Desmopressin 0.1mg Tab (DDAVP, nighttime urine)")
+# Flomax (prostate/bladder) was dropped 2026-11-24, replaced by desmopressin.
 typeset DRUG_LIST=""
 typeset SKIPPED=""
 
