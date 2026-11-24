@@ -898,6 +898,19 @@ e("urine_log.py",
   "nights; writes urine_log.pdf/.xlsx with 24-hour totals and the share "
   "made at night.",
   ["see urine_log.ksh"])
+e("sleep_summary.ksh",
+  "One-page sleep-study overview: night voids, ounces per night and per "
+  "void (urine_log), Watch sleep hours, wakings, fall-asleep and wake-up "
+  "times (sleep_study.db), and ResMed myAir usage, AHI and estimated "
+  "events per night, as averages, medians and totals for the last 7 "
+  "nights and since the study began. Writes sleep_summary.pdf/.xlsx to "
+  "the Desktop.",
+  ["sleep_summary.ksh [--since YYYY-MM-DD] [--no-files] [--no-prompt]"],
+  "Last step of all_sleep.ksh. Reads ~/Desktop/myAir-Steve-Price_stats.xlsx "
+  "for the ResMed figures.")
+e("sleep_summary.py",
+  "Back end for sleep_summary.ksh.",
+  ["see sleep_summary.ksh"])
 e("nocturnal.ksh",
   "Old name for urine.ksh, kept so habits still work; runs urine.ksh.",
   ["nocturnal.ksh"])

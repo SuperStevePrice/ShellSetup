@@ -15,11 +15,14 @@
 #                            run health_sleep as a separate step.
 #   4. myair_stats_report - ResMed myAir report; independent of the above,
 #                            writes its own PDF/xlsx pair to the Desktop
+#   5. sleep_summary      - one-page overview of steps 1-4's stored data
+#                            (averages, medians, totals); writes the
+#                            sleep_summary.pdf/.xlsx pair to the Desktop
 #
 # Each sub-tool is skipped (not fatal) if not found on PATH. Shows live
 # output on screen AND writes a single combined log file for the run.
 #
-# -d / --dry-run: don't run anything. Instead, for each of the four steps,
+# -d / --dry-run: don't run anything. Instead, for each of the five steps,
 # print the command that WOULD run, and where applicable, check whether
 # the required input data is actually sitting in ~/Downloads, printing a
 # warning with how-to-get-it instructions if it's missing. Ends with a
@@ -93,6 +96,9 @@ run() {
 			WARNINGS=$((WARNINGS + 1))
 		fi
 
+		print "\n--- sleep_summary ---"
+		print "Would run: sleep_summary (reads the data the steps above store)"
+
 		print "\n=== all_sleep: dry run finished $(date) - $WARNINGS warning(s) ==="
 		print "See: $LOGFILE"
 		return 0
@@ -157,6 +163,15 @@ run() {
 "
 	else
 		print "myair_stats_report not found on PATH - skipping"
+	fi
+
+	print "\n--- sleep_summary ---"
+	if command -v sleep_summary >/dev/null 2>&1; then
+		sleep_summary
+		SEE_LINES="${SEE_LINES}$(latest_see_line sleep_summary)
+"
+	else
+		print "sleep_summary not found on PATH - skipping"
 	fi
 
 	print "\n=== all_sleep: finished $(date) ==="

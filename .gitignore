@@ -30,6 +30,7 @@ bin/*.bak.*
 !bin/make_bookmarklet_icons.py
 !bin/health_sleep.py
 !bin/urine_log.py
+!bin/sleep_summary.py
 !bin/setup_sleep_db.py
 backup-predeploy/
 
