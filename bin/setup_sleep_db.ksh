@@ -12,7 +12,7 @@ if [[ $# -lt 1 ]]; then
     print "  ${0##*/} --report [-n N]"
     print ""
     print "Run with no useful flags still creates/updates the database and imports"
-    print "the nocturia log automatically (default path ~/.nocturia_log.csv)."
+    print "the urine log automatically (default path ~/.urine_log.csv)."
 fi
 
 exec python3 "$here/setup_sleep_db.py" "$@"

@@ -38,8 +38,8 @@ alias l="ls -l"
 alias ll="ls -l"       
 alias lr="ls -ltr"       
 alias ms="morning_sleep.ksh"        # Apple Health Sleep Report
-alias nk="nocturnal.ksh"            # Creates empty file for nocturnal data
-alias ns="nocturnal_log.ksh"        # Nighttime Log data handler. Requires cmd script.
+alias nk="urine.ksh"                # Creates empty file for Urine Log commands
+alias ns="urine_log.ksh"            # Urine Log data handler. Requires cmd script.
 alias perltidy="$(which perltidy) -pro=~/.perltidyrc"
 alias print="echo"       
 alias py=python                    

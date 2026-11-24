@@ -129,12 +129,6 @@ e("check_vnc_remote.ksh",
   "SSHes into the Linux Tailscale hosts and reports VNC processes, "
   "binaries, systemd units and any port-5900 listener.",
   ["check_vnc_remote.ksh [-s]      -s = Spanish output"])
-e("clean_nocturia_pilot_error.ksh",
-  "One-off: removes the two test rows logged with no amount on the night "
-  "of 2026-11-17 (02:08 and 03:23) from ~/.nocturia_log.csv. Backs the "
-  "file up first and writes nothing unless exactly 2 rows match.",
-  ["clean_nocturia_pilot_error.ksh"],
-  "Hardcoded on purpose; other amount-less rows are left alone.")
 e("clean_text.py",
   "Replaces U+2028/U+2029 (line/paragraph separator) characters in a text "
   "file with plain newlines.",
@@ -445,7 +439,7 @@ e("mixdown_stems.ksh",
 e("morning_sleep.ksh",
   "Morning sleep-study routine: confirms nightly meds and as-needed "
   "items, takes notes, logs them, runs health_sleep on the Watch export, "
-  "then shows the combined database report (sleep + drugs + nocturia).",
+  "then shows the combined database report (sleep + drugs + night voids).",
   ["morning_sleep.ksh [-f export.zip|export.xml]"],
   "Default export: ./export.zip, then ~/Downloads/export.zip")
 e("my_machine.ksh",
@@ -465,15 +459,6 @@ e("myair_stats_report.py",
 e("names.ksh",
   "Demo of basename/dirname on a hard-coded path.", ["names.ksh"],
   "Example snippet; no header.")
-e("nocturia_log.ksh",
-  "'Pissy Night' log wrapper for nocturia_log.py: records nighttime "
-  "urination time and amount (oz) for the sleep study.",
-  ["nocturia_log.ksh HH:MM [AMOUNT_OZ] [\"notes\"] [-d YYYY-MM-DD]",
-   "nocturia_log.ksh -l [-n N] [--night YYYY-MM-DD]     list"])
-e("nocturia_log.py",
-  "Back end for nocturia_log.ksh; stores entries in ~/.nocturia_log.csv "
-  "grouped by night.",
-  ["see nocturia_log.ksh"])
 e("nopasswd-apt-update.ksh",
   "Run once per Linux host: adds a sudoers rule allowing passwordless "
   "apt update / full-upgrade / --fix-broken / autoremove only.",
@@ -675,10 +660,10 @@ e("setup_sleep_db.ksh",
    "setup_sleep_db.ksh --import-drug-log FILE",
    "setup_sleep_db.ksh --report [-n N]"])
 e("setup_sleep_db.py",
-  "Creates/updates ~/sleep_study.db (prescriptions, drug log, nocturia, "
+  "Creates/updates ~/sleep_study.db (prescriptions, drug log, urine_log, "
   "sleep), imports logs, prints the nightly report and exports "
   "xlsx/pdf.",
-  ["setup_sleep_db.py [--db F] [--import-nocturia CSV]",
+  ["setup_sleep_db.py [--db F] [--import-urine-log CSV]",
    "    [--import-drug-log CSV] [--import-prescriptions-sql SQL]",
    "    [--report [-n 14]] [--export-xlsx [P]] [--export-pdf [P]]",
    "    [--no-export] [--rolling-window N]"],
@@ -877,39 +862,49 @@ e("yt2txt.ksh",
    "  -u upgrade yt-dlp first"],
   "Never overwrites; adds _2, _3 ...")
 e("all_sleep.ksh",
-  "Unified sleep-study wrapper: runs nocturnal.ksh, nocturnal_log, "
-  "morning_sleep, health_sleep and myair_stats_report in sequence "
-  "(nocturnal data first, since morning_sleep cross-references it). "
-  "Produces all 3 pairs of reports on the Desktop: sleep_report "
-  "(pdf/xlsx), nocturnal (pdf/xlsx) and myAir-Steve-Price_stats "
-  "(pdf/xlsx). Each component checks for its own required Downloads "
-  "input file and exits with fetch instructions if it's missing, rather "
-  "than prompting interactively.",
+  "Unified sleep-study wrapper: runs urine, urine_log, morning_sleep "
+  "(which runs health_sleep) and myair_stats_report in sequence (urine "
+  "data first, since morning_sleep cross-references it). Produces 3 pairs "
+  "of reports on the Desktop: sleep_report (pdf/xlsx), urine_log "
+  "(pdf/xlsx) and myAir-Steve-Price_stats (pdf/xlsx). Each component "
+  "checks for its own required Downloads input file and exits with fetch "
+  "instructions if it's missing, rather than prompting interactively.",
   ["all_sleep.ksh"],
-  "Aliased as 'as' in dots/aliases (SS repo). Run order: nocturnal -> "
-  "nocturnal_log -> morning_sleep -> health_sleep -> myair_stats_report.")
+  "Aliased as 'as' in dots/aliases (SS repo). Run order: urine -> "
+  "urine_log -> morning_sleep -> myair_stats_report.")
+e("urine.ksh",
+  "Opens vi on a new ~/Downloads/urine_cmds_<timestamp>.ksh file for "
+  "pasting the Urine Log web page's ready-to-paste commands copied from "
+  "the iPhone (universal clipboard). Does not run the file; urine_log "
+  "does that.",
+  ["urine.ksh"],
+  "Aliased as 'nk'. First step in the all_sleep.ksh sequence. "
+  "Renamed 2026-11-24 from nocturnal.ksh.")
+e("urine_log.ksh",
+  "Urine Log wrapper for urine_log.py: records every urination, day and "
+  "night, with time and amount (oz); with no arguments processes the "
+  "pending urine_cmds_*.ksh file; with -r writes the urine_log.pdf/.xlsx "
+  "24-hour report pair to the Desktop.",
+  ["urine_log.ksh                                       process pending cmds file",
+   "urine_log.ksh HH:MM [AMOUNT_OZ] [\"notes\"] [-d YYYY-MM-DD] [--day | --as-night]",
+   "urine_log.ksh -l [-n N] [--on YYYY-MM-DD | --night YYYY-MM-DD]   list",
+   "urine_log.ksh -r                                    write report pair"],
+  "Aliased as 'ns'. Second step in the all_sleep.ksh sequence. Renamed "
+  "2026-11-24 from nocturnal_log.ksh (earlier nocturia_log.ksh).")
+e("urine_log.py",
+  "Back end for urine_log.ksh. Stores entries in ~/.urine_log.csv, each "
+  "marked day or night (night = 21:00-07:00, override with "
+  "URINE_LOG_BEDTIME / URINE_LOG_WAKE) and keyed by wake-up date for "
+  "nights; writes urine_log.pdf/.xlsx with 24-hour totals and the share "
+  "made at night.",
+  ["see urine_log.ksh"])
 e("nocturnal.ksh",
-  "Opens vi on a new ~/Downloads/nocturnal_cmds_<timestamp>.ksh file for "
-  "pasting the Nocturnal Log web page's ready-to-paste commands copied from "
-  "the iPhone (universal clipboard); after save/quit runs the saved file "
-  "via ksh to log the entries through nocturnal_log.",
-  ["nocturnal.ksh"],
-  "Run via ksh, not chmod +x, per Steve's Downloads convention. First step "
-  "in the all_sleep.ksh sequence.")
+  "Old name for urine.ksh, kept so habits still work; runs urine.ksh.",
+  ["nocturnal.ksh"])
 e("nocturnal_log.ksh",
-  "'Nocturnal Log' wrapper for nocturnal_log.py (renamed Nov 2026 from "
-  "nocturia_log.ksh): records nighttime urination time and amount (oz) for "
-  "the sleep study, and (with -r) writes the nocturnal.pdf/.xlsx report "
-  "pair to the Desktop.",
-  ["nocturnal_log.ksh HH:MM [AMOUNT_OZ] [\"notes\"] [-d YYYY-MM-DD]",
-   "nocturnal_log.ksh -l [-n N] [--night YYYY-MM-DD]     list",
-   "nocturnal_log.ksh -r                                 write report pair"],
-  "Second step in the all_sleep.ksh sequence, after nocturnal.ksh.")
-e("nocturnal_log.py",
-  "Back end for nocturnal_log.ksh (renamed Nov 2026 from nocturia_log.py); "
-  "stores entries in ~/.nocturnal_log.csv grouped by night, and (with "
-  "-r/--report) writes nocturnal.pdf/.xlsx to the Desktop.",
-  ["see nocturnal_log.ksh"])
+  "Old name for urine_log.ksh, kept so older copied command lines still "
+  "work; runs urine_log.ksh with the same arguments.",
+  ["nocturnal_log.ksh ...   (same as urine_log.ksh)"])
 e("wispr_dictation_login.ksh",
   "Launches Wispr Flow and clicks File > Start Dictation via System Events "
   "UI automation; installable as a login-time LaunchAgent so dictation "

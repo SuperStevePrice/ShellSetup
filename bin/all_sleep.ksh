@@ -2,13 +2,13 @@
 # all_sleep.ksh
 #
 # Master wrapper for the sleep-study pipeline. Runs in dependency order:
-#   1. nocturnal          - paste/run tonight's iPhone clipboard commands,
-#                            opens vi for Cmd-V, logs entries via nocturnal_log
-#   2. nocturnal_log      - (no args) processes tonight's pasted commands,
+#   1. urine              - paste the Urine Log app's iPhone clipboard commands,
+#                            opens vi for Cmd-V, logs entries via urine_log
+#   2. urine_log          - (no args) processes the pasted commands,
 #                            then (-l) lists/confirms, then (-r) writes the
-#                            nocturnal.pdf/.xlsx pair to the Desktop
+#                            urine_log.pdf/.xlsx pair to the Desktop
 #   3. morning_sleep      - Apple Health meds log + sleep_report.pdf/.xlsx
-#                            pair; cross-references the nocturnal data logged
+#                            pair; cross-references the urine data logged
 #                            in steps 1-2, so it must run after them. It also
 #                            runs health_sleep (Apple Watch sleep-stage data
 #                            from export.xml) itself, so all_sleep does not
@@ -23,7 +23,7 @@
 # print the command that WOULD run, and where applicable, check whether
 # the required input data is actually sitting in ~/Downloads, printing a
 # warning with how-to-get-it instructions if it's missing. Ends with a
-# count of warnings (0-2; nocturnal_log has nothing file-based to check,
+# count of warnings (0-2; urine_log has nothing file-based to check,
 # and morning_sleep's check covers health_sleep's export input).
 
 DRYRUN=0
@@ -42,7 +42,7 @@ mkdir -p "$LOGDIR"
 # Looks up the most recently written ~/logs/<name>.*.log file for a given
 # sub-step and prints its own "See: ..." line, if it has one. Reads the
 # file from disk after the step has already finished, rather than piping
-# the step's live output through another tee - nocturnal's vi session in
+# the step's live output through another tee - urine's vi session in
 # particular needs direct terminal access and must not be re-piped.
 latest_see_line() {
 	typeset f
@@ -55,20 +55,20 @@ run() {
 		print "=== all_sleep: DRY RUN $(date) ==="
 		WARNINGS=0
 
-		print "\n--- nocturnal ---"
-		print "Would run: nocturnal"
-		leftover=$(ls "$DLDIR"/nocturnal_cmds_*.ksh 2>/dev/null)
+		print "\n--- urine ---"
+		print "Would run: urine"
+		leftover=$(ls "$DLDIR"/urine_cmds_*.ksh "$DLDIR"/nocturnal_cmds_*.ksh 2>/dev/null)
 		if [[ -n "$leftover" ]]; then
 			print "WARNING: found existing unconsumed cmds file(s) in $DLDIR:"
 			print "$leftover"
 			print "  -> make sure these were already run (ksh <file>) before logging new data."
 			WARNINGS=$((WARNINGS + 1))
 		else
-			print "No leftover nocturnal_cmds_*.ksh files found - OK."
+			print "No leftover urine_cmds_*.ksh files found - OK."
 		fi
 
-		print "\n--- nocturnal_log ---"
-		print "Would run: nocturnal_log (process pending), then nocturnal_log -l"
+		print "\n--- urine_log ---"
+		print "Would run: urine_log (process pending), then urine_log -l, then urine_log -r"
 		print "(nothing to check - reads its own internal log)"
 
 		print "\n--- morning_sleep ---"
@@ -121,24 +121,24 @@ run() {
 			;;
 	esac
 
-	print "\n--- nocturnal ---"
-	if command -v nocturnal >/dev/null 2>&1; then
-		nocturnal
-		SEE_LINES="${SEE_LINES}$(latest_see_line nocturnal)
+	print "\n--- urine ---"
+	if command -v urine >/dev/null 2>&1; then
+		urine
+		SEE_LINES="${SEE_LINES}$(latest_see_line urine)
 "
 	else
-		print "nocturnal not found on PATH - skipping"
+		print "urine not found on PATH - skipping"
 	fi
 
-	print "\n--- nocturnal_log ---"
-	if command -v nocturnal_log >/dev/null 2>&1; then
-		nocturnal_log
-		nocturnal_log -l
-		nocturnal_log -r
-		SEE_LINES="${SEE_LINES}$(latest_see_line nocturnal_log)
+	print "\n--- urine_log ---"
+	if command -v urine_log >/dev/null 2>&1; then
+		urine_log
+		urine_log -l
+		urine_log -r
+		SEE_LINES="${SEE_LINES}$(latest_see_line urine_log)
 "
 	else
-		print "nocturnal_log not found on PATH - skipping"
+		print "urine_log not found on PATH - skipping"
 	fi
 
 	print "\n--- morning_sleep ---"

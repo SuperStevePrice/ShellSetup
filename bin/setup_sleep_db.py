@@ -53,12 +53,13 @@ CREATE TABLE IF NOT EXISTS nightly_sleep (
     last_record TEXT
 );
 
-CREATE TABLE IF NOT EXISTS nocturia_log (
+CREATE TABLE IF NOT EXISTS urine_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     night TEXT NOT NULL,           -- YYYY-MM-DD
     time TEXT NOT NULL,            -- HH:MM
     amount_oz REAL,
-    notes TEXT
+    notes TEXT,
+    period TEXT DEFAULT 'night'    -- 'night' or 'day' (urine_log.py); only night counts below
 );
 
 -- Always dropped and recreated below (rather than CREATE VIEW IF NOT
@@ -91,8 +92,8 @@ SELECT
     d.drug,
     d.melatonin,
     d.notes AS drug_notes,
-    (SELECT COUNT(*) FROM nocturia_log n WHERE n.night = s.night) AS urination_count,
-    (SELECT ROUND(SUM(amount_oz), 1) FROM nocturia_log n WHERE n.night = s.night) AS urination_total_oz
+    (SELECT COUNT(*) FROM urine_log n WHERE n.night = s.night AND COALESCE(n.period, 'night') = 'night') AS urination_count,
+    (SELECT ROUND(SUM(amount_oz), 1) FROM urine_log n WHERE n.night = s.night AND COALESCE(n.period, 'night') = 'night') AS urination_total_oz
 FROM nightly_sleep s
 LEFT JOIN (
     SELECT night, drug, melatonin, notes
@@ -113,8 +114,8 @@ SELECT
     d.drug,
     d.melatonin,
     d.notes AS drug_notes,
-    (SELECT COUNT(*) FROM nocturia_log n WHERE n.night = d.night) AS urination_count,
-    (SELECT ROUND(SUM(amount_oz), 1) FROM nocturia_log n WHERE n.night = d.night) AS urination_total_oz
+    (SELECT COUNT(*) FROM urine_log n WHERE n.night = d.night AND COALESCE(n.period, 'night') = 'night') AS urination_count,
+    (SELECT ROUND(SUM(amount_oz), 1) FROM urine_log n WHERE n.night = d.night AND COALESCE(n.period, 'night') = 'night') AS urination_total_oz
 FROM (
     SELECT night, drug, melatonin, notes
     FROM sleep_drug_log sd
@@ -159,19 +160,30 @@ ORDER BY night DESC;
 
 def connect(db_path, rolling_window=DEFAULT_ROLLING_WINDOW):
     conn = sqlite3.connect(db_path)
+    # Older databases call this table nocturia_log and lack the period
+    # column. Bring them up to date before the views that use both are
+    # rebuilt (the views are dropped first so the rename can't trip on them).
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    if "nocturia_log" in tables and "urine_log" not in tables:
+        conn.execute("DROP VIEW IF EXISTS nightly_report")
+        conn.execute("DROP VIEW IF EXISTS nightly_report_base")
+        conn.execute("ALTER TABLE nocturia_log RENAME TO urine_log")
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(urine_log)")]
+    if cols and "period" not in cols:
+        conn.execute("ALTER TABLE urine_log ADD COLUMN period TEXT DEFAULT 'night'")
     conn.executescript(BASE_SCHEMA)
     conn.executescript(ROLLING_SCHEMA.format(window_minus_1=rolling_window - 1))
     conn.commit()
     return conn
 
-def import_nocturia(conn, csv_path):
+def import_urine_log(conn, csv_path):
     csv_path = os.path.expanduser(csv_path)
     if not os.path.exists(csv_path):
-        print(f"  (no nocturia log found at {csv_path}, skipping)")
+        print(f"  (no urine log found at {csv_path}, skipping)")
         return 0
     # Re-importing is safe to run repeatedly: clear and reload from the CSV,
     # which is the source of truth, rather than appending duplicates each time.
-    conn.execute("DELETE FROM nocturia_log")
+    conn.execute("DELETE FROM urine_log")
     n = 0
     with open(csv_path) as f:
         reader = csv.DictReader(f)
@@ -180,8 +192,8 @@ def import_nocturia(conn, csv_path):
             amt = row.get(amt_field, "")
             amt_val = float(amt) if amt not in (None, "") else None
             conn.execute(
-                "INSERT INTO nocturia_log (night, time, amount_oz, notes) VALUES (?,?,?,?)",
-                (row["night"], row["time"], amt_val, row.get("notes", ""))
+                "INSERT INTO urine_log (night, time, amount_oz, notes, period) VALUES (?,?,?,?,?)",
+                (row["night"], row["time"], amt_val, row.get("notes", ""), row.get("period") or "night")
             )
             n += 1
     conn.commit()
@@ -323,7 +335,7 @@ def export_pdf(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
         "night": "Night", "asleep_hours": "Asleep (hrs)", "awake_hours": "Awake (hrs)",
         "inbed_hours": "In Bed (hrs)", "wakings": "Wakings", "first_record": "First",
         "last_record": "Last", "drug": "Medication(s)", "melatonin": "Melatonin",
-        "drug_notes": "Notes", "urination_count": "Nocturia #", "urination_total_oz": "Oz Total",
+        "drug_notes": "Notes", "urination_count": "Night Voids", "urination_total_oz": "Night Oz",
         "asleep_rolling_avg": f"Asleep {rolling_window}-Night Avg",
     }
     headers = [header_labels.get(c, c.replace("_", " ").title()) for c in cols]
@@ -346,7 +358,7 @@ def export_pdf(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
     # re-checking that budget, which let the table quietly overflow
     # both margins once asleep_rolling_avg was added. The savings for
     # the new column come entirely from the short numeric/code columns
-    # (night, hours, wakings, times, melatonin, nocturia); drug and
+    # (night, hours, wakings, times, melatonin, night voids); drug and
     # drug_notes keep their original width since trimming free-text
     # columns causes more line-wraps and risks pushing the report onto
     # a second page. Keep the total at or under ~9.9" when adding or
@@ -389,8 +401,9 @@ def report(conn, n):
 def main():
     ap = argparse.ArgumentParser(description="Set up and manage the sleep study SQLite database.")
     ap.add_argument("--db", default=DEFAULT_DB, help=f"database file path (default {DEFAULT_DB})")
-    ap.add_argument("--import-nocturia", metavar="CSV", default="~/.nocturia_log.csv",
-                     help="path to nocturia_log's CSV (default ~/.nocturia_log.csv)")
+    ap.add_argument("--import-urine-log", "--import-nocturia", dest="import_urine_log",
+                     metavar="CSV", default="~/.urine_log.csv",
+                     help="path to urine_log's CSV (default ~/.urine_log.csv)")
     ap.add_argument("--import-drug-log", metavar="CSV",
                      help="path to sleep_drug_log's data file, if known")
     ap.add_argument("--import-prescriptions-sql", metavar="SQL",
@@ -416,9 +429,9 @@ def main():
     conn = connect(a.db, rolling_window=a.rolling_window)
     print(f"Database ready at {a.db}")
 
-    if a.import_nocturia:
-        n = import_nocturia(conn, a.import_nocturia)
-        print(f"  imported {n} nocturia_log row(s)")
+    if a.import_urine_log:
+        n = import_urine_log(conn, a.import_urine_log)
+        print(f"  imported {n} urine_log row(s)")
 
     if a.import_drug_log:
         n = import_sleep_drug_log(conn, a.import_drug_log)

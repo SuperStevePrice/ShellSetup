@@ -4,7 +4,7 @@
 # two common as-needed items (Tylenol/CeraVe, default no), lets you add
 # any other one-off drugs, asks notes, logs it, runs health_sleep on
 # the Watch export, then shows the consolidated database report (sleep
-# + drug + nocturia, joined by night).
+# + drug + urine_log, joined by night).
 #
 # Usage:
 #   morning_sleep.ksh [-f export.zip|export.xml]
