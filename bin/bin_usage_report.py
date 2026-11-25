@@ -305,10 +305,6 @@ e("german-vocab.ksh",
 e("get_ip.ksh",
   "Shows the OS, host and first non-loopback IP address (Linux or macOS).",
   ["get_ip.ksh"])
-e("getraenke.sh",
-  "Small interactive German drinks ('Getraenke') ordering prompt, compiled "
-  "to bash from Amber (amber-lang.com).",
-  ["getraenke.sh"], "Generated code; no descriptive header.")
 e("git_bin.ksh",
   "Installs scripts into ~/bin and the SS repo's bin/, then commits and "
   "pushes them. Files found in ~/Downloads are moved to ~/bin first.",
@@ -463,13 +459,6 @@ e("nopasswd-apt-update.ksh",
   "Run once per Linux host: adds a sudoers rule allowing passwordless "
   "apt update / full-upgrade / --fix-broken / autoremove only.",
   ["(normally pushed and run by deploy-nopasswd.ksh)"])
-e("NumText.am",
-  "Amber language source showing Text-to-Num conversion.",
-  ["amber NumText.am"], "Source for NumText.sh.")
-e("NumText.sh",
-  "Bash compiled from NumText.am (Amber): demonstrates converting text "
-  "to a number with parse().",
-  ["NumText.sh"])
 e("os.ksh",
   "Prints the operating system name and version.", ["os.ksh"])
 e("p.ksh",
@@ -515,10 +504,6 @@ e("pbp.ksh",
 e("pbpaste_script.ksh",
   "Pastes the clipboard to stdout (/usr/bin/pbpaste).",
   ["pbpaste_script.ksh"])
-e("per",
-  "Ran macOS 'periodic' maintenance.", ["per"],
-  "DEPRECATED 2026-04-14: Apple removed 'periodic'. Use mdfind instead of "
-  "locate.")
 e("playpause.ksh",
   "Plays an audio file with interactive controls: SPACE pause/resume, "
   "q quit. Uses afplay (macOS) or paplay/aplay (Linux).",
