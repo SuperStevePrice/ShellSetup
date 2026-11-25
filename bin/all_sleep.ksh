@@ -5,8 +5,9 @@
 #   1. urine              - paste the Urine Log app's iPhone clipboard commands,
 #                            opens vi for Cmd-V, logs entries via urine_log
 #   2. urine_log          - (no args) processes the pasted commands,
-#                            then (-l) lists/confirms, then (-r) writes the
-#                            urine_log.pdf/.xlsx pair to the Desktop
+#                            then (-l) lists/confirms them
+#      (morning_sleep runs next, then urine_log -r writes the
+#       urine_log.pdf/.xlsx pair, using that morning's Watch sleep times)
 #   3. morning_sleep      - Apple Health meds log + sleep_report.pdf/.xlsx
 #                            pair; cross-references the urine data logged
 #                            in steps 1-2, so it must run after them. It also
@@ -60,7 +61,8 @@ run() {
 
 		print "\n--- urine ---"
 		print "Would run: urine"
-		leftover=$(ls "$DLDIR"/urine_cmds_*.ksh "$DLDIR"/nocturnal_cmds_*.ksh 2>/dev/null)
+		leftover=$(ls "$DLDIR"/urine_cmds_*.ksh \
+			"$DLDIR"/nocturnal_cmds_*.ksh 2>/dev/null)
 		if [[ -n "$leftover" ]]; then
 			print "WARNING: found existing unconsumed cmds file(s) in $DLDIR:"
 			print "$leftover"
@@ -71,7 +73,8 @@ run() {
 		fi
 
 		print "\n--- urine_log ---"
-		print "Would run: urine_log (process pending), then urine_log -l, then urine_log -r"
+		print "Would run: urine_log (process pending), then urine_log -l;"
+		print "           urine_log -r after morning_sleep"
 		print "(nothing to check - reads its own internal log)"
 
 		print "\n--- morning_sleep ---"
@@ -140,7 +143,6 @@ run() {
 	if command -v urine_log >/dev/null 2>&1; then
 		urine_log
 		urine_log -l
-		urine_log -r
 		SEE_LINES="${SEE_LINES}$(latest_see_line urine_log)
 "
 	else
@@ -154,6 +156,15 @@ run() {
 "
 	else
 		print "morning_sleep not found on PATH - skipping"
+	fi
+
+	# urine_log's report waits until after morning_sleep, so night vs.
+	# day uses the Apple Watch sleep times that morning_sleep just loaded.
+	print "\n--- urine_log report ---"
+	if command -v urine_log >/dev/null 2>&1; then
+		urine_log -r
+		SEE_LINES="${SEE_LINES}$(latest_see_line urine_log)
+"
 	fi
 
 	print "\n--- myair_stats_report ---"

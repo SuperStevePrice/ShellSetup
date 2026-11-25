@@ -15,6 +15,12 @@ DEFAULT_REPORT_SINCE = "2026-11-01"
 # Override per-run with --rolling-window.
 DEFAULT_ROLLING_WINDOW = 7
 
+# Footnote for the Night Voids* / Night Oz* columns (same wording as
+# urine_log.py and sleep_summary.py).
+NIGHT_FOOTNOTE = ("* Night = from falling asleep to waking, per Apple "
+                  "Watch, plus the first void after waking. 9 pm–7 am on "
+                  "nights without Watch data.")
+
 BASE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS prescriptions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,7 +65,8 @@ CREATE TABLE IF NOT EXISTS urine_log (
     time TEXT NOT NULL,            -- HH:MM
     amount_oz REAL,
     notes TEXT,
-    period TEXT DEFAULT 'night'    -- 'night' or 'day' (urine_log.py); only night counts below
+    -- 'night' or 'day' (urine_log.py); only night counts below
+    period TEXT DEFAULT 'night'
 );
 
 -- Always dropped and recreated below (rather than CREATE VIEW IF NOT
@@ -92,8 +99,12 @@ SELECT
     d.drug,
     d.melatonin,
     d.notes AS drug_notes,
-    (SELECT COUNT(*) FROM urine_log n WHERE n.night = s.night AND COALESCE(n.period, 'night') = 'night') AS urination_count,
-    (SELECT ROUND(SUM(amount_oz), 1) FROM urine_log n WHERE n.night = s.night AND COALESCE(n.period, 'night') = 'night') AS urination_total_oz
+    (SELECT COUNT(*) FROM urine_log n
+      WHERE n.night = s.night
+        AND COALESCE(n.period, 'night') = 'night') AS urination_count,
+    (SELECT ROUND(SUM(amount_oz), 1) FROM urine_log n
+      WHERE n.night = s.night
+        AND COALESCE(n.period, 'night') = 'night') AS urination_total_oz
 FROM nightly_sleep s
 LEFT JOIN (
     SELECT night, drug, melatonin, notes
@@ -114,8 +125,12 @@ SELECT
     d.drug,
     d.melatonin,
     d.notes AS drug_notes,
-    (SELECT COUNT(*) FROM urine_log n WHERE n.night = d.night AND COALESCE(n.period, 'night') = 'night') AS urination_count,
-    (SELECT ROUND(SUM(amount_oz), 1) FROM urine_log n WHERE n.night = d.night AND COALESCE(n.period, 'night') = 'night') AS urination_total_oz
+    (SELECT COUNT(*) FROM urine_log n
+      WHERE n.night = d.night
+        AND COALESCE(n.period, 'night') = 'night') AS urination_count,
+    (SELECT ROUND(SUM(amount_oz), 1) FROM urine_log n
+      WHERE n.night = d.night
+        AND COALESCE(n.period, 'night') = 'night') AS urination_total_oz
 FROM (
     SELECT night, drug, melatonin, notes
     FROM sleep_drug_log sd
@@ -163,14 +178,16 @@ def connect(db_path, rolling_window=DEFAULT_ROLLING_WINDOW):
     # Older databases call this table nocturia_log and lack the period
     # column. Bring them up to date before the views that use both are
     # rebuilt (the views are dropped first so the rename can't trip on them).
-    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    tables = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'")}
     if "nocturia_log" in tables and "urine_log" not in tables:
         conn.execute("DROP VIEW IF EXISTS nightly_report")
         conn.execute("DROP VIEW IF EXISTS nightly_report_base")
         conn.execute("ALTER TABLE nocturia_log RENAME TO urine_log")
     cols = [r[1] for r in conn.execute("PRAGMA table_info(urine_log)")]
     if cols and "period" not in cols:
-        conn.execute("ALTER TABLE urine_log ADD COLUMN period TEXT DEFAULT 'night'")
+        conn.execute("ALTER TABLE urine_log "
+                     "ADD COLUMN period TEXT DEFAULT 'night'")
     conn.executescript(BASE_SCHEMA)
     conn.executescript(ROLLING_SCHEMA.format(window_minus_1=rolling_window - 1))
     conn.commit()
@@ -192,8 +209,10 @@ def import_urine_log(conn, csv_path):
             amt = row.get(amt_field, "")
             amt_val = float(amt) if amt not in (None, "") else None
             conn.execute(
-                "INSERT INTO urine_log (night, time, amount_oz, notes, period) VALUES (?,?,?,?,?)",
-                (row["night"], row["time"], amt_val, row.get("notes", ""), row.get("period") or "night")
+                "INSERT INTO urine_log (night, time, amount_oz, notes, "
+                "period) VALUES (?,?,?,?,?)",
+                (row["night"], row["time"], amt_val, row.get("notes", ""),
+                 row.get("period") or "night")
             )
             n += 1
     conn.commit()
@@ -266,7 +285,9 @@ def export_xlsx(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
     header_fill = PatternFill(start_color="1A4480", end_color="1A4480", fill_type="solid")
     body_font = Font(name="Arial", size=10)
 
-    header_labels = {"asleep_rolling_avg": f"Asleep {rolling_window}-Night Avg"}
+    header_labels = {"asleep_rolling_avg": f"Asleep {rolling_window}-Night Avg",
+                     "urination_count": "Night Voids*",
+                     "urination_total_oz": "Night Oz*"}
 
     for j, col in enumerate(cols, start=1):
         label = header_labels.get(col, col.replace("_", " ").title())
@@ -294,6 +315,8 @@ def export_xlsx(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
 
     ws.freeze_panes = "A2"
     ws.auto_filter.ref = ws.dimensions
+    note = ws.cell(row=len(rows) + 3, column=1, value=NIGHT_FOOTNOTE)
+    note.font = Font(name="Arial", size=9, italic=True)
 
     path = os.path.expanduser(path)
     wb.save(path)
@@ -335,7 +358,8 @@ def export_pdf(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
         "night": "Night", "asleep_hours": "Asleep (hrs)", "awake_hours": "Awake (hrs)",
         "inbed_hours": "In Bed (hrs)", "wakings": "Wakings", "first_record": "First",
         "last_record": "Last", "drug": "Medication(s)", "melatonin": "Melatonin",
-        "drug_notes": "Notes", "urination_count": "Night Voids", "urination_total_oz": "Night Oz",
+        "drug_notes": "Notes", "urination_count": "Night Voids*",
+        "urination_total_oz": "Night Oz*",
         "asleep_rolling_avg": f"Asleep {rolling_window}-Night Avg",
     }
     headers = [header_labels.get(c, c.replace("_", " ").title()) for c in cols]
@@ -381,6 +405,8 @@ def export_pdf(conn, path, rolling_window=DEFAULT_ROLLING_WINDOW):
         ('RIGHTPADDING', (0, 0), (-1, -1), 4),
     ]))
     story.append(table)
+    story.append(Spacer(1, 8))
+    story.append(Paragraph(NIGHT_FOOTNOTE, styles["Italic"]))
 
     doc.build(story)
     return path, len(rows)
@@ -401,7 +427,8 @@ def report(conn, n):
 def main():
     ap = argparse.ArgumentParser(description="Set up and manage the sleep study SQLite database.")
     ap.add_argument("--db", default=DEFAULT_DB, help=f"database file path (default {DEFAULT_DB})")
-    ap.add_argument("--import-urine-log", "--import-nocturia", dest="import_urine_log",
+    ap.add_argument("--import-urine-log", "--import-nocturia",
+                    dest="import_urine_log",
                      metavar="CSV", default="~/.urine_log.csv",
                      help="path to urine_log's CSV (default ~/.urine_log.csv)")
     ap.add_argument("--import-drug-log", metavar="CSV",

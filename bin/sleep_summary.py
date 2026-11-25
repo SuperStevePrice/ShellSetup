@@ -25,6 +25,7 @@ DB = os.path.expanduser("~/sleep_study.db")
 MYAIR_XLSX = os.path.expanduser("~/Desktop/myAir-Steve-Price_stats.xlsx")
 DESKTOP = os.path.expanduser("~/Desktop")
 STUDY_START = "2026-11-01"   # same as setup_sleep_db.py's DEFAULT_REPORT_SINCE
+DAYTIME_LOGGING_SINCE = "2026-11-24"   # same as urine_log.py
 RECENT = 7
 
 # --- helpers ------------------------------------------------------------------
@@ -64,7 +65,8 @@ def fmt_date(d):
 # --- data ---------------------------------------------------------------------
 
 def load_urine(since):
-    """night key -> {"n": voids, "oz": total, "amounts": [oz...]} for night entries."""
+    """night key -> {"n": voids, "oz": total, "amounts": [oz...]}
+    for night entries (and the same for day entries)."""
     nights, days = {}, {}
     if not os.path.exists(URINE_CSV):
         return nights, days
@@ -75,7 +77,8 @@ def load_urine(since):
             bucket = days if r.get("period") == "day" else nights
             v = (r.get("amount_oz") or "").strip()
             a = float(v) if v else None
-            n = bucket.setdefault(r["night"], {"n": 0, "oz": 0.0, "amounts": []})
+            n = bucket.setdefault(r["night"],
+                                  {"n": 0, "oz": 0.0, "amounts": []})
             n["n"] += 1
             if a is not None:
                 n["oz"] += a
@@ -88,8 +91,9 @@ def load_watch(since):
         return {}
     conn = sqlite3.connect(DB)
     rows = conn.execute(
-        "SELECT night, asleep_hours, awake_hours, wakings, first_record, last_record "
-        "FROM nightly_sleep WHERE night >= ? AND asleep_hours IS NOT NULL ORDER BY night",
+        "SELECT night, asleep_hours, awake_hours, wakings, first_record, "
+        "last_record FROM nightly_sleep "
+        "WHERE night >= ? AND asleep_hours IS NOT NULL ORDER BY night",
         (since,)).fetchall()
     conn.close()
     return {r[0]: {"asleep": r[1], "awake": r[2], "wakings": r[3],
@@ -119,7 +123,8 @@ def load_myair():
         rng, days, usage, ahi, leak, n4, n6 = row[:7]
         hrs, ahi_v = _parse_hm(usage), _first_float(ahi)
         out.append({"range": rng, "days": days, "hours": hrs, "ahi": ahi_v,
-                    "events": hrs * ahi_v if hrs and ahi_v is not None else None,
+                    "events": (hrs * ahi_v
+                               if hrs and ahi_v is not None else None),
                     "leak": _first_float(leak), "n4": n4, "n6": n6})
     return out
 
@@ -138,14 +143,15 @@ def stats_for(keys, urine, watch):
     return {
         "u_n": len(u), "w_n": len(w),
         "voids": voids, "oz": oz, "per_void": per_void,
-        "asleep": col("asleep"), "awake": col("awake"), "wakings": col("wakings"),
+        "asleep": col("asleep"), "awake": col("awake"),
+        "wakings": col("wakings"),
         "onset": onset, "up": up,
     }
 
 ROWS = [
     # label, key, kind ("count", "oz", "hours", "clock", "int"), show total?
-    ("Night voids per night",        "voids",    "count", True),
-    ("Night urine per night (oz)",   "oz",       "oz",    True),
+    ("Night voids per night*",       "voids",    "count", True),
+    ("Night urine per night (oz)*",  "oz",       "oz",    True),
     ("Ounces per void",              "per_void", "oz",    False),
     ("Asleep (Watch)",               "asleep",   "hours", False),
     ("Awake after falling asleep",   "awake",    "hours", False),
@@ -172,34 +178,43 @@ def table_rows(recent, overall):
             tot = num(sum(o), "{:g}")
         n = len(o)
         out.append([label, fmt_val(mean(r), kind), fmt_val(median(r), kind),
-                    fmt_val(mean(o), kind), fmt_val(median(o), kind), tot, str(n)])
+                    fmt_val(mean(o), kind), fmt_val(median(o), kind),
+                    tot, str(n)])
     return out
 
 def overview(overall, myair, keys, urine_days):
     span = f"{fmt_date(keys[0])}–{fmt_date(keys[-1])}" if keys else ""
     o = overall
-    line1 = (f"Sleep ({span}, {o['w_n']} Watch nights): asleep {hours_str(mean(o['asleep']))} avg "
-             f"(median {hours_str(median(o['asleep']))}), {num(mean(o['wakings']))} wakings, "
-             f"asleep about {min_to_clock(mean(o['onset']))}, up about {min_to_clock(mean(o['up']))}.")
-    parts = [f"Urine ({o['u_n']} nights): {num(mean(o['voids']))} voids/night "
-             f"(median {num(median(o['voids']), '{:g}')}), {num(mean(o['oz']))} oz/night, "
+    line1 = (f"Sleep ({span}, {o['w_n']} Watch nights): "
+             f"asleep {hours_str(mean(o['asleep']))} avg "
+             f"(median {hours_str(median(o['asleep']))}), "
+             f"{num(mean(o['wakings']))} wakings, "
+             f"asleep about {min_to_clock(mean(o['onset']))}, "
+             f"up about {min_to_clock(mean(o['up']))}.")
+    parts = [f"Urine ({o['u_n']} nights): {num(mean(o['voids']))} night voids* "
+             f"(median {num(median(o['voids']), '{:g}')}), "
+             f"{num(mean(o['oz']))} oz/night, "
              f"{num(mean(o['per_void']))} oz per void"]
-    if urine_days:
-        parts[0] += f"; daytime logged on {len(urine_days)} day(s)"
+    logged_days = [d for d in urine_days if d >= DAYTIME_LOGGING_SINCE]
+    if logged_days:
+        parts[0] += f"; daytime logged on {len(logged_days)} day(s)"
     m30 = next((m for m in myair if m["days"] == 30), None)
     if m30:
-        parts.append(f"CPAP (30 days): {hours_str(m30['hours'])}/night, AHI {num(m30['ahi'], '{:.2f}')} "
+        parts.append(f"CPAP (30 days): {hours_str(m30['hours'])}/night, "
+                     f"AHI {num(m30['ahi'], '{:.2f}')} "
                      f"(~{num(m30['events'], '{:.0f}')} events/night)")
     return line1, "; ".join(parts) + "."
 
 HEAD = ["Measure", f"Last {RECENT}: avg", f"Last {RECENT}: median",
         "All: avg", "All: median", "All: total", "Nights"]
+MYAIR_WIDTHS = (0.9, 0.8, 1.0, 1.05, 1.0, 1.25, 1.25)
 MYAIR_HEAD = ["myAir window", "Avg use", "AHI (events/hr)", "Est. events/night",
               "Leak 95th %", "Nights >= 4 h", "Nights >= 6 h"]
 
 def myair_rows(myair):
-    return [[f"{m['days']} days", hours_str(m["hours"]), num(m["ahi"], "{:.2f}"),
-             num(m["events"], "{:.0f}"), num(m["leak"], "{:.2f} L/min"), m["n4"], m["n6"]]
+    return [[f"{m['days']} days", hours_str(m["hours"]),
+             num(m["ahi"], "{:.2f}"), num(m["events"], "{:.0f}"),
+             num(m["leak"], "{:.2f} L/min"), m["n4"], m["n6"]]
             for m in myair]
 
 # --- output -------------------------------------------------------------------
@@ -213,7 +228,9 @@ def print_table(head, rows):
         print(line(r))
 
 NOTES = [
-    "Night = 9 pm to 7 am; night voids are counted by the morning you woke up.",
+    "* Night = from falling asleep to waking, per Apple Watch, plus the "
+    "first void after waking. 9 pm–7 am on nights without Watch data. "
+    "Night voids are counted by the morning you woke up.",
     "Ounces per void leaves out attempts logged as 0 oz.",
     "Apple Watch starts recording once you are asleep, so 'Fell asleep' is not "
     "your bedtime, and time to fall asleep can't be measured from it.",
@@ -227,9 +244,11 @@ def write_xlsx(path, lines, rows, mrows, since):
     wb = Workbook()
     ws = wb.active
     ws.title = "Summary"
-    fill = PatternFill(start_color="1F3864", end_color="1F3864", fill_type="solid")
+    fill = PatternFill(start_color="1F3864", end_color="1F3864",
+                       fill_type="solid")
     white = Font(color="FFFFFF", bold=True)
-    ws.append([f"Sleep Summary - generated {date.today().isoformat()}, data since {since}"])
+    ws.append([f"Sleep Summary - generated {date.today().isoformat()}, "
+               f"data since {since}"])
     ws["A1"].font = Font(bold=True, size=13)
     for l in lines:
         ws.append([l])
@@ -257,7 +276,8 @@ def write_pdf(path, lines, rows, mrows, since):
     from reportlab.lib.pagesizes import letter
     from reportlab.lib import colors
     from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                    Paragraph, Spacer)
     from reportlab.lib.styles import getSampleStyleSheet
 
     def style(t):
@@ -272,18 +292,22 @@ def write_pdf(path, lines, rows, mrows, since):
         return t
 
     ss = getSampleStyleSheet()
-    doc = SimpleDocTemplate(path, pagesize=letter, leftMargin=0.6*inch, rightMargin=0.6*inch,
+    doc = SimpleDocTemplate(path, pagesize=letter,
+                            leftMargin=0.6*inch, rightMargin=0.6*inch,
                             topMargin=0.6*inch, bottomMargin=0.6*inch)
     story = [Paragraph("Sleep Summary", ss["Title"]),
-             Paragraph(f"Generated {date.today().isoformat()} - data since {since}", ss["Normal"]),
+             Paragraph(f"Generated {date.today().isoformat()} - "
+                       f"data since {since}", ss["Normal"]),
              Spacer(1, 8)]
     for l in lines:
         story += [Paragraph(l, ss["BodyText"]), Spacer(1, 4)]
     story.append(Spacer(1, 8))
-    story.append(style(Table([HEAD] + rows, colWidths=[2.1*inch] + [0.95*inch] * 6)))
+    story.append(style(Table([HEAD] + rows,
+                             colWidths=[2.1*inch] + [0.95*inch] * 6)))
     if mrows:
         story += [Spacer(1, 12), style(Table([MYAIR_HEAD] + mrows,
-                                             colWidths=[0.9*inch, 0.8*inch, 1.0*inch, 1.05*inch, 1.0*inch, 1.25*inch, 1.25*inch]))]
+                                             colWidths=[w * inch for w in
+                                                        MYAIR_WIDTHS]))]
     story.append(Spacer(1, 12))
     for n in NOTES:
         story.append(Paragraph(n, ss["Italic"]))
@@ -293,17 +317,24 @@ def ask_open(path, what, ask):
     if not (ask and path and os.path.isfile(path)):
         return
     try:
-        ans = input(f"Would you like to open the {what} summary? [y/N]: ").strip().lower()
+        ans = input(f"Would you like to open the {what} summary? [y/N]: ")
+        ans = ans.strip().lower()
     except EOFError:
         ans = "n"
     if ans == "y":
         subprocess.run(["open", path])
 
 def main():
-    ap = argparse.ArgumentParser(description="One-page sleep summary across urine, Apple Watch and ResMed data.")
-    ap.add_argument("--since", default=STUDY_START, help=f"first night to include, YYYY-MM-DD (default {STUDY_START})")
-    ap.add_argument("--no-files", action="store_true", help="print only; don't write the PDF/xlsx")
-    ap.add_argument("--no-prompt", action="store_true", help="don't ask to open the files")
+    ap = argparse.ArgumentParser(
+        description="One-page sleep summary across urine, Apple Watch "
+                    "and ResMed data.")
+    ap.add_argument("--since", default=STUDY_START,
+                    help=f"first night to include, YYYY-MM-DD "
+                         f"(default {STUDY_START})")
+    ap.add_argument("--no-files", action="store_true",
+                    help="print only; don't write the PDF/xlsx")
+    ap.add_argument("--no-prompt", action="store_true",
+                    help="don't ask to open the files")
     a = ap.parse_args()
 
     urine, urine_days = load_urine(a.since)
@@ -331,7 +362,8 @@ def main():
         print()
         print_table(MYAIR_HEAD, mrows)
     else:
-        print(f"\n(no ResMed figures: {MYAIR_XLSX} not found - run myair_stats_report)")
+        print(f"\n(no ResMed figures: {MYAIR_XLSX} not found - "
+              f"run myair_stats_report)")
 
     if a.no_files:
         return 0
@@ -342,13 +374,15 @@ def main():
         write_xlsx(xlsx, lines, rows, mrows, a.since)
         print(f"wrote {xlsx}")
     except ImportError:
-        print("openpyxl not installed - skipping sleep_summary.xlsx", file=sys.stderr)
+        print("openpyxl not installed - skipping sleep_summary.xlsx",
+              file=sys.stderr)
         xlsx = None
     try:
         write_pdf(pdf, lines, rows, mrows, a.since)
         print(f"wrote {pdf}")
     except ImportError:
-        print("reportlab not installed - skipping sleep_summary.pdf", file=sys.stderr)
+        print("reportlab not installed - skipping sleep_summary.pdf",
+              file=sys.stderr)
         pdf = None
     ask_open(pdf, "PDF", not a.no_prompt)
     ask_open(xlsx, "numbers (xlsx)", not a.no_prompt)

@@ -41,11 +41,12 @@ alias h="fc -l"
 alias hs="health_sleep.ksh"         # ResMed Health Sleep Report
 alias l="ls -l"        
 alias ll="ls -l"       
+alias lo="cd ~/logs"
 alias lr="ls -ltr"       
 alias mr="myair_stats_report.ksh"   # ResMed myAir stats report
 alias ms="morning_sleep.ksh"        # Apple Health Sleep Report
 alias nk="urine.ksh"                # Creates empty file for Urine Log commands
-alias ns="urine_log.ksh"            # Urine Log data handler. Requires cmd script.
+alias ns="urine_log.ksh"            # Urine Log handler. Requires cmd script.
 alias perltidy="$(which perltidy) -pro=~/.perltidyrc"
 alias print="echo"       
 alias py=python                    
