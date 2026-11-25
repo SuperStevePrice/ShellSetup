@@ -70,6 +70,9 @@ typeset BFLAG=""       # set if -b (block/paragraph/stanza translation mode) was
 
 typeset USAGE_FILE="$HOME/Documents/speak.usage"
 
+# Default folder for bare filenames not found in the current directory.
+typeset SPEAK_DIR="$HOME/Documents/speak_txt"
+
 usage() {
     printf '%s\n' "Usage: $0 <textfile|-> [-v voice] [-g [voice]] [-e [voice]] [-s [voice]] [-f [voice]] [-r rate] [-o outfile] [-p] [-n] [-c] [-x lang] [-b]"
     printf '%s\n' "       $0 -l            (list available voices)"
@@ -97,9 +100,9 @@ ARGUMENTS
     <textfile>        Path to a text file to read aloud. A bare filename
                        (no "/") is first looked for in the current
                        directory, as always; if not found there, it's
-                       looked for in ~/Documents instead. If ~/Documents
-                       doesn't exist, you'll be prompted for the full
-                       path.
+                       looked for in ~/Documents/speak_txt instead. If
+                       that folder doesn't exist, you'll be prompted
+                       for the full path.
     -                  Read from stdin instead of a file (e.g. for piping).
                        Example: echo "hello" | speak -
 
@@ -344,8 +347,8 @@ NOTES
       working directory gives a clear "file not found", instead of the
       filename silently being swallowed as a bogus voice name.
     - A bare filename (no "/") is checked in the current directory
-      first, as always. If not found there, ~/Documents is tried next.
-      If ~/Documents doesn't exist, you'll be prompted for the full
+      first, as always. If not found there, ~/Documents/speak_txt is
+      tried next. If that folder doesn't exist, you'll be prompted for the full
       path instead. Give a relative (e.g. ./notes.txt) or absolute path
       directly to bypass this and use that path as-is.
     - Voice NAMES are platform-specific (see -g/-e/-s/-f/-v above); everything
@@ -1274,7 +1277,7 @@ while [[ $# -gt 0 ]]; do
             # A second (or third...) non-option token here almost always
             # means a wildcard matched more than one file and the shell
             # expanded it before we ever saw a "*" -- e.g. "speak
-            # freude*.txt" run from ~/Documents. speak only ever reads one
+            # freude*.txt" run from ~/Documents/speak_txt. speak only ever reads one
             # file; silently keeping just the last token and dropping the
             # rest would be a quiet data-loss bug, so refuse instead and
             # point at the tool that's actually built for this.
@@ -1402,8 +1405,8 @@ fi
 # If INPUT is a bare filename (no "/"), the CURRENT DIRECTORY is checked
 # first, same as always -- this is what lets "speak poem.txt" keep
 # working from inside ~/Projects/SS or anywhere else the file actually
-# lives. Only if it's NOT found there does ~/Documents get tried as a
-# fallback default location. If ~/Documents doesn't exist either, prompt
+# lives. Only if it's NOT found there does $SPEAK_DIR (~/Documents/speak_txt)
+# get tried as a fallback default location. If it doesn't exist either, prompt
 # for the full path instead. A relative path like ./notes.txt or an
 # absolute path is left alone and checked as given, below.
 if [[ "$INPUT" != "-" ]]; then
@@ -1411,13 +1414,13 @@ if [[ "$INPUT" != "-" ]]; then
         */*) ;;   # a path was given -- leave it as-is
         *)
             if [[ ! -f "$INPUT" ]]; then
-                # Not in the current directory -- try ~/Documents next.
-                if [[ -d "$HOME/Documents" ]]; then
-                    [[ -f "$HOME/Documents/$INPUT" ]] && INPUT="$HOME/Documents/$INPUT"
-                    # If it's not in ~/Documents either, leave INPUT as the
+                # Not in the current directory -- try $SPEAK_DIR next.
+                if [[ -d "$SPEAK_DIR" ]]; then
+                    [[ -f "$SPEAK_DIR/$INPUT" ]] && INPUT="$SPEAK_DIR/$INPUT"
+                    # If it's not in $SPEAK_DIR either, leave INPUT as the
                     # bare name -- the file-not-found check below reports it.
                 else
-                    printf '%s\n' "~/Documents does not exist."
+                    printf '%s\n' "$SPEAK_DIR does not exist."
                     printf '%s' "Enter the full path to the text file: "
                     read INPUT
                 fi

@@ -43,16 +43,16 @@
 # If textfile.txt is not a fully qualified path (i.e. doesn't start
 # with /), the CURRENT DIRECTORY is checked first -- same precedence
 # 'speak' itself uses -- and only if nothing matches there does it fall
-# back to the base name in ~/Documents. So "laura li_fold.txt" above
+# back to the base name in ~/Documents/speak_txt. So "laura li_fold.txt" above
 # resolves to ./laura li_fold.txt if that exists here, else
-# ~/Documents/laura li_fold.txt.
+# ~/Documents/speak_txt/laura li_fold.txt.
 #
 # Wildcards are allowed in the base name (e.g. freude*.txt), whether
 # the shell expands them for you (because you ran from a directory
 # where they matched something -- that directory is honored, not
-# silently swapped for ~/Documents) or they reach the script unexpanded
+# silently swapped for ~/Documents/speak_txt) or they reach the script unexpanded
 # (quoted, or no match in the current directory, in which case
-# ~/Documents is tried next). Either way, if more than one file
+# ~/Documents/speak_txt is tried next). Either way, if more than one file
 # matches, you're shown a numbered list to pick from -- and (unless
 # -L is given) that same list comes back up after every playback, so
 # you can jump straight from one match to another (e.g. the 1st
@@ -64,6 +64,9 @@ typeset -a args
 typeset -a speak_args
 typeset textfile
 integer n
+
+# Default folder for bare filenames not found in the current directory.
+typeset SPEAK_DIR="$HOME/Documents/speak_txt"
 
 integer forever=0
 integer spanish=0
@@ -115,7 +118,7 @@ if (( n < 1 )); then
 fi
 
 # If you run a wildcard (e.g. freude*.txt) from a directory where it
-# happens to match something -- most commonly ~/Documents itself --
+# happens to match something -- most commonly ~/Documents/speak_txt itself --
 # the shell expands it before this script ever sees it, handing us
 # several separate filename arguments instead of one argument
 # containing a "*". Scan backward from the end of the argument list
@@ -155,11 +158,11 @@ while (( idx >= 0 )); do
         # Found right here in the current directory -- this is exactly
         # the case where the shell already expanded a wildcard for us
         # because it matched something in THIS directory, so that's
-        # where the match actually lives; don't reach into ~/Documents
+        # where the match actually lives; don't reach into ~/Documents/speak_txt
         # instead.
         cand_resolved=$cand
     else
-        cand_resolved="$HOME/Documents/${cand##*/}"
+        cand_resolved="$SPEAK_DIR/${cand##*/}"
     fi
     if [[ -f $cand_resolved ]]; then
         trailing_resolved=("$cand_resolved" "${trailing_resolved[@]}")
@@ -201,7 +204,7 @@ else
         # first -- same precedence 'speak' itself uses -- so running
         # speak-loop from inside a project directory finds a file
         # sitting right there instead of silently reaching into
-        # ~/Documents.
+        # ~/Documents/speak_txt.
         IFS=
         matches=( $textfile )
         IFS=$old_ifs
@@ -209,11 +212,11 @@ else
 
         # Nothing usable here (no match, or the only match was a
         # directory -- e.g. *pro* catching a "project_docs" folder) --
-        # fall back to ~/Documents using just the base name (any
+        # fall back to ~/Documents/speak_txt using just the base name (any
         # directory part given on the command line is dropped for this
         # fallback).
         if (( ${#matches[@]} == 0 )); then
-            textfile="$HOME/Documents/${textfile##*/}"
+            textfile="$SPEAK_DIR/${textfile##*/}"
             IFS=
             matches=( $textfile )
             IFS=$old_ifs
