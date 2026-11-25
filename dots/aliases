@@ -16,35 +16,48 @@
 # Invoked by ~/.profile at login.
 #
 #-------------------------------------------------------------------------------
-alias a="amber"                    
+alias ..="cd .."
+alias ...="cd ../.."
 alias as="all_sleep.ksh"           
 alias b="cd ~/bin"                 
 alias br="bin_usage_report"        
 alias c="tput clear"               
 alias clr="tput clear"             
+alias desk="cd ~/Desktop"
 alias doc="cd ~/Documents/"        
 alias docs="clr;cd ~/Documents/;lr"
 alias dr="clr; cd ~/Downloads/;ls -ltr"  
-alias elee="cd ~/Documents/elevenLabsUploads/english"
-alias eleg="cd ~/Documents/elevenLabsUploads/german"
+alias fp="cd ~/Documents/FavoritePoems"
+alias fpe="cd ~/Documents/FavoritePoems/Texts/English"
+alias fpg="cd ~/Documents/FavoritePoems/Texts/German"
+alias fpr="cd ~/Documents/FavoritePoems/Recordings"
 alias g="$(which git)"      
 alias get=g          
 alias gits="g status"      
 alias gl="$(which git) log"     
+alias gp="git_push"
 alias gs="$(which git) status"    
 alias h="fc -l"        
 alias hs="health_sleep.ksh"         # ResMed Health Sleep Report
 alias l="ls -l"        
 alias ll="ls -l"       
 alias lr="ls -ltr"       
+alias mr="myair_stats_report.ksh"   # ResMed myAir stats report
 alias ms="morning_sleep.ksh"        # Apple Health Sleep Report
 alias nk="urine.ksh"                # Creates empty file for Urine Log commands
 alias ns="urine_log.ksh"            # Urine Log data handler. Requires cmd script.
 alias perltidy="$(which perltidy) -pro=~/.perltidyrc"
 alias print="echo"       
 alias py=python                    
+alias ra=". ~/.aliases"             # Reload aliases
+alias sb="cd ~/Projects/SS/bin"
+alias sd="cd ~/Projects/SS/dots"
+alias ss="cd ~/Projects/SS"
+alias sy="syncAll"
 alias t="cd ~/tests"               
-alias vl="view logs/setup.log"    
+alias ulog="cd ~/Projects/UrineLog"
+alias va="vi ~/Projects/ShellSetup/dots/aliases"    # Edit aliases source
+alias vl="view ~/Projects/ShellSetup/logs/setup.log"
 
 # OS Specific Python paths:
 if [ "$(uname)" = "Darwin" ]; then
