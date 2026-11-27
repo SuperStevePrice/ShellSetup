@@ -54,6 +54,7 @@ alias ra=". ~/.aliases"             # Reload aliases
 alias sb="cd ~/Projects/SS/bin"
 alias sd="cd ~/Projects/SS/dots"
 alias ss="cd ~/Projects/SS"
+alias st="cd ~/Documents/speak_txt"
 alias sy="syncAll"
 alias t="cd ~/tests"               
 alias ulog="cd ~/Projects/UrineLog"
